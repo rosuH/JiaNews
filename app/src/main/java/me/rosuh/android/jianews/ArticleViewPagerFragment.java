@@ -28,10 +28,7 @@ public class ArticleViewPagerFragment extends Fragment {
     private FragmentManager mFragmentManager;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
-    private TabItem mHomeItem;
-    private TabItem mAnnounceItem;
-    private TabItem mActivityItem;
-    private TabItem mMediaItem;
+
 
     private FragmentStatePagerAdapter mStatePagerAdapter;
 
@@ -50,22 +47,11 @@ public class ArticleViewPagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.article_list_view_pager_fragment, container, false);
         mViewPager = view.findViewById(R.id.vp_article_list);
         mTabLayout = view.findViewById(R.id.tb_layout_nav);
-//        mHomeItem = view.findViewById(R.id.ti_home_button);
-//        mAnnounceItem = view.findViewById(R.id.ti_announce_button);
-//        mActivityItem = view.findViewById(R.id.ti_campus_ac_button);
-//        mMediaItem = view.findViewById(R.id.ti_media_report_button);
 
-        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_home)
-                .setContentDescription(R.string.tab_home).setIcon(R.drawable.ic_home_button));
-        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_announce)
-                .setContentDescription(R.string.tab_announce).setIcon(R.drawable.ic_announce_button));
-        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_activity)
-                .setContentDescription(R.string.tab_activity).setIcon(R.drawable.ic_campus_button));
-        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_media)
-                .setContentDescription(R.string.tab_media).setIcon(R.drawable.ic_media_button));
-//        mTabLayout.addView(mAnnounceItem, Const.VALUE_TAB_INDEX_ANNOUNCE);
-//        mTabLayout.addView(mActivityItem, Const.VALUE_TAB_INDEX_ACTIVITY);
-//        mTabLayout.addView(mMediaItem, Const.VALUE_TAB_INDEX_MEDIA);
+        mTabLayout.addTab(mTabLayout.newTab());
+        mTabLayout.addTab(mTabLayout.newTab());
+        mTabLayout.addTab(mTabLayout.newTab());
+        mTabLayout.addTab(mTabLayout.newTab());
 
         mFragmentManager = getFragmentManager();
         mViewPager.setAdapter(mStatePagerAdapter = new FragmentStatePagerAdapter(mFragmentManager){
@@ -83,8 +69,19 @@ public class ArticleViewPagerFragment extends Fragment {
         mViewPager.setCurrentItem(Const.VALUE_ARTICLE_START_PAGE);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
+        setTabLayout();
 
         return view;
+    }
+
+    private void setTabLayout(){
+        mTabLayout.getTabAt(0).setText(R.string.tab_home)
+                .setContentDescription(R.string.tab_home).setIcon(R.drawable.ic_home_button);
+        mTabLayout.getTabAt(1).setText(R.string.tab_announce)
+                .setContentDescription(R.string.tab_announce).setIcon(R.drawable.ic_announce_button);
+        mTabLayout.getTabAt(2).setText(R.string.tab_activity)
+                .setContentDescription(R.string.tab_activity).setIcon(R.drawable.ic_campus_button);
+        mTabLayout.getTabAt(3).setText(R.string.tab_media)
+                .setContentDescription(R.string.tab_media).setIcon(R.drawable.ic_media_button);
     }
 }
