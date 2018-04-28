@@ -1,5 +1,7 @@
 package me.rosuh.android.jianews;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -7,12 +9,18 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -30,23 +38,23 @@ public class BannerFragment extends Fragment {
     private ArticleLab mArticleLab;
     private List<Article> mArticles = new ArrayList<>();
     private ScheduledExecutorService mScheduledExecutorService;
-    private Handler mHandler = new Handler();
-//    private TimerRunner mTimerRunner;
+    private ScheduledExecutorService mBannerExecutor;
     private List<TextView> mIndicatorTextViews = new ArrayList<>();
-    private FragmentPagerAdapter mFragmentPagerAdapter;
-    private boolean isDataGot = false;
+    private FragmentStatePagerAdapter mFragmentPagerAdapter;
+    private Activity mActivity;
 
 
     public static Fragment newInstance() {
         return new BannerFragment();
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mArticleLab = ArticleLab.get(getContext());
         // 如果获取失败，则每个三秒重新获取一次，9 秒后失败则报告错误
-        mScheduledExecutorService = Executors.newScheduledThreadPool(1);
+        mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         mScheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -55,7 +63,6 @@ public class BannerFragment extends Fragment {
                 if (mArticles != null && !mArticles.isEmpty() && mFragmentPagerAdapter != null){
                     mFragmentPagerAdapter.notifyDataSetChanged();
                     stopScheduleRunner();
-//                    isDataGot = true;
                 }
             }
         },0, 3, TimeUnit.SECONDS);
@@ -66,6 +73,7 @@ public class BannerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.banner_fragment, container, false);
+        mActivity = getActivity();
         mViewPager = view.findViewById(R.id.vp_banner);
         mLinearLayout = view.findViewById(R.id.ll_indicator);
 
@@ -73,7 +81,7 @@ public class BannerFragment extends Fragment {
         initCircle();
 
         FragmentManager fm = getFragmentManager();
-        mFragmentPagerAdapter = new FragmentPagerAdapter(fm) {
+        mFragmentPagerAdapter = new FragmentStatePagerAdapter(fm){
             private int mIndex;
             @Override
             public Fragment getItem(int position) {
@@ -102,9 +110,14 @@ public class BannerFragment extends Fragment {
             public int getCount() {
                 return Const.VALUE_BANNER_MAX_PAGES;
             }
-        };
 
+            @Override
+            public int getItemPosition(@NonNull Object object) {
+                return PagerAdapter.POSITION_NONE;
+            }
+        };
         mViewPager.setAdapter(mFragmentPagerAdapter);
+        mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.setCurrentItem(VALUE_BANNER_START_PAGE);
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
             private int mIndex;
@@ -121,8 +134,25 @@ public class BannerFragment extends Fragment {
                     mIndex = tempNum - mIndex;
                 }
                 changePoints(mIndex);
+                startBannerScroll();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
             }
         });
+
+        try {
+            Class refClass = Class.forName("android.support.v4.view.ViewPager");
+            Field f = refClass.getDeclaredField("mScroller");
+            FixedSpeedScroller fixedSpeedScroller = new FixedSpeedScroller(getContext(), new LinearOutSlowInInterpolator());
+            fixedSpeedScroller.setmDuration(1300);
+            f.setAccessible(true);
+            f.set(mViewPager, fixedSpeedScroller);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         return view;
     }
@@ -166,16 +196,40 @@ public class BannerFragment extends Fragment {
 
     }
 
-//    class TimerRunner implements Runnable{
-//        @Override
-//        public void run() {
-//            int currItem = mViewPager.getCurrentItem();
-//            mViewPager.setCurrentItem(currItem+1);
-//            if (mHandler != null){
-//                mHandler.postDelayed(this, 5000);
-//            }
-//        }
-//    }
+    /**
+     * 功能：开始轮播图轮播功能
+     */
+    private void startBannerScroll(){
+        stopBannerScroll();
+
+        mBannerExecutor = Executors.newSingleThreadScheduledExecutor();
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                selectNextItem();
+            }
+
+            private void selectNextItem(){
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+                    }
+                });
+            }
+        };
+        mBannerExecutor.scheduleAtFixedRate(command, 3, 3, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 功能：停止轮播图轮播功能
+     */
+    private void stopBannerScroll(){
+        if (mBannerExecutor != null){
+            mBannerExecutor.shutdownNow();
+        }
+    }
+
 
     /**
      * 功能：若 mArticles 无意义，则 ismArticlesEmpty 为真
@@ -195,10 +249,15 @@ public class BannerFragment extends Fragment {
         }
     }
 
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        mHandler.removeMessages(0);
-//        mHandler = null;
-//    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopBannerScroll();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startBannerScroll();
+    }
 }

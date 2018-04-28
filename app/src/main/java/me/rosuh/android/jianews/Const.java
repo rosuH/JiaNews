@@ -12,6 +12,7 @@ public class Const {
     public static final int VALUE_BANNER_MAX_PAGES = 1000;
     public static final int VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE = 10;
     public static final int VALUE_BANNER_START_PAGE = VALUE_BANNER_MAX_PAGES/2;
+    public static final int VALUE_BANNER_CACHE_PAGES = 3;
 
     /**
      * Article View Pager

@@ -5,7 +5,7 @@
     <string name="tab_activity">校园动态</string>
     <string name="tab_media">媒体报道</string>
     <string name="iv_description">文章缩略图</string>
-    <string name="item_loading">正在加载中&#8230;</string>
+    <string name="item_loading">文章加载中&#8230;</string>
     
     <string name="sv_menu_item_search">搜索一下最近新闻</string>
     <string name="dl_menu_item">侧边栏</string>
