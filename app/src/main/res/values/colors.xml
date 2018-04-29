@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#007fca</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#007fca</color>
     <color name="indicator_normal">@color/gray</color>
     <color name="indicator_select">#007fca</color>
     <color name="banner_text_color">#007fca</color>

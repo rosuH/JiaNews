@@ -1,5 +1,7 @@
 package me.rosuh.android.jianews;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -10,25 +12,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ArticleViewPagerFragment extends Fragment {
-    private List<Article> mArticles;
-    private List<Article> mAnnouncementArticles;
-    private List<Article> mActivitiesArticles;
-    private List<Article> mMediaArticles;
     private FragmentManager mFragmentManager;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
-
+    private static final String TAG = "ArticleViewPagerFragmen";
 
     private FragmentStatePagerAdapter mStatePagerAdapter;
 
@@ -57,22 +58,31 @@ public class ArticleViewPagerFragment extends Fragment {
         mViewPager.setAdapter(mStatePagerAdapter = new FragmentStatePagerAdapter(mFragmentManager){
             @Override
             public Fragment getItem(int position) {
-                return ArticleListFragment.newInstance(position);
+                Fragment fragment = ArticleListFragment.newInstance(position);
+                fragment.setTargetFragment(ArticleViewPagerFragment.this, Const.REQUEST_CODE_ARTICLE_LIST_REFRESH);
+                return fragment;
             }
 
             @Override
             public int getCount() {
                 return Const.VALUE_ARTICLE_MAX_PAGES;
             }
+
+            @Override
+            public int getItemPosition(@NonNull Object object) {
+                return PagerAdapter.POSITION_NONE;
+            }
         });
 
         mViewPager.setCurrentItem(Const.VALUE_ARTICLE_START_PAGE);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-        setTabLayout();
 
+        setTabLayout();
         return view;
     }
+
+
 
     private void setTabLayout(){
         mTabLayout.getTabAt(0).setText(R.string.tab_home)
@@ -83,5 +93,34 @@ public class ArticleViewPagerFragment extends Fragment {
                 .setContentDescription(R.string.tab_activity).setIcon(R.drawable.ic_campus_button);
         mTabLayout.getTabAt(3).setText(R.string.tab_media)
                 .setContentDescription(R.string.tab_media).setIcon(R.drawable.ic_media_button);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Const.REQUEST_CODE_ARTICLE_LIST_REFRESH && resultCode == Activity.RESULT_OK){
+            refreshViewpager();
+        }
+    }
+
+    /**
+     * 功能：刷新视图
+     */
+    private void refreshViewpager(){
+        if (mViewPager != null && mFragmentManager != null){
+            mStatePagerAdapter.notifyDataSetChanged();
+            Log.d(TAG, "mStatePagerAdapter.notifyDataSetChanged() has been called ");
+        }
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

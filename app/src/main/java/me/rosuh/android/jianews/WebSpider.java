@@ -68,9 +68,12 @@ public class WebSpider {
                         .getAllElements()
                         .toString();
                 article.setContent(content);
+                String summary = Jsoup.parse(content).getElementsByTag("p").get(0).text()
+                        .substring(0, Const.VALUE_ARTICLE_SUMMARY);
+                article.setSummary(summary);
                 /**
                  * 获取第一张图片链接作为缩略图
-                 * 如果为空，则获取，防止抛出异常
+                 * 如果为空，则不获取，防止抛出异常
                  */
                 Elements imgLinks = Jsoup.parse(content).getElementsByTag("img");
                 if (!imgLinks.isEmpty()){
@@ -112,6 +115,9 @@ public class WebSpider {
                         .getAllElements()
                         .toString();
                 article.setContent(content);
+                String summary = Jsoup.parse(content).getElementsByTag("p").get(0).text()
+                        .substring(0, Const.VALUE_ARTICLE_SUMMARY);
+                article.setSummary(summary);
                 // 暂时使用 URL 作为 id
                 article.setId(article.getUrl());
                 articles.add(article);

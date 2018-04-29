@@ -8,6 +8,7 @@ public class Article implements Parcelable{
      * 文章 ID
      * 文章链接
      * 文章标题
+     * 文章概括
      * 文章缩略图
      * 文章内容
      * 文章发布时间
@@ -16,6 +17,7 @@ public class Article implements Parcelable{
     private String id;
     private String url;
     private String title;
+    private String summary;
     private String thumbnail;
     private String content;
     private String publishTime;
@@ -100,6 +102,14 @@ public class Article implements Parcelable{
             return new Article[size];
         }
     };
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
     @Override
     public int describeContents() {
