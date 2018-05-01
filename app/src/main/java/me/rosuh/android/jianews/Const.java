@@ -4,6 +4,7 @@ public class Const {
     public static final String TAG_FRAGMENT_BANNER = "tagFragmentBanner";
     public static final String TAG_FRAGMENT_ARTICLE_LIST = "tagFragmentArticleList";
     public static final String TAG_FRAGMENT_TAB_NAV = "tagFragmentTagNav";
+    public static final String TAG_FRAGMENT_READING_ITEM = "tagFragmentReadingItem";
 
     // REQUEST CODE
     public static final int REQUEST_CODE_ARTICLE_LIST_REFRESH = 1;
@@ -22,12 +23,14 @@ public class Const {
      */
     public static final int VALUE_ARTICLE_MAX_PAGES = 4;
     public static final int VALUE_ARTICLE_START_PAGE = 0;
-    public static final int VALUE_ARTICLE_INDEX_START = 1;
+    public static final int VALUE_ARTICLE_INDEX_START = 0;
     public static final int VALUE_ARTICLE_SUMMARY = 40;
     public static final int VALUE_LIST_EMPTY_TYPE = 1;
     public static final int VALUE_LIST_FOO_TYPE = 2;
     public static final int VALUE_LIST_HEADER_TYPE = 3;
     public static final int VALUE_LIST_DEFAULT_TYPE = 4;
+    public static final int VALUE_LIST_DEFAULT_SIZE = 10;
+
 
     /**
      * Tab Layout
@@ -45,6 +48,12 @@ public class Const {
     public static final String KEY_ARGS_BANNER_ARTICLES_LIST = "argsBannerArticlesList";
     public static final String KEY_ARGS_ARTICLES_LIST = "argsArticlesList";
     public static final String KEY_ARGS_ARTICLES_POSITION = "argsArticlesPosition";
+
+    /**
+     * Activity Intent key
+     */
+    public static final String KEY_Intent_ARTICLE_READING_ITEM = "argsArticleReadingItem";
+
 
     /**
      * Web Spider

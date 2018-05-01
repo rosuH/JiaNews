@@ -2,6 +2,7 @@ package me.rosuh.android.jianews;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,12 +39,13 @@ public class BannerFragment extends Fragment {
     private LinearLayout mLinearLayout;
     private ArticleLab mArticleLab;
     private List<Article> mArticles = new ArrayList<>();
-    private ScheduledExecutorService mScheduledExecutorService;
+    private List<Article> mArticlesSync = new ArrayList<>();
     private ScheduledExecutorService mBannerExecutor;
     private List<TextView> mIndicatorTextViews = new ArrayList<>();
     private FragmentStatePagerAdapter mFragmentPagerAdapter;
     private Activity mActivity;
-
+    private static final String TAG = "BannerFragment";
+    private Context mContext;
 
     public static Fragment newInstance() {
         return new BannerFragment();
@@ -50,22 +53,17 @@ public class BannerFragment extends Fragment {
 
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArticleLab = ArticleLab.get(getContext());
-        // 如果获取失败，则每个三秒重新获取一次，9 秒后失败则报告错误
-        mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        mScheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                mArticles = mArticleLab.getBannerArticles();
-                // 获取到数据则通知轮播图更新
-                if (mArticles != null && !mArticles.isEmpty() && mFragmentPagerAdapter != null){
-                    mFragmentPagerAdapter.notifyDataSetChanged();
-                    stopScheduleRunner();
-                }
-            }
-        },0, 3, TimeUnit.SECONDS);
+        mArticleLab = ArticleLab.get(mContext);
+        GetDataTask getDataTask = new GetDataTask(BannerFragment.this);
+        getDataTask.execute();
     }
 
     @Nullable
@@ -85,21 +83,10 @@ public class BannerFragment extends Fragment {
             private int mIndex;
             @Override
             public Fragment getItem(int position) {
-                // 如果 mArticles 为空，那么设置实际展示页面为默认大小值
-                // 否则设置之为 mArticles.size()
-                int tempNum = VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
-                if (!ismArticlesEmpty()){
-                    tempNum = mArticles.size();
-                    stopScheduleRunner();
-                }
-                mIndex = Math.abs(position - VALUE_BANNER_START_PAGE) % tempNum;
-
-                if (position < VALUE_BANNER_START_PAGE && mIndex != 0){
-                    mIndex = tempNum - mIndex;
-                }
+                mIndex = getRightIndex(position);
                 // 如果未获取到文章数据，则传送一个 null 过去
                 // 目标收到后进行判断，如果是 null，则设置为 加载图
-                if (ismArticlesEmpty()){
+                if (ismArticlesEmpty(mArticles)){
                     return BannerPageFragment.newInstance(mIndex, null);
                 }else {
                     return BannerPageFragment.newInstance(mIndex, mArticles.get(mIndex));
@@ -123,16 +110,7 @@ public class BannerFragment extends Fragment {
             private int mIndex;
             @Override
             public void onPageSelected(int position) {
-                mIndex = Math.abs(position - VALUE_BANNER_START_PAGE);
-                int tempNum = VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
-                if (!ismArticlesEmpty()){
-                    tempNum = mArticles.size();
-                }
-                mIndex = Math.abs(position - VALUE_BANNER_START_PAGE) % tempNum;
-
-                if (position < VALUE_BANNER_START_PAGE && mIndex != 0){
-                    mIndex = tempNum - mIndex;
-                }
+                mIndex = getRightIndex(position);
                 changePoints(mIndex);
                 startBannerScroll();
             }
@@ -143,6 +121,7 @@ public class BannerFragment extends Fragment {
             }
         });
 
+        // 通过反射改变轮播图的切换速度
         try {
             Class refClass = Class.forName("android.support.v4.view.ViewPager");
             Field f = refClass.getDeclaredField("mScroller");
@@ -155,6 +134,19 @@ public class BannerFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private int getRightIndex(int position){
+        int tempNum = VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
+        if (!ismArticlesEmpty(mArticles)){
+            tempNum = mArticles.size();
+        }
+        int index = Math.abs(position - VALUE_BANNER_START_PAGE) % tempNum;
+        if (position < VALUE_BANNER_START_PAGE && index != 0){
+            index = tempNum - index;
+        }
+
+        return index;
     }
 
     private void changePoints(int pos){
@@ -174,7 +166,7 @@ public class BannerFragment extends Fragment {
         int height = 15;
         int margin = 5;
         int loopSize;
-        if (ismArticlesEmpty()){
+        if (ismArticlesEmpty(mArticles)){
             loopSize = 10;
         }else {
            loopSize = mArticles.size();
@@ -230,23 +222,33 @@ public class BannerFragment extends Fragment {
         }
     }
 
+    private static class GetDataTask extends AsyncTask<Integer, Void, List<Article>> {
+        private WeakReference<BannerFragment> mWeakReference;
+        private ArticleLab mArticleLab;
+
+        GetDataTask(BannerFragment context){
+            mWeakReference = new WeakReference<>(context);
+            mArticleLab = mWeakReference.get().mArticleLab;
+        }
+
+        @Override
+        protected List<Article> doInBackground(Integer...integers) {
+            return mArticleLab.getBannerArticles();
+        }
+        @Override
+        protected void onPostExecute(List<Article> result) {
+            super.onPostExecute(result);
+            mWeakReference.get().mArticles = result;
+        }
+    }
+
 
     /**
      * 功能：若 mArticles 无意义，则 ismArticlesEmpty 为真
      * @return 若 mArticles 无意义，则 ismArticlesEmpty 为真
      */
-    private boolean ismArticlesEmpty(){
-        return (mArticles == null || mArticles.isEmpty());
-    }
-
-    /**
-     * 功能：停止获取数据的定时器
-     */
-    private void stopScheduleRunner(){
-        if (mScheduledExecutorService != null){
-            mScheduledExecutorService.shutdown();
-            mScheduledExecutorService = null;
-        }
+    private boolean ismArticlesEmpty(List list){
+        return (list == null || list.isEmpty());
     }
 
     @Override

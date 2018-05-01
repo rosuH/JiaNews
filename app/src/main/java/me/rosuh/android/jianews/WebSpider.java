@@ -28,17 +28,25 @@ public class WebSpider {
                 !url.equals(URL_CAMPUS_ACTIVITIES) &&
                 !url.equals(URL_MEDIA_REPORTS) &&
                 !url.equals(URL_CAMPUS_ANNOUNCEMENT);
-
-        if ( isUrlPointless||index <= 0) {
+        String mUrl;
+        if ( isUrlPointless||index < 0) {
             return null;
+        } else if (index == 0) {
+            mUrl = url + ".html";
+        }else {
+            mUrl = url + "_" + index + ".html";
         }
 
-        String mUrl = url + "_" + index + ".html";
         try {
             Document doc = Jsoup.connect(mUrl).get();
             Element uls = doc.getElementsByTag("ul").get(0);
             Elements links = uls.getElementsByTag("a");
-            sArticles = dataFilterForList(links);
+            Elements dates = doc.getElementsByClass("date");
+            if (!mUrl.equals(Const.URL_MEDIA_REPORTS)){
+                sArticles = dataFilterForList(links, dates);
+            }else {
+                sArticles = dataFilterForMedia(links, dates);
+            }
         }catch (IOException ioe){
             ioe.printStackTrace();
         }
@@ -55,20 +63,22 @@ public class WebSpider {
      * @param links 文章链接集合
      * @return articles 返回已经填充好的文章列表
      */
-    private static List<Article> dataFilterForList(Elements links){
+    private static List<Article> dataFilterForList(Elements links, Elements dates){
         List<Article> articles = new ArrayList<>();
         try {
-            for (Element link: links){
+            for (int i = 0; i < 15; i++){
+                Element link = links.get(i);
                 Article article = new Article();
+                article.setPublishTime(dates.get(i).text());
                 article.setUrl(link.attr("href"));
                 article.setTitle(link.text());
                 // 获取文章内容
-                String content = Jsoup.connect(article.getUrl()).get()
-                        .select("[height=297]").get(0)
-                        .getAllElements()
-                        .toString();
+                String content = Jsoup.connect(article.getUrl()).get().body()
+                        .select("[bgcolor=#FFFFFF]").get(0)
+                        .getElementsByTag("tbody").get(0)
+                        .getElementsByTag("tr").toString();
                 article.setContent(content);
-                String summary = Jsoup.parse(content).getElementsByTag("p").get(0).text()
+                String summary = Jsoup.parse(content).text()
                         .substring(0, Const.VALUE_ARTICLE_SUMMARY);
                 article.setSummary(summary);
                 /**
@@ -110,12 +120,12 @@ public class WebSpider {
                 article.setTitle(linkTag.getElementsByTag("img").get(0).attr("alt"));
                 article.setThumbnail(linkTag.getElementsByTag("img").get(0).attr("abs:src"));
                 article.setUrl(linkTag.getElementsByTag("a").get(0).attr("href"));
-                String content = Jsoup.connect(article.getUrl()).get()
-                        .select("[height=297]").get(0)
-                        .getAllElements()
-                        .toString();
+                String content = Jsoup.connect(article.getUrl()).get().body()
+                        .select("[bgcolor=#FFFFFF]").get(0)
+                        .getElementsByTag("tbody").get(0)
+                        .getElementsByTag("tr").toString();
                 article.setContent(content);
-                String summary = Jsoup.parse(content).getElementsByTag("p").get(0).text()
+                String summary = Jsoup.parse(content).text()
                         .substring(0, Const.VALUE_ARTICLE_SUMMARY);
                 article.setSummary(summary);
                 // 暂时使用 URL 作为 id
@@ -128,12 +138,17 @@ public class WebSpider {
         return articles;
     }
 
-//    public static void printfAll(){
-//        for (int i = 0; i < mLinks.size(); i++){
-//            System.out.println(
-//                    "Link[ " + i + " ] = " + mLinks.get(i) + " \n" +
-//                            "Title[ " + i + " ] = " + mTitles.get(i) + " \n"
-//            );
-//        }
-//    }
+    private static List<Article> dataFilterForMedia(Elements links, Elements dates){
+        List<Article> articles = new ArrayList<>();
+        for (int i = 0; i < links.size(); i++){
+            Element link = links.get(i);
+            Article article = new Article();
+            article.setPublishTime(dates.get(i).text());
+            article.setUrl(link.attr("href"));
+            article.setTitle(link.text());
+            article.setId(article.getUrl());
+            articles.add(article);
+        }
+        return articles;
+    }
 }

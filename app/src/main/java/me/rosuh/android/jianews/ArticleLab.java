@@ -37,7 +37,7 @@ public class ArticleLab {
     /**
      * 功能：根据传入的链接，判断返回的文章类型
      *      1. 如果静态变量有意义，则返回正确类型的文章列表
-     *      2. 如果没有意义，则调用后台线程获取数据，此时先返回 null；调用者需要在 3 秒内重新调用本方法
+     *      2. 如果没有意义，则获取数据
      * @param url   文章类型链接
      * @return 如果本地静态变量有意义，直接返回；否则返回 null
      */
@@ -46,33 +46,29 @@ public class ArticleLab {
             Log.i(TAG, "The url is null");
             return null;
         }
-        if (index <= 0){
-            index = 1;
+        if (index < 0){
+            index = 0;
         }
 
         switch (url){
             case Const.URL_MAJOR_NEWS:
                 if (sMainNewsArticles.isEmpty()){
                     sMainNewsArticles = getDataBackground(url, index);
-                    break;
                 }
                 return sMainNewsArticles;
             case Const.URL_CAMPUS_ACTIVITIES:
                 if (sActivityArticles.isEmpty()){
                     sActivityArticles = getDataBackground(url, index);
-                    break;
                 }
                 return sActivityArticles;
             case Const.URL_CAMPUS_ANNOUNCEMENT:
                 if (sAnnouncementArticles.isEmpty()){
                     sAnnouncementArticles = getDataBackground(url, index);
-                    break;
                 }
                 return sAnnouncementArticles;
             case Const.URL_MEDIA_REPORTS:
                 if (sMediaArticles.isEmpty()){
                     sMediaArticles = getDataBackground(url, index);
-                    break;
                 }
                 return sMediaArticles;
             default:
@@ -83,13 +79,12 @@ public class ArticleLab {
     /**
      * 功能：获取轮播图文章
      *      1. 如果静态变量有意义，则返回正确类型的文章列表
-     *      2. 如果没有意义，则调用后台线程获取数据，此时先返回 null；调用者需要在 3 秒内重新调用本方法
+     *      2. 如果没有意义，则获取数据
      * @return
      */
     public List<Article> getBannerArticles(){
         if (sBannerArticles.isEmpty()){
-            sBannerArticles = getDataBackground(Const.URL_HOME_PAGE, 1);
-            return null;
+            sBannerArticles = getDataBackground(Const.URL_HOME_PAGE, 0);
         }
         return sBannerArticles;
     }

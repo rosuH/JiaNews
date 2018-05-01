@@ -29,9 +29,9 @@ public class ArticleViewPagerFragment extends Fragment {
     private FragmentManager mFragmentManager;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
-    private static final String TAG = "ArticleViewPagerFragmen";
+    private static final String TAG = "APFragment";
 
-    private FragmentStatePagerAdapter mStatePagerAdapter;
+    private FragmentPagerAdapter mStatePagerAdapter;
 
     public static Fragment newInstance(){
         return new ArticleViewPagerFragment();
@@ -55,7 +55,8 @@ public class ArticleViewPagerFragment extends Fragment {
         mTabLayout.addTab(mTabLayout.newTab());
 
         mFragmentManager = getFragmentManager();
-        mViewPager.setAdapter(mStatePagerAdapter = new FragmentStatePagerAdapter(mFragmentManager){
+        mStatePagerAdapter = new FragmentPagerAdapter(mFragmentManager){
+
             @Override
             public Fragment getItem(int position) {
                 Fragment fragment = ArticleListFragment.newInstance(position);
@@ -72,7 +73,10 @@ public class ArticleViewPagerFragment extends Fragment {
             public int getItemPosition(@NonNull Object object) {
                 return PagerAdapter.POSITION_NONE;
             }
-        });
+        };
+        mViewPager.setAdapter(mStatePagerAdapter);
+        mViewPager.setOffscreenPageLimit(1);
+
 
         mViewPager.setCurrentItem(Const.VALUE_ARTICLE_START_PAGE);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -99,7 +103,7 @@ public class ArticleViewPagerFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Const.REQUEST_CODE_ARTICLE_LIST_REFRESH && resultCode == Activity.RESULT_OK){
-            refreshViewpager();
+//            refreshViewpager();
         }
     }
 
@@ -109,7 +113,7 @@ public class ArticleViewPagerFragment extends Fragment {
     private void refreshViewpager(){
         if (mViewPager != null && mFragmentManager != null){
             mStatePagerAdapter.notifyDataSetChanged();
-            Log.d(TAG, "mStatePagerAdapter.notifyDataSetChanged() has been called ");
+            Log.d(TAG, "mStatePagerAdapter.notifyDataSetChanged()called ");
         }
     }
 

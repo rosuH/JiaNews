@@ -62,7 +62,6 @@ public class BannerPageFragment extends Fragment {
             // 如果为空，不加载 imageview
             imageView.setVisibility(View.GONE);
             textView.setText(R.string.item_loading);
-            Log.i("BannerPageFragment", "article is null");
         }else {
             // 不为空则从图片链接加载，并设置 text
             imageView.setVisibility(View.VISIBLE);
@@ -70,8 +69,6 @@ public class BannerPageFragment extends Fragment {
                     .apply(bitmapTransform(new BlurTransformation(3, 3)))
                     .into(imageView);
             textView.setText(article.getTitle());
-            Log.i("BannerPageFragment", "article is not null");
-
         }
         return view;
     }
