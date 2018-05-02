@@ -296,6 +296,9 @@ public class ArticleListFragment extends Fragment {
         }
     }
 
+    /**
+     * 功能： 通过链接和页码获取文章数据
+     */
     private static class GetDataTask extends AsyncTask<Integer, Void, Void>{
         private WeakReference<ArticleListFragment> mWeakReference;
         private List<Article> list;
@@ -304,33 +307,23 @@ public class ArticleListFragment extends Fragment {
         private ArticleLab mArticleLab;
 
         GetDataTask(ArticleListFragment context, int index){
-            mWeakReference = new WeakReference<>(context);
-            list = mWeakReference.get().mArticles;
-            mUrl = mWeakReference.get().mRequestUrl;
-            mIndex = index;
+            this.mWeakReference = new WeakReference<>(context);
+            this.list = mWeakReference.get().mArticles;
+            this.mUrl = mWeakReference.get().mRequestUrl;
+            this.mIndex = index;
         }
 
         @Override
         protected Void doInBackground(Integer...integers) {
-            getSpecificArticles(mUrl, mIndex);
-            return null;
-        }
-
-        /**
-         * 功能： 通过链接和页码获取文章数据
-         * @param url  文章类型链接
-         */
-        private void getSpecificArticles(final String url, int index){
             if (list == null || list.isEmpty()){
                 mArticleLab = ArticleLab.get(this.mWeakReference.get().mContext);
-                List<Article> temps = mArticleLab.getArticleList(url, index);
+                List<Article> temps = mArticleLab.getArticleList(mUrl, mIndex);
                 // 获取到数据则通知列表更新
                 if (temps != null && !temps.isEmpty()){
                     list = temps;
-                    Log.d(TAG, "run: temps.size() = " + temps.size());
                 }
             }
-            Log.d(TAG, "run: temps.size() = 0");
+            return null;
         }
 
         @Override

@@ -42,7 +42,7 @@ public class WebSpider {
             Element uls = doc.getElementsByTag("ul").get(0);
             Elements links = uls.getElementsByTag("a");
             Elements dates = doc.getElementsByClass("date");
-            if (!mUrl.equals(Const.URL_MEDIA_REPORTS)){
+            if (!url.equals(Const.URL_MEDIA_REPORTS)){
                 sArticles = dataFilterForList(links, dates);
             }else {
                 sArticles = dataFilterForMedia(links, dates);

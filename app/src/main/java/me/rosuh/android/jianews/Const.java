@@ -52,7 +52,8 @@ public class Const {
     /**
      * Activity Intent key
      */
-    public static final String KEY_Intent_ARTICLE_READING_ITEM = "argsArticleReadingItem";
+    public static final String KEY_INTENT_ARTICLE_READING_ITEM = "argsArticleReadingItem";
+    public static final String KEY_INTENT_EXTRA_TABLE_HTML = "argsTableHtml";
 
 
     /**

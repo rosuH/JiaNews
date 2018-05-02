@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import java.util.List;
@@ -30,29 +31,17 @@ import static me.rosuh.android.jianews.Const.TAG_FRAGMENT_TAB_NAV;
 
 public class HomeActivity extends AppCompatActivity {
 
-
-    private FragmentManager mFragmentManager;
     private DrawerLayout mDrawerLayout;
-    private FrameLayout mBannerLayout;
-    private FrameLayout mArticleListLayout;
-    private Toolbar mToolbar;
-    private NavigationView mNavigationView;
-    private List<Article> mArticles;
-    private ArticleLab mArticleLab;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-
-        mBannerLayout = findViewById(R.id.fl_banner_container);
-        mArticleListLayout = findViewById(R.id.fl_article_list_container);
         mDrawerLayout = findViewById(R.id.dl_home);
-        mNavigationView = findViewById(R.id.nav_view);
+        NavigationView mNavigationView = findViewById(R.id.nav_view);
 
         // 顶部工具栏
-        mToolbar = findViewById(R.id.tb_home);
+        Toolbar mToolbar = findViewById(R.id.tb_home);
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -71,11 +60,11 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // 添加轮播图、文章列表和底部导航栏
-        mFragmentManager = getSupportFragmentManager();
+        FragmentManager mFragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = mFragmentManager.beginTransaction();
-        ft.add(R.id.fl_banner_container, BannerFragment.newInstance(), TAG_FRAGMENT_BANNER);
         ft.add(R.id.fl_article_list_container, ArticleViewPagerFragment.newInstance()
                 , TAG_FRAGMENT_ARTICLE_LIST);
+        ft.add(R.id.fl_banner_container, BannerFragment.newInstance(), TAG_FRAGMENT_BANNER);
         ft.commit();
     }
 
@@ -96,5 +85,4 @@ public class HomeActivity extends AppCompatActivity {
         }
         return true;
     }
-
 }

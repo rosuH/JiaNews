@@ -3,20 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
     <android.support.v7.widget.Toolbar
         android:id="@+id/tb_reading"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/tool_bar_color"
-        android:elevation="4dp"
+        android:elevation="7dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
     </android.support.v7.widget.Toolbar>
-    <WebView
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:id="@+id/wv_article_reading"
+    <ScrollView
+        android:layout_below="@+id/tb_reading"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+        <TextView
+            android:padding="8dp"
+            android:id="@+id/tv_reading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 </RelativeLayout>
