@@ -73,19 +73,21 @@ public class WebSpider {
                 article.setUrl(link.attr("href"));
                 article.setTitle(link.text());
                 // 获取文章内容
-                String content = Jsoup.connect(article.getUrl()).get().body()
+                Element contentNode = Jsoup.connect(article.getUrl()).get().body()
                         .select("[bgcolor=#FFFFFF]").get(0)
-                        .getElementsByTag("tbody").get(0)
-                        .getElementsByTag("tr").toString();
-                article.setContent(content);
-                String summary = Jsoup.parse(content).text()
-                        .substring(0, Const.VALUE_ARTICLE_SUMMARY);
+                        .getElementsByTag("tbody").get(0);
+                if (contentNode.getElementsByTag("div").size() > 1){
+                    article.setContent(contentNode.getElementsByTag("div").toString());
+                }else {
+                    article.setContent(contentNode.getElementsByTag("p").toString());
+                }
+                String summary = Jsoup.parse(article.getContent()).text();
                 article.setSummary(summary);
                 /**
                  * 获取第一张图片链接作为缩略图
                  * 如果为空，则不获取，防止抛出异常
                  */
-                Elements imgLinks = Jsoup.parse(content).getElementsByTag("img");
+                Elements imgLinks = Jsoup.parse(article.getContent()).getElementsByTag("img");
                 if (!imgLinks.isEmpty()){
                     article.setThumbnail(imgLinks.get(0).attr("src"));
                 }
@@ -123,10 +125,9 @@ public class WebSpider {
                 String content = Jsoup.connect(article.getUrl()).get().body()
                         .select("[bgcolor=#FFFFFF]").get(0)
                         .getElementsByTag("tbody").get(0)
-                        .getElementsByTag("tr").toString();
+                        .getElementsByTag("p").toString();
                 article.setContent(content);
-                String summary = Jsoup.parse(content).text()
-                        .substring(0, Const.VALUE_ARTICLE_SUMMARY);
+                String summary = Jsoup.parse(content).text();
                 article.setSummary(summary);
                 // 暂时使用 URL 作为 id
                 article.setId(article.getUrl());

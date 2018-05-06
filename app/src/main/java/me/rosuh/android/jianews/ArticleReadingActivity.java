@@ -48,34 +48,17 @@ public class ArticleReadingActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        final TextView textView = findViewById(R.id.tv_reading);
-
-        Html.ImageGetter imageGetter = new Html.ImageGetter() {
-            private Drawable mDrawable;
-            private SimpleTarget<Drawable> mSimpleTarget = new SimpleTarget<Drawable>() {
-                @Override
-                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                    mDrawable = resource;
-                    textView.invalidateDrawable(mDrawable);
-                }
-            };
-            @Override
-            public Drawable getDrawable(String source) {
-                Glide.with(ArticleReadingActivity.this).load(source).into(mSimpleTarget);
-                return mDrawable;
-            }
-
-        };
-
+        WebView webView = findViewById(R.id.wv_reading);
+        webView.getSettings().setSupportZoom(true);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setBuiltInZoomControls(false);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        String imageFixStr = "<style>img{display: inline;height: auto;max-width: 100%;}</style>";
         Article article = getIntent().getParcelableExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM);
         if (article != null){
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N ){
-                textView.setText(Html.fromHtml(article.getContent(), imageGetter, null));
-            }else {
-                textView.setText(Html.fromHtml(article.getContent(), 123, imageGetter, null));
-            }
+            webView.loadDataWithBaseURL(null, imageFixStr + article.getContent(), "text/html", "UTF-8", null);
         }else {
-            textView.setText(R.string.content_not_found);
+            webView.loadDataWithBaseURL(null, imageFixStr + getString(R.string.content_not_found), "text/html", "UTF-8", null);
         }
     }
 }

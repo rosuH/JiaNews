@@ -41,7 +41,6 @@ public class ArticleListFragment extends Fragment {
     private Context mContext;
     private String mRequestUrl;
     private GetDataTask mGetDataTask;
-    private AsyncTask mRefreshTask;
     private static final String TAG = "ArticleListFragment";
     private RequestOptions mRequestOptions = new RequestOptions().centerCrop().fallback(R.drawable.logo_no)
             .placeholder(R.drawable.logo_no).error(R.drawable.logo_no);
@@ -87,11 +86,9 @@ public class ArticleListFragment extends Fragment {
             default:
                 mRequestUrl = Const.URL_MAJOR_NEWS;
         }
-        //
-        if (mRefreshTask == null){
-            mGetDataTask = new GetDataTask(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START);
-        }
-        mRefreshTask = mGetDataTask.execute();
+
+        mGetDataTask = new GetDataTask(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START);
+        mGetDataTask.execute();
     }
 
     @Nullable
@@ -128,10 +125,8 @@ public class ArticleListFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (mRefreshTask == null){
-                    mGetDataTask = new GetDataTask(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START);
-                }
-                mRefreshTask = mGetDataTask.execute();
+                mGetDataTask = new GetDataTask(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START);
+                mGetDataTask.execute();
             }
         });
         mSwipeRefreshLayout.setRefreshing(true);
@@ -150,11 +145,10 @@ public class ArticleListFragment extends Fragment {
         if (getTargetFragment() != null && !isListEmpty(mArticles)){
             getTargetFragment().onActivityResult(Const.REQUEST_CODE_ARTICLE_LIST_REFRESH
                     , Activity.RESULT_OK, new Intent());
-            if (mSwipeRefreshLayout.isRefreshing()){
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
         }
-
+        if (mSwipeRefreshLayout.isRefreshing()){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
         Log.d(TAG, "updateUI: mArticleAdapter.notifyDataSetChanged() has been called.");
     }
 
