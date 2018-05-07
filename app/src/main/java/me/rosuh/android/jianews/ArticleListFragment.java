@@ -103,21 +103,10 @@ public class ArticleListFragment extends Fragment {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                int pos = mArticleAdapter.getItemCount();
-                int layoutPos = layout.findFirstVisibleItemPosition();
-                int type = mArticleAdapter.getItemViewType(pos);
-                /**
-                 * @Test
-                 */
-                Log.d(TAG, "onScrollStateChanged: mArticleAdapter.getItemCount() = " + mArticleAdapter.getItemCount());
-                Log.d(TAG, "onScrollStateChanged: layout.findFirstVisibleItemPosition() = " + layout.findFirstVisibleItemPosition());
-                // End
-
-                if (newState == SCROLL_STATE_IDLE){
-                    if (layoutPos == mArticleAdapter.getItemCount() + 1
-                            && type != Const.VALUE_LIST_FOO_TYPE){
-                        mArticleAdapter.notifyItemInserted(mArticleAdapter.getItemCount() - 1);
-                    }
+                int layoutPos = layout.findLastCompletelyVisibleItemPosition();
+                int lastType = mArticleAdapter.getItemViewType(layoutPos);
+                if (lastType == Const.VALUE_LIST_FOO_TYPE){
+                    loadMoreData(layoutPos);
                 }
             }
         });
@@ -132,6 +121,11 @@ public class ArticleListFragment extends Fragment {
         mSwipeRefreshLayout.setRefreshing(true);
         updateUI();
         return view;
+    }
+
+    private void loadMoreData(int position){
+        mGetDataTask = new GetDataTask(ArticleListFragment.this, position);
+        mGetDataTask.execute();
     }
 
     /**
@@ -286,7 +280,11 @@ public class ArticleListFragment extends Fragment {
             if (isListEmpty(mArticles)){
                 return Const.VALUE_LIST_DEFAULT_SIZE;
             }
-            return mArticles.size() + 1;
+            return mArticles.size();
+        }
+
+        private void addItems(List<Article> articles){
+            mArticles.addAll(articles);
         }
     }
 
@@ -309,13 +307,11 @@ public class ArticleListFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Integer...integers) {
-            if (list == null || list.isEmpty()){
-                mArticleLab = ArticleLab.get(this.mWeakReference.get().mContext);
-                List<Article> temps = mArticleLab.getArticleList(mUrl, mIndex);
-                // 获取到数据则通知列表更新
-                if (temps != null && !temps.isEmpty()){
-                    list = temps;
-                }
+            mArticleLab = ArticleLab.get(this.mWeakReference.get().mContext);
+            List<Article> temps = mArticleLab.getArticleList(mUrl, mIndex);
+            // 获取到数据则通知列表更新
+            if (temps != null && !temps.isEmpty()){
+                list = temps;
             }
             return null;
         }
@@ -324,7 +320,11 @@ public class ArticleListFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             mWeakReference.get().mArticlesSync = list;
-            mWeakReference.get().stopRefresh();
+            if (mIndex == Const.VALUE_ARTICLE_INDEX_START){
+                mWeakReference.get().stopRefresh();
+            }else {
+                mWeakReference.get().stopLoading();
+            }
             Log.d(TAG, "onPostExecute: called");
         }
     }
@@ -351,8 +351,23 @@ public class ArticleListFragment extends Fragment {
         updateUI();
     }
 
+    private void stopLoading(){
+        if (isListEmpty(mArticlesSync)){
+            return;
+        }
+        int size = mArticles.size();
+        mArticleAdapter.addItems(mArticlesSync);
+        mArticleAdapter.notifyItemRangeInserted(size, mArticles.size());
+    }
+
+    /**
+     * 功能：比较两个列表是否一致，以确认是否有新数据
+     * @param ori   原始列表
+     * @param des   新的列表
+     * @return  如果有新数据，返回 true，没有则返回 false
+     */
     private boolean isNewData(List<Article> ori, List<Article> des){
-        return ori.get(0).getId().equals(des.get(0).getId());
+        return !ori.get(0).getId().equals(des.get(0).getId());
     }
 
     /**

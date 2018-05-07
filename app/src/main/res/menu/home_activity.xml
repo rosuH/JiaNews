@@ -5,8 +5,4 @@
         android:title="@string/sv_menu_item_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom" />
-
-    <item android:id="@+id/menu_item_clean"
-        android:title="@string/sv_menu_item_search"
-        app:showAsAction="ifRoom"/>
 </menu>
