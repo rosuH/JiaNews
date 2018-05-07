@@ -29,12 +29,20 @@ public class WebSpider {
                 !url.equals(URL_MEDIA_REPORTS) &&
                 !url.equals(URL_CAMPUS_ANNOUNCEMENT);
         String mUrl;
-        if ( isUrlPointless||index < 0) {
+        int count = index / 50;
+
+        if (isUrlPointless||index < 0) {
             return null;
         } else if (index == 0) {
+            // 文章索引为 0~9，也就是刷新或者首次载入列表的时候
+            // 文章页链接为 第一页链接，index 的值需要重设为 10，方便后面做循环
+            mUrl = url + ".html";
+            index = (index+1)*10;
+        }else if (count == 0){
+            // count 计算的是网页的页码，如果文章索引低于 50，那么就是在第一页之内
             mUrl = url + ".html";
         }else {
-            mUrl = url + "_" + index + ".html";
+            mUrl = url + "_" + count + ".html";
         }
 
         try {
@@ -43,7 +51,7 @@ public class WebSpider {
             Elements links = uls.getElementsByTag("a");
             Elements dates = doc.getElementsByClass("date");
             if (!url.equals(Const.URL_MEDIA_REPORTS)){
-                sArticles = dataFilterForList(links, dates);
+                sArticles = dataFilterForList(links, dates, index);
             }else {
                 sArticles = dataFilterForMedia(links, dates);
             }
@@ -63,10 +71,11 @@ public class WebSpider {
      * @param links 文章链接集合
      * @return articles 返回已经填充好的文章列表
      */
-    private static List<Article> dataFilterForList(Elements links, Elements dates){
+    private static List<Article> dataFilterForList(Elements links, Elements dates, int index){
         List<Article> articles = new ArrayList<>();
+        int cirStart = index - 10;
         try {
-            for (int i = 0; i < 15; i++){
+            for (int i = cirStart; i < index; i++){
                 Element link = links.get(i);
                 Article article = new Article();
                 article.setPublishTime(dates.get(i).text());

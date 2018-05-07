@@ -36,70 +36,26 @@ public class ArticleLab {
 
     /**
      * 功能：根据传入的链接，判断返回的文章类型
-     *      1. 如果静态变量有意义，则返回正确类型的文章列表
-     *      2. 如果没有意义，则获取数据
+     *      1. 直接返回获取的文章数据
+     *      2. index 的大小是为 10 的倍数，1 = 10， 2 = 20 的意思，我们在程序里为它人工页
+     *          2.1 如果到了 50 条件记录，也就是 index == 5 的时候，获取的网页链接会递增
      * @param url   文章类型链接
-     * @return 如果本地静态变量有意义，直接返回；否则返回 null
+     * @return 返回获取的文章数据
      */
     public List<Article> getArticleList(String url, int index){
+        List<Article> articles;
         if (url == null){
             Log.i(TAG, "The url is null");
             return null;
         }
-        if (index < 0){
-            index = 0;
-        }
-
         switch (url){
-            case Const.URL_MAJOR_NEWS:
-                if (sMainNewsArticles.isEmpty()){
-                    sMainNewsArticles = getDataBackground(url, index);
-                }
-                return sMainNewsArticles;
-            case Const.URL_CAMPUS_ACTIVITIES:
-                if (sActivityArticles.isEmpty()){
-                    sActivityArticles = getDataBackground(url, index);
-                }
-                return sActivityArticles;
-            case Const.URL_CAMPUS_ANNOUNCEMENT:
-                if (sAnnouncementArticles.isEmpty()){
-                    sAnnouncementArticles = getDataBackground(url, index);
-                }
-                return sAnnouncementArticles;
-            case Const.URL_MEDIA_REPORTS:
-                if (sMediaArticles.isEmpty()){
-                    sMediaArticles = getDataBackground(url, index);
-                }
-                return sMediaArticles;
+            case Const.URL_HOME_PAGE:
+                articles = WebSpider.getBannerList();
+                break;
             default:
+                articles = WebSpider.getArticlesList(url, index);
         }
-        return null;
-    }
 
-    /**
-     * 功能：获取轮播图文章
-     *      1. 如果静态变量有意义，则返回正确类型的文章列表
-     *      2. 如果没有意义，则获取数据
-     * @return
-     */
-    public List<Article> getBannerArticles(){
-        if (sBannerArticles.isEmpty()){
-            sBannerArticles = getDataBackground(Const.URL_HOME_PAGE, 0);
-        }
-        return sBannerArticles;
-    }
-
-    private List<Article> getDataBackground(String url, int index){
-        List<Article> articles;
-
-        if (url.equals(Const.URL_HOME_PAGE)){
-            articles = WebSpider.getBannerList();
-        }else {
-            articles = WebSpider.getArticlesList(url, index);
-        }
-        if (articles == null){
-            Log.i(TAG, "Articles List from WebSpider.getData is null");
-        }
         return articles;
     }
 }

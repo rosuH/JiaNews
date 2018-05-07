@@ -56,9 +56,11 @@ public class ArticleReadingActivity extends AppCompatActivity {
         String imageFixStr = "<style>img{display: inline;height: auto;max-width: 100%;}</style>";
         Article article = getIntent().getParcelableExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM);
         if (article != null){
-            webView.loadDataWithBaseURL(null, imageFixStr + article.getContent(), "text/html", "UTF-8", null);
+            webView.loadDataWithBaseURL(null, imageFixStr + article.getContent()
+                    , "text/html", "UTF-8", null);
         }else {
-            webView.loadDataWithBaseURL(null, imageFixStr + getString(R.string.content_not_found), "text/html", "UTF-8", null);
+            webView.loadDataWithBaseURL(null, imageFixStr + getString(R.string.content_not_found)
+                    , "text/html", "UTF-8", null);
         }
     }
 }

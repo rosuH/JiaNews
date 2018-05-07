@@ -206,6 +206,9 @@ public class BannerFragment extends Fragment {
                     @Override
                     public void run() {
                         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+                        if (mViewPager.getCurrentItem() == Const.VALUE_BANNER_MAX_PAGES){
+                            mViewPager.setCurrentItem(Const.VALUE_BANNER_START_PAGE);
+                        }
                     }
                 });
             }
@@ -233,7 +236,7 @@ public class BannerFragment extends Fragment {
 
         @Override
         protected List<Article> doInBackground(Integer...integers) {
-            return mArticleLab.getBannerArticles();
+            return mArticleLab.getArticleList(Const.URL_HOME_PAGE, Const.VALUE_ARTICLE_INDEX_START);
         }
         @Override
         protected void onPostExecute(List<Article> result) {
