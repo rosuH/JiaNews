@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -68,7 +69,7 @@ public class BannerFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.banner_fragment, container, false);
         mActivity = getActivity();
@@ -86,6 +87,7 @@ public class BannerFragment extends Fragment {
                 mIndex = getRightIndex(position);
                 // 如果未获取到文章数据，则传送一个 null 过去
                 // 目标收到后进行判断，如果是 null，则设置为 加载图
+                Log.d(TAG, "getItem: Call");
                 if (ismArticlesEmpty(mArticles)){
                     return BannerPageFragment.newInstance(mIndex, null);
                 }else {

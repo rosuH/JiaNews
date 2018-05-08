@@ -56,7 +56,7 @@ public class BannerPageFragment extends Fragment {
         TextView textView = view.findViewById(R.id.tv_banner_title);
         // 获取传递来的数据
         int position = getArguments().getInt(Const.KEY_ARGS_BANNER_POSITION);
-        Article article = getArguments().getParcelable(Const.KEY_ARGS_BANNER_ARTICLE);
+        final Article article = getArguments().getParcelable(Const.KEY_ARGS_BANNER_ARTICLE);
 
         if (article == null){
             // 如果为空，不加载 imageview
@@ -69,6 +69,12 @@ public class BannerPageFragment extends Fragment {
                     .apply(bitmapTransform(new BlurTransformation(3, 3)))
                     .into(imageView);
             textView.setText(article.getTitle());
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(ArticleReadingActivity.newIntent(article, getActivity()));
+                }
+            });
         }
         return view;
     }

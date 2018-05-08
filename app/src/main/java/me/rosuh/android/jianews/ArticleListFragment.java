@@ -319,6 +319,9 @@ public class ArticleListFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            if (mWeakReference.get().mArticlesSync == null){
+                return;
+            }
             mWeakReference.get().mArticlesSync = list;
             if (mIndex == Const.VALUE_ARTICLE_INDEX_START){
                 mWeakReference.get().stopRefresh();
