@@ -116,15 +116,4 @@ public class ArticleViewPagerFragment extends Fragment {
             Log.d(TAG, "mStatePagerAdapter.notifyDataSetChanged()called ");
         }
     }
-
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 }

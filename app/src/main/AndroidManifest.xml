@@ -12,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".HomeActivity">
+        <activity android:name=".HomeActivity"
+            android:launchMode="singleTop"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW"/>
@@ -21,6 +23,10 @@
         </activity>
         <activity android:name=".ArticleReadingActivity"
             android:parentActivityName=".HomeActivity"/>
+        <activity android:name=".AboutPageDialog"
+            android:theme="@style/Theme.DialogTemplate.Font"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
     </application>
 
 </manifest>

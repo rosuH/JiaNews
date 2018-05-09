@@ -195,7 +195,6 @@ public class BannerFragment extends Fragment {
      */
     private void startBannerScroll(){
         stopBannerScroll();
-
         mBannerExecutor = Executors.newSingleThreadScheduledExecutor();
         Runnable command = new Runnable() {
             @Override
@@ -215,7 +214,7 @@ public class BannerFragment extends Fragment {
                 });
             }
         };
-        mBannerExecutor.scheduleAtFixedRate(command, 3, 3, TimeUnit.SECONDS);
+        mBannerExecutor.scheduleAtFixedRate(command, 5, 3, TimeUnit.SECONDS);
     }
 
     /**
