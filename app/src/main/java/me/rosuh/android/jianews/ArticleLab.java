@@ -1,28 +1,18 @@
 package me.rosuh.android.jianews;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
-
-import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * 这个类用于创建、获取 Article 及其集合的单例类
+ * @author rosuh 2018-5-9
+ * @version 0.1
+ */
 
 public class ArticleLab {
     private static final String TAG = "ArticleLab";
     private static ArticleLab sArticleLab;
-    /**
-     * 文章列表静态变量：
-     * 1. 综合要闻
-     * 2. 校园公告
-     * 3. 校园动态
-     * 4. 媒体报道
-      */
-    private static List<Article> sMainNewsArticles = new ArrayList<>();
-    private static List<Article> sAnnouncementArticles = new ArrayList<>();
-    private static List<Article> sActivityArticles = new ArrayList<>();
-    private static List<Article> sMediaArticles = new ArrayList<>();
-    private static List<Article> sBannerArticles = new ArrayList<>();
-
 
     public static ArticleLab get(Context context){
         if (sArticleLab == null){

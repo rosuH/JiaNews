@@ -1,41 +1,33 @@
 package me.rosuh.android.jianews;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.MultiTransformation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.ViewTarget;
-import com.bumptech.glide.request.transition.Transition;
-
-import java.util.List;
-
 import jp.wasabeef.glide.transformations.BlurTransformation;
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 
 /**
+ * 本类是轮播图具体页面的 fragment 类
  * @author rosuh
  */
 public class BannerPageFragment extends Fragment {
     private Context mContext;
 
-    public static Fragment newInstance(int position, Article article){
+    /**
+     * @param article 和 page 相对应的文章对象
+     * @return 附带文章对象的 fragment
+     */
+    public static Fragment newInstance(Article article){
         Bundle args = new Bundle();
-        args.putInt(Const.KEY_ARGS_BANNER_POSITION, position);
         args.putParcelable(Const.KEY_ARGS_BANNER_ARTICLE, article);
         Fragment fragment = new BannerPageFragment();
         fragment.setArguments(args);
@@ -55,7 +47,6 @@ public class BannerPageFragment extends Fragment {
         ImageView imageView = view.findViewById(R.id.iv_banner_image);
         TextView textView = view.findViewById(R.id.tv_banner_title);
         // 获取传递来的数据
-        int position = getArguments().getInt(Const.KEY_ARGS_BANNER_POSITION);
         final Article article = getArguments().getParcelable(Const.KEY_ARGS_BANNER_ARTICLE);
 
         if (article == null){

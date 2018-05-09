@@ -3,6 +3,11 @@ package me.rosuh.android.jianews;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * 这个类是 Article 文章类，描述了 Article 这个类的成员和方法
+ * @author rosuh 2018-5-9
+ * @version 0.1
+ */
 public class Article implements Parcelable{
     /**
      * 文章 ID

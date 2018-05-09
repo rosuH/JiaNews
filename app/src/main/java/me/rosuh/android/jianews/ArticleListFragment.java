@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,8 +26,18 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
-
+/**
+ * 这个类是文章列表的 Fragment 类，在这里类中实现了：
+ * 1. 对 RecyclerView 的初始化
+ * - 当数据没有准备好时，加载 Empty 视图
+ * - 当数据准备好时，刷新列表视图
+ * 2. 下拉刷新
+ * 3. 上拉加载视图
+ * 4. 通过 item 的点击来启动对应的文章阅读页面
+ *
+ * @author rosuh 2018-5-9
+ * @version 0.1
+ */
 public class ArticleListFragment extends Fragment {
 
     private RecyclerView mArticleRecyclerView;
@@ -37,15 +45,19 @@ public class ArticleListFragment extends Fragment {
     private List<Article> mArticles;
     private List<Article> mArticlesSync = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ArticleLab mArticleLab;
     private Context mContext;
     private String mRequestUrl;
     private GetDataTask mGetDataTask;
-    private static final String TAG = "ArticleListFragment";
     private RequestOptions mRequestOptions = new RequestOptions().centerCrop().fallback(R.drawable.logo_no)
             .placeholder(R.drawable.logo_no).error(R.drawable.logo_no);
 
 
+    /**
+     * New instance fragment.
+     *
+     * @param position TabLayout 选中的 item 位置
+     * @return 附带有 position 的 fragment 实例
+     */
     public static Fragment newInstance(int position) {
         Bundle args = new Bundle();
         args.putInt(Const.KEY_ARGS_ARTICLES_POSITION, position);
@@ -64,7 +76,6 @@ public class ArticleListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArticleLab = ArticleLab.get(mContext);
         // 把 Viewpager 的 position 转换为相对应的文章类型页面链接
         int position;
        if (getArguments() != null){
@@ -87,6 +98,7 @@ public class ArticleListFragment extends Fragment {
                 mRequestUrl = Const.URL_MAJOR_NEWS;
         }
 
+        // 执行数据获取工作
         mGetDataTask = new GetDataTask(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START);
         mGetDataTask.execute();
     }
@@ -105,11 +117,13 @@ public class ArticleListFragment extends Fragment {
                 super.onScrollStateChanged(recyclerView, newState);
                 int layoutPos = layout.findLastCompletelyVisibleItemPosition();
                 int lastType = mArticleAdapter.getItemViewType(layoutPos);
+                // 如果最后一个 item 的类型是 VALUE_LIST_FOO_TYPE，那么调用加载更多数据方法
                 if (lastType == Const.VALUE_LIST_FOO_TYPE){
                     loadMoreData(layoutPos);
                 }
             }
         });
+        // 下拉刷新布局
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(mContext, R.color.colorAccent));
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -123,6 +137,10 @@ public class ArticleListFragment extends Fragment {
         return view;
     }
 
+
+    /**
+     * @param position 传入 layout.findLastCompletelyVisibleItemPosition() 作为当前可是列表最后项
+     */
     private void loadMoreData(int position){
         mGetDataTask = new GetDataTask(ArticleListFragment.this, position);
         mGetDataTask.execute();
@@ -143,9 +161,11 @@ public class ArticleListFragment extends Fragment {
         if (mSwipeRefreshLayout.isRefreshing()){
             mSwipeRefreshLayout.setRefreshing(false);
         }
-        Log.d(TAG, "updateUI: mArticleAdapter.notifyDataSetChanged() has been called.");
     }
 
+    /**
+     * 文章类 Holder
+     */
     private class ArticleHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private Article mArticle;
         private TextView mTitleTextView;
@@ -153,7 +173,7 @@ public class ArticleListFragment extends Fragment {
         private TextView mPublishTimeTextView;
         private ImageView mThumbnailImageView;
 
-        public ArticleHolder(LayoutInflater inflater, ViewGroup parent){
+        private ArticleHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.article_list_item_fragment, parent, false));
             mTitleTextView = itemView.findViewById(R.id.tv_article_title);
             mSummaryTextView = itemView.findViewById(R.id.tv_article_summary);
@@ -183,6 +203,7 @@ public class ArticleListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (mArticle.getContent() == null && mArticle.getThumbnail() == null){
+                // 实现点击启动特定 article 的阅读页面
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(mArticle.getUrl()));
                 startActivity(intent);
@@ -203,6 +224,12 @@ public class ArticleListFragment extends Fragment {
         private TextView mSummaryTextView;
         private ImageView mThumbnailImageView;
 
+        /**
+         * Instantiates a new Empty holder.
+         *
+         * @param inflater the inflater
+         * @param parent   the parent
+         */
         public EmptyHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.article_list_item_fragment, parent, false));
             mTitleTextView = itemView.findViewById(R.id.tv_article_title);
@@ -221,6 +248,12 @@ public class ArticleListFragment extends Fragment {
      *
      */
     private class FooterHolder extends RecyclerView.ViewHolder {
+        /**
+         * Instantiates a new Footer holder.
+         *
+         * @param inflater the inflater
+         * @param parent   the parent
+         */
         public FooterHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.list_item_footer, parent, false));
         }
@@ -230,7 +263,7 @@ public class ArticleListFragment extends Fragment {
         private List<Article> mArticles;
         private Article mArticle;
 
-        public ArticleAdapter(List<Article> articles){
+        private ArticleAdapter(List<Article> articles){
             mArticles = articles;
             if (mArticles == null){
                 mArticles = new ArrayList<>();
@@ -298,6 +331,12 @@ public class ArticleListFragment extends Fragment {
         private int mIndex;
         private ArticleLab mArticleLab;
 
+        /**
+         * Instantiates a new Get data task.
+         *
+         * @param context the context
+         * @param index   the index
+         */
         GetDataTask(ArticleListFragment context, int index){
             this.mWeakReference = new WeakReference<>(context);
             this.list = mWeakReference.get().mArticles;
@@ -328,7 +367,6 @@ public class ArticleListFragment extends Fragment {
             }else {
                 mWeakReference.get().stopLoading();
             }
-            Log.d(TAG, "onPostExecute: called");
         }
     }
 

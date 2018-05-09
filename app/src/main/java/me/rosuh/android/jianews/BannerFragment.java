@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -18,10 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -32,22 +28,27 @@ import java.util.concurrent.TimeUnit;
 import static me.rosuh.android.jianews.Const.VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
 import static me.rosuh.android.jianews.Const.VALUE_BANNER_START_PAGE;
 
-
+/**
+ * 这个类是轮播图的 fragment 类
+ *
+ * @author rosuh 2018-5-9
+ * @version 0.1
+ */
 public class BannerFragment extends Fragment {
-
-
     private ViewPager mViewPager;
     private LinearLayout mLinearLayout;
     private ArticleLab mArticleLab;
     private List<Article> mArticles = new ArrayList<>();
-    private List<Article> mArticlesSync = new ArrayList<>();
     private ScheduledExecutorService mBannerExecutor;
     private List<TextView> mIndicatorTextViews = new ArrayList<>();
-    private FragmentStatePagerAdapter mFragmentPagerAdapter;
     private Activity mActivity;
-    private static final String TAG = "BannerFragment";
     private Context mContext;
 
+    /**
+     * New instance fragment.
+     *
+     * @return the fragment
+     */
     public static Fragment newInstance() {
         return new BannerFragment();
     }
@@ -80,18 +81,17 @@ public class BannerFragment extends Fragment {
         initCircle();
 
         FragmentManager fm = getFragmentManager();
-        mFragmentPagerAdapter = new FragmentStatePagerAdapter(fm){
+        FragmentStatePagerAdapter mFragmentPagerAdapter = new FragmentStatePagerAdapter(fm){
             private int mIndex;
             @Override
             public Fragment getItem(int position) {
                 mIndex = getRightIndex(position);
                 // 如果未获取到文章数据，则传送一个 null 过去
                 // 目标收到后进行判断，如果是 null，则设置为 加载图
-                Log.d(TAG, "getItem: Call");
                 if (ismArticlesEmpty(mArticles)){
-                    return BannerPageFragment.newInstance(mIndex, null);
+                    return BannerPageFragment.newInstance(null);
                 }else {
-                    return BannerPageFragment.newInstance(mIndex, mArticles.get(mIndex));
+                    return BannerPageFragment.newInstance(mArticles.get(mIndex));
                 }
             }
 
@@ -138,6 +138,12 @@ public class BannerFragment extends Fragment {
         return view;
     }
 
+
+    /**
+     * 功能：把 page 的当前位置转换为正确的索引值，以便从集合中获取数据
+     * @param position  page 的原生位置
+     * @return  返回正确的索引值
+     */
     private int getRightIndex(int position){
         int tempNum = VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
         if (!ismArticlesEmpty(mArticles)){
@@ -151,6 +157,11 @@ public class BannerFragment extends Fragment {
         return index;
     }
 
+
+    /**
+     * 功能：通过当前页面的 position 来改变对应的指示器的样式
+     * @param pos 当前 page 的位置
+     */
     private void changePoints(int pos){
         if (mIndicatorTextViews != null){
             for (int i = 0; i < mIndicatorTextViews.size(); i++){
@@ -163,6 +174,10 @@ public class BannerFragment extends Fragment {
         }
     }
 
+
+    /**
+     * 功能：初始化指示器
+     */
     private void initCircle(){
         int width = 15;
         int height = 15;
@@ -230,6 +245,11 @@ public class BannerFragment extends Fragment {
         private WeakReference<BannerFragment> mWeakReference;
         private ArticleLab mArticleLab;
 
+        /**
+         * Instantiates a new Get data task.
+         *
+         * @param context the context
+         */
         GetDataTask(BannerFragment context){
             mWeakReference = new WeakReference<>(context);
             mArticleLab = mWeakReference.get().mArticleLab;

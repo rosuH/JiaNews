@@ -4,17 +4,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
 import static me.rosuh.android.jianews.Const.URL_CAMPUS_ACTIVITIES;
 import static me.rosuh.android.jianews.Const.URL_CAMPUS_ANNOUNCEMENT;
 import static me.rosuh.android.jianews.Const.URL_MAJOR_NEWS;
 import static me.rosuh.android.jianews.Const.URL_MEDIA_REPORTS;
 
+/**
+ * @author rosuh
+ */
 public class WebSpider {
     /**
      * 功能：根据传入的 url 和 index，进行文章数据的获取
