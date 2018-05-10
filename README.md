@@ -21,6 +21,25 @@
 - [推荐： Fir.im 内测平台](https://fir.im/emq4)
 - [GitHub](https://github.com/rosuH/JiaNews/releases/download/v0.1/app-release.apk)
 
+### 自己构建
+
+如果你想要自己构建 App，那么需要先删除我的配置信息。
+1. 使用 Android Studio 打开此项目
+2. 进入 `app` 目录，将 `build.gradle` 中的下列代码删除：
+
+```
+signingConfigs {
+        config {
+            storeFile file(KEY_PATH)
+            storePassword KEY_PASS
+            keyAlias ALIAS_NAME
+            keyPassword ALIAS_PASS
+        }
+    }
+```
+
+3. 执行构建即可
+
 ### 技术原理
 
 本程序的技术原理是：
