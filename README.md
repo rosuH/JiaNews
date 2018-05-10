@@ -16,6 +16,11 @@
     - 媒体报道
   - 一个新闻图片轮播图
 
+### 下载
+
+- [推荐： Fir.im 内测平台](https://fir.im/emq4)
+- [GitHub](https://github.com/rosuH/JiaNews/releases/download/v0.1/app-release.apk)
+
 ### 技术原理
 
 本程序的技术原理是：
