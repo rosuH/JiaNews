@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +41,8 @@ public class ArticleListFragment extends Fragment {
 
     private RecyclerView mArticleRecyclerView;
     private ArticleAdapter mArticleAdapter;
-    private List<Article> mArticles;
-    private List<Article> mArticlesSync = new ArrayList<>();
+    private List<ArticleBean> mArticleBeans;
+    private List<ArticleBean> mArticlesSync = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Context mContext;
     private String mRequestUrl;
@@ -150,11 +149,11 @@ public class ArticleListFragment extends Fragment {
      * 功能：根据数据创建适配器，将之设置给列表，后更新 UI
      */
     public void updateUI(){
-        mArticleAdapter = new ArticleAdapter(mArticles);
+        mArticleAdapter = new ArticleAdapter(mArticleBeans);
         mArticleRecyclerView.setAdapter(mArticleAdapter);
         mArticleAdapter.notifyDataSetChanged();
         // 发送消息给 ArticleViewPagerFragment 告知更新 ViewPager
-        if (getTargetFragment() != null && !isListEmpty(mArticles)){
+        if (getTargetFragment() != null && !isListEmpty(mArticleBeans)){
             getTargetFragment().onActivityResult(Const.REQUEST_CODE_ARTICLE_LIST_REFRESH
                     , Activity.RESULT_OK, new Intent());
         }
@@ -167,7 +166,7 @@ public class ArticleListFragment extends Fragment {
      * 文章类 Holder
      */
     private class ArticleHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private Article mArticle;
+        private ArticleBean mArticleBean;
         private TextView mTitleTextView;
         private TextView mSummaryTextView;
         private TextView mPublishTimeTextView;
@@ -183,32 +182,32 @@ public class ArticleListFragment extends Fragment {
         }
         /**
          * 功能：被 Adapter 调用来绑定数据和视图
-         *      1. 由 adapter 传入一个 article 对象
+         *      1. 由 adapter 传入一个 articleBean 对象
          *      2. 由本方法绑定
-         * @param article 传入已填充数据的 article 对象
+         * @param articleBean 传入已填充数据的 articleBean 对象
          */
-        private void bind(Article article){
-            this.mArticle = article;
-            mTitleTextView.setText(mArticle.getTitle());
-            if (mArticle.getThumbnail() != null){
-                Glide.with(mContext).load(mArticle.getThumbnail()).apply(mRequestOptions)
+        private void bind(ArticleBean articleBean){
+            this.mArticleBean = articleBean;
+            mTitleTextView.setText(mArticleBean.getTitle());
+            if (mArticleBean.getThumbnail() != null){
+                Glide.with(mContext).load(mArticleBean.getThumbnail()).apply(mRequestOptions)
                         .into(mThumbnailImageView);
             }
-            if (mArticle.getContent() != null){
-                mSummaryTextView.setText(mArticle.getSummary());
+            if (mArticleBean.getContent() != null){
+                mSummaryTextView.setText(mArticleBean.getSummary());
             }
-            mPublishTimeTextView.setText(mArticle.getPublishTime());
+            mPublishTimeTextView.setText(mArticleBean.getPublishTime());
         }
 
         @Override
         public void onClick(View v) {
-            if (mArticle.getContent() == null && mArticle.getThumbnail() == null){
+            if (mArticleBean.getContent() == null && mArticleBean.getThumbnail() == null){
                 // 实现点击启动特定 article 的阅读页面
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mArticle.getUrl()));
+                intent.setData(Uri.parse(mArticleBean.getUrl()));
                 startActivity(intent);
             }else {
-                startActivity(ArticleReadingActivity.newIntent(mArticle, getActivity()));
+                startActivity(ArticleReadingActivity.newIntent(mArticleBean, getActivity()));
             }
         }
     }
@@ -219,7 +218,7 @@ public class ArticleListFragment extends Fragment {
      *
      */
     private class EmptyHolder extends RecyclerView.ViewHolder {
-        private Article mArticle;
+        private ArticleBean mArticleBean;
         private TextView mTitleTextView;
         private TextView mSummaryTextView;
         private ImageView mThumbnailImageView;
@@ -260,13 +259,13 @@ public class ArticleListFragment extends Fragment {
     }
 
     private class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private List<Article> mArticles;
-        private Article mArticle;
+        private List<ArticleBean> mArticleBeans;
+        private ArticleBean mArticleBean;
 
-        private ArticleAdapter(List<Article> articles){
-            mArticles = articles;
-            if (mArticles == null){
-                mArticles = new ArrayList<>();
+        private ArticleAdapter(List<ArticleBean> articleBeans){
+            mArticleBeans = articleBeans;
+            if (mArticleBeans == null){
+                mArticleBeans = new ArrayList<>();
             }
         }
 
@@ -289,9 +288,9 @@ public class ArticleListFragment extends Fragment {
             int type = getItemViewType(position);
 
             if (type == Const.VALUE_LIST_DEFAULT_TYPE){
-                mArticle = mArticles.get(position);
+                mArticleBean = mArticleBeans.get(position);
                 ArticleHolder viewHolder = (ArticleHolder)holder;
-                viewHolder.bind(mArticle);
+                viewHolder.bind(mArticleBean);
             }
         }
 
@@ -301,7 +300,7 @@ public class ArticleListFragment extends Fragment {
                 // 返回上拉加载
                 return Const.VALUE_LIST_FOO_TYPE;
             }
-            if (mArticles.size() == 0){
+            if (mArticleBeans.size() == 0){
                 // 返回空视图
                 return Const.VALUE_LIST_EMPTY_TYPE;
             }
@@ -310,14 +309,14 @@ public class ArticleListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            if (isListEmpty(mArticles)){
+            if (isListEmpty(mArticleBeans)){
                 return Const.VALUE_LIST_DEFAULT_SIZE;
             }
-            return mArticles.size();
+            return mArticleBeans.size();
         }
 
-        private void addItems(List<Article> articles){
-            mArticles.addAll(articles);
+        private void addItems(List<ArticleBean> articleBeans){
+            mArticleBeans.addAll(articleBeans);
         }
     }
 
@@ -326,7 +325,7 @@ public class ArticleListFragment extends Fragment {
      */
     private static class GetDataTask extends AsyncTask<Integer, Void, Void>{
         private WeakReference<ArticleListFragment> mWeakReference;
-        private List<Article> list;
+        private List<ArticleBean> list;
         private String mUrl;
         private int mIndex;
         private ArticleLab mArticleLab;
@@ -339,7 +338,7 @@ public class ArticleListFragment extends Fragment {
          */
         GetDataTask(ArticleListFragment context, int index){
             this.mWeakReference = new WeakReference<>(context);
-            this.list = mWeakReference.get().mArticles;
+            this.list = mWeakReference.get().mArticleBeans;
             this.mUrl = mWeakReference.get().mRequestUrl;
             this.mIndex = index;
         }
@@ -347,7 +346,7 @@ public class ArticleListFragment extends Fragment {
         @Override
         protected Void doInBackground(Integer...integers) {
             mArticleLab = ArticleLab.get(this.mWeakReference.get().mContext);
-            List<Article> temps = mArticleLab.getArticleList(mUrl, mIndex);
+            List<ArticleBean> temps = mArticleLab.getArticleList(mUrl, mIndex);
             // 获取到数据则通知列表更新
             if (temps != null && !temps.isEmpty()){
                 list = temps;
@@ -379,14 +378,14 @@ public class ArticleListFragment extends Fragment {
         if (isListEmpty(mArticlesSync)){
             return;
         }
-        if (isListEmpty(mArticles)){
+        if (isListEmpty(mArticleBeans)){
             // 如果为空，则直接赋值
-            mArticles = mArticlesSync;
-        }else if (isNewData(mArticles, mArticlesSync)){
-            // 先获取增加的数据，然后把新数据复制到 mArticles 头部
-            int index = mArticlesSync.indexOf(mArticles.get(0));
-            List<Article> list = mArticlesSync.subList(0, index);
-            mArticles.addAll(0, list);
+            mArticleBeans = mArticlesSync;
+        }else if (isNewData(mArticleBeans, mArticlesSync)){
+            // 先获取增加的数据，然后把新数据复制到 mArticleBeans 头部
+            int index = mArticlesSync.indexOf(mArticleBeans.get(0));
+            List<ArticleBean> list = mArticlesSync.subList(0, index);
+            mArticleBeans.addAll(0, list);
         }
         Toast.makeText(mContext, R.string.item_refresh_finished, Toast.LENGTH_SHORT).show();
         updateUI();
@@ -396,9 +395,9 @@ public class ArticleListFragment extends Fragment {
         if (isListEmpty(mArticlesSync)){
             return;
         }
-        int size = mArticles.size();
+        int size = mArticleBeans.size();
         mArticleAdapter.addItems(mArticlesSync);
-        mArticleAdapter.notifyItemRangeInserted(size, mArticles.size());
+        mArticleAdapter.notifyItemRangeInserted(size, mArticleBeans.size());
     }
 
     /**
@@ -407,13 +406,13 @@ public class ArticleListFragment extends Fragment {
      * @param des   新的列表
      * @return  如果有新数据，返回 true，没有则返回 false
      */
-    private boolean isNewData(List<Article> ori, List<Article> des){
+    private boolean isNewData(List<ArticleBean> ori, List<ArticleBean> des){
         return !ori.get(0).getId().equals(des.get(0).getId());
     }
 
     /**
-     * 功能：若 mArticles 无意义，则 ismArticlesEmpty 为真
-     * @return 若 mArticles 无意义，则 ismArticlesEmpty 为真
+     * 功能：若 mArticleBeans 无意义，则 ismArticlesEmpty 为真
+     * @return 若 mArticleBeans 无意义，则 ismArticlesEmpty 为真
      */
     private boolean isListEmpty(List list){
         return (list == null || list.isEmpty());

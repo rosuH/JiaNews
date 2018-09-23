@@ -3,7 +3,7 @@ package me.rosuh.android.jianews;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 /**
- * 本类 ViewPager 所使用的动画类
+ * 本类是 ViewPager 所使用的动画类
  * @author rosuh
  */
 

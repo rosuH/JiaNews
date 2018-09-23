@@ -19,10 +19,14 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.Objects;
+
 import static me.rosuh.android.jianews.Const.TAG_FRAGMENT_BANNER;
 
 /**
  * 首页 Activity
+ * @author rosu
  */
 public class HomeActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
@@ -35,17 +39,16 @@ public class HomeActivity extends AppCompatActivity {
         ViewPager mViewPager = findViewById(R.id.vp_article_list);
         mDrawerLayout = findViewById(R.id.dl_home);
 
-
         initToolBar();
         initNavigationView();
         
-        // 添加轮播图
+//         添加轮播图
         FragmentManager mFragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = mFragmentManager.beginTransaction();
-        ft.add(R.id.fl_banner_container, BannerFragment.newInstance(), TAG_FRAGMENT_BANNER);
-        ft.commit();
+//        ft.add(R.id.fl_banner_container, BannerFragment.newInstance(), TAG_FRAGMENT_BANNER);
+//        ft.commit();
         
-        // 文章列表
+//         文章列表
         mFragmentManager = getSupportFragmentManager();
         FragmentPagerAdapter mStatePagerAdapter = new FragmentPagerAdapter(mFragmentManager){
 
@@ -124,14 +127,14 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        tabLayout.getTabAt(0).setText(R.string.tab_home)
-                .setContentDescription(R.string.tab_home).setIcon(R.drawable.ic_home_button);
-        tabLayout.getTabAt(1).setText(R.string.tab_announce)
-                .setContentDescription(R.string.tab_announce).setIcon(R.drawable.ic_announce_button);
-        tabLayout.getTabAt(2).setText(R.string.tab_activity)
-                .setContentDescription(R.string.tab_activity).setIcon(R.drawable.ic_campus_button);
-        tabLayout.getTabAt(3).setText(R.string.tab_media)
-                .setContentDescription(R.string.tab_media).setIcon(R.drawable.ic_media_button);
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setText(R.string.tab_home)
+                .setContentDescription(R.string.tab_home);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).setText(R.string.tab_announce)
+                .setContentDescription(R.string.tab_announce);
+        Objects.requireNonNull(tabLayout.getTabAt(2)).setText(R.string.tab_activity)
+                .setContentDescription(R.string.tab_activity);
+        Objects.requireNonNull(tabLayout.getTabAt(3)).setText(R.string.tab_media)
+                .setContentDescription(R.string.tab_media);
     }
     
     @Override

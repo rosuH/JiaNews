@@ -26,7 +26,7 @@ public class WebSpider {
      * @param index 传入的索引值
      * @return  获取的文章列表
      */
-    public static List<Article> getArticlesList(String url, int index){
+    public static List<ArticleBean> getArticlesList(String url, int index){
         /**
          * 链接判断和页码判断
          */
@@ -86,46 +86,46 @@ public class WebSpider {
      * @param links 文章链接集合
      * @return articles 返回已经填充好的文章列表
      */
-    private static List<Article> dataFilterForList(Elements links, Elements dates, int index){
-        List<Article> articles = new ArrayList<>();
+    private static List<ArticleBean> dataFilterForList(Elements links, Elements dates, int index){
+        List<ArticleBean> articleBeans = new ArrayList<>();
         int cirStart = index - 10;
         try {
             for (int i = cirStart; i < index; i++){
                 Element link = links.get(i);
-                Article article = new Article();
-                article.setPublishTime(dates.get(i).text());
-                article.setUrl(link.attr("href"));
-                article.setTitle(link.text());
+                ArticleBean articleBean = new ArticleBean();
+                articleBean.setPublishTime(dates.get(i).text());
+                articleBean.setUrl(link.attr("href"));
+                articleBean.setTitle(link.text());
                 // 获取文章内容
-                Element contentNode = Jsoup.connect(article.getUrl()).get().body()
+                Element contentNode = Jsoup.connect(articleBean.getUrl()).get().body()
                         .select("[bgcolor=#FFFFFF]").get(0)
                         .getElementsByTag("tbody").get(0);
                 if (contentNode.getElementsByTag("div").size() > 1){
-                    article.setContent(contentNode.getElementsByTag("div").toString());
+                    articleBean.setContent(contentNode.getElementsByTag("div").toString());
                 }else {
-                    article.setContent(contentNode.getElementsByTag("p").toString());
+                    articleBean.setContent(contentNode.getElementsByTag("p").toString());
                 }
-                String summary = Jsoup.parse(article.getContent()).text();
-                article.setSummary(summary);
+                String summary = Jsoup.parse(articleBean.getContent()).text();
+                articleBean.setSummary(summary);
                 /**
                  * 获取第一张图片链接作为缩略图
                  * 如果为空，则不获取，防止抛出异常
                  */
-                Elements imgLinks = Jsoup.parse(article.getContent()).getElementsByTag("img");
+                Elements imgLinks = Jsoup.parse(articleBean.getContent()).getElementsByTag("img");
                 if (!imgLinks.isEmpty()){
-                    article.setThumbnail(imgLinks.get(0).attr("src"));
+                    articleBean.setThumbnail(imgLinks.get(0).attr("src"));
                 }
-                article.setId(article.getUrl());
+                articleBean.setId(articleBean.getUrl());
 
-                articles.add(article);
+                articleBeans.add(articleBean);
             }
         }catch (IOException ioe){
             ioe.printStackTrace();
         }
-        return articles;
+        return articleBeans;
     }
 
-    public static List<Article> getBannerList(){
+    public static List<ArticleBean> getBannerList(){
         try {
             Elements elements = Jsoup.connect(Const.URL_HOME_PAGE)
                     .get()
@@ -138,42 +138,42 @@ public class WebSpider {
         return null;
     }
 
-    private static List<Article> dataFilterForBanner(Elements linkTags){
-        List<Article> articles = new ArrayList<>();
+    private static List<ArticleBean> dataFilterForBanner(Elements linkTags){
+        List<ArticleBean> articleBeans = new ArrayList<>();
         try {
             for (Element linkTag: linkTags){
-                Article article = new Article();
-                article.setTitle(linkTag.getElementsByTag("img").get(0).attr("alt"));
-                article.setThumbnail(linkTag.getElementsByTag("img").get(0).attr("abs:src"));
-                article.setUrl(linkTag.getElementsByTag("a").get(0).attr("href"));
-                String content = Jsoup.connect(article.getUrl()).get().body()
+                ArticleBean articleBean = new ArticleBean();
+                articleBean.setTitle(linkTag.getElementsByTag("img").get(0).attr("alt"));
+                articleBean.setThumbnail(linkTag.getElementsByTag("img").get(0).attr("abs:src"));
+                articleBean.setUrl(linkTag.getElementsByTag("a").get(0).attr("href"));
+                String content = Jsoup.connect(articleBean.getUrl()).get().body()
                         .select("[bgcolor=#FFFFFF]").get(0)
                         .getElementsByTag("tbody").get(0)
                         .getElementsByTag("p").toString();
-                article.setContent(content);
+                articleBean.setContent(content);
                 String summary = Jsoup.parse(content).text();
-                article.setSummary(summary);
+                articleBean.setSummary(summary);
                 // 暂时使用 URL 作为 id
-                article.setId(article.getUrl());
-                articles.add(article);
+                articleBean.setId(articleBean.getUrl());
+                articleBeans.add(articleBean);
             }
         }catch (IOException ioe){
             ioe.printStackTrace();
         }
-        return articles;
+        return articleBeans;
     }
 
-    private static List<Article> dataFilterForMedia(Elements links, Elements dates){
-        List<Article> articles = new ArrayList<>();
+    private static List<ArticleBean> dataFilterForMedia(Elements links, Elements dates){
+        List<ArticleBean> articleBeans = new ArrayList<>();
         for (int i = 0; i < links.size(); i++){
             Element link = links.get(i);
-            Article article = new Article();
-            article.setPublishTime(dates.get(i).text());
-            article.setUrl(link.attr("href"));
-            article.setTitle(link.text());
-            article.setId(article.getUrl());
-            articles.add(article);
+            ArticleBean articleBean = new ArticleBean();
+            articleBean.setPublishTime(dates.get(i).text());
+            articleBean.setUrl(link.attr("href"));
+            articleBean.setTitle(link.text());
+            articleBean.setId(articleBean.getUrl());
+            articleBeans.add(articleBean);
         }
-        return articles;
+        return articleBeans;
     }
 }

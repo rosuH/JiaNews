@@ -4,11 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * 这个类是 Article 文章类，描述了 Article 这个类的成员和方法
+ * 这个类是 ArticleBean 文章类，描述了 ArticleBean 这个类的成员和方法
  * @author rosuh 2018-5-9
  * @version 0.1
  */
-public class Article implements Parcelable{
+public class ArticleBean implements Parcelable{
     /**
      * 文章 ID
      * 文章链接
@@ -28,9 +28,9 @@ public class Article implements Parcelable{
     private String publishTime;
     private int clickCount;
 
-    public Article(){ }
+    public ArticleBean(){ }
 
-    protected Article(Parcel in){
+    protected ArticleBean(Parcel in){
         this.id = in.readString();
         this.url = in.readString();;
         this.title = in.readString();;
@@ -96,15 +96,15 @@ public class Article implements Parcelable{
         this.clickCount = clickCount;
     }
 
-    public static final Creator<Article> CREATOR = new Creator<Article>() {
+    public static final Creator<ArticleBean> CREATOR = new Creator<ArticleBean>() {
         @Override
-        public Article createFromParcel(Parcel source) {
-            return new Article(source);
+        public ArticleBean createFromParcel(Parcel source) {
+            return new ArticleBean(source);
         }
 
         @Override
-        public Article[] newArray(int size) {
-            return new Article[size];
+        public ArticleBean[] newArray(int size) {
+            return new ArticleBean[size];
         }
     };
 

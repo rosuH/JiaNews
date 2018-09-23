@@ -13,17 +13,17 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 
 /**
- * 这个类是文章阅读页面的 fragment 类
+ * 这个类是文章阅读页面的 AppCompatActivity 类
  * @author rosuh 2018-5-9
  * @version 0.1
  */
 
 public class ArticleReadingActivity extends AppCompatActivity {
 
-    private Article mArticle;
-    public static Intent newIntent(Article article, Activity activity){
+    private ArticleBean mArticleBean;
+    public static Intent newIntent(ArticleBean articleBean, Activity activity){
         Intent intent = new Intent(activity, ArticleReadingActivity.class);
-        intent.putExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM, article);
+        intent.putExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM, articleBean);
         return intent;
     }
 
@@ -44,9 +44,9 @@ public class ArticleReadingActivity extends AppCompatActivity {
         webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setLoadWithOverviewMode(true);
         String imageFixStr = "<style>img{display: inline;height: auto;max-width: 100%;}</style>";
-        mArticle = getIntent().getParcelableExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM);
-        if (mArticle != null){
-            webView.loadDataWithBaseURL(null, imageFixStr + mArticle.getContent()
+        mArticleBean = getIntent().getParcelableExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM);
+        if (mArticleBean != null){
+            webView.loadDataWithBaseURL(null, imageFixStr + mArticleBean.getContent()
                     , "text/html", "UTF-8", null);
         }else {
             webView.loadDataWithBaseURL(null, imageFixStr + getString(R.string.content_not_found)
@@ -67,13 +67,13 @@ public class ArticleReadingActivity extends AppCompatActivity {
             case R.id.menu_item_link:
                 // 使用浏览器打开文章原始链接
                 Intent intentLink = new Intent(Intent.ACTION_VIEW);
-                intentLink.setData(Uri.parse(mArticle.getUrl()));
+                intentLink.setData(Uri.parse(mArticleBean.getUrl()));
                 startActivity(intentLink);
                 break;
             case R.id.menu_item_share:
                 // 分享按钮
                 Intent intentShare = new Intent(Intent.ACTION_SEND);
-                intentShare.putExtra(Intent.EXTRA_TEXT, mArticle.getTitle() + "\n" + mArticle.getUrl());
+                intentShare.putExtra(Intent.EXTRA_TEXT, mArticleBean.getTitle() + "\n" + mArticleBean.getUrl());
                 intentShare.setType("text/plain");
                 startActivity(Intent.createChooser(intentShare, getResources().getString(R.string.menu_item_share)));
             default:
