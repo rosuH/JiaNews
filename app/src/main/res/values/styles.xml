@@ -24,5 +24,13 @@
         <item name="tabSelectedTextColor">@android:color/black</item>
     </style>
 
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/bg</item>
+        <item name="colorPrimary">@color/launcher_status_bar_color</item>
+        <item name="colorPrimaryDark">@color/launcher_status_bar_color</item>
+        <item name="colorAccent">@color/launcher_status_bar_color</item>
+        <item name="android:windowTranslucentStatus">false</item>
+    </style>
+
 
 </resources>

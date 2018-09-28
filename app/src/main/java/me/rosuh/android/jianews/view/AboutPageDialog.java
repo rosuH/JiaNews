@@ -1,8 +1,10 @@
-package me.rosuh.android.jianews;
+package me.rosuh.android.jianews.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+
+import me.rosuh.android.jianews.R;
 
 /**
  * 这个类是用来显示 App 作者信息的；

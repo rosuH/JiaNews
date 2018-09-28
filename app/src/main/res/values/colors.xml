@@ -30,4 +30,6 @@
 
     <color name="tab_selected">@color/colorAccent</color>
     <color name="tool_bar_color">#007fca</color>
+
+    <color name="launcher_status_bar_color">#373737</color>
 </resources>

@@ -6,9 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,13 +14,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.Objects;
 
-import static me.rosuh.android.jianews.Const.TAG_FRAGMENT_BANNER;
+import me.rosuh.android.jianews.view.AboutPageDialog;
+import me.rosuh.android.jianews.view.ArticleListFragment;
+import me.rosuh.android.jianews.util.Const;
 
 /**
  * 首页 Activity
@@ -34,6 +36,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme);
         setContentView(R.layout.home_activity);
 
         ViewPager mViewPager = findViewById(R.id.vp_article_list);
@@ -42,15 +45,8 @@ public class HomeActivity extends AppCompatActivity {
         initToolBar();
         initNavigationView();
         
-//         添加轮播图
-        FragmentManager mFragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = mFragmentManager.beginTransaction();
-//        ft.add(R.id.fl_banner_container, BannerFragment.newInstance(), TAG_FRAGMENT_BANNER);
-//        ft.commit();
-        
 //         文章列表
-        mFragmentManager = getSupportFragmentManager();
-        FragmentPagerAdapter mStatePagerAdapter = new FragmentPagerAdapter(mFragmentManager){
+        FragmentPagerAdapter mStatePagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()){
 
             @Override
             public Fragment getItem(int position) {
@@ -141,6 +137,21 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.home_activity, menu);
+        MenuItem item = menu.findItem(R.id.menu_item_search);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setQueryHint("请输入关键词");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(HomeActivity.this, query, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return true;
     }
 

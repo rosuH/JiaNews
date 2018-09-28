@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews;
+package me.rosuh.android.jianews.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +25,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.rosuh.android.jianews.ArticleReadingActivity;
+import me.rosuh.android.jianews.R;
+import me.rosuh.android.jianews.bean.ArticleBean;
+import me.rosuh.android.jianews.bean.ArticleLab;
+import me.rosuh.android.jianews.util.Const;
+
 /**
  * 这个类是文章列表的 Fragment 类，在这里类中实现了：
  * 1. 对 RecyclerView 的初始化
@@ -47,6 +53,7 @@ public class ArticleListFragment extends Fragment {
     private Context mContext;
     private String mRequestUrl;
     private GetDataTask mGetDataTask;
+    private Toast mToast;
     private RequestOptions mRequestOptions = new RequestOptions().centerCrop().fallback(R.drawable.logo_no)
             .placeholder(R.drawable.logo_no).error(R.drawable.logo_no);
 
@@ -345,7 +352,7 @@ public class ArticleListFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Integer...integers) {
-            mArticleLab = ArticleLab.get(this.mWeakReference.get().mContext);
+            mArticleLab = ArticleLab.getInstance();
             List<ArticleBean> temps = mArticleLab.getArticleList(mUrl, mIndex);
             // 获取到数据则通知列表更新
             if (temps != null && !temps.isEmpty()){
@@ -387,7 +394,7 @@ public class ArticleListFragment extends Fragment {
             List<ArticleBean> list = mArticlesSync.subList(0, index);
             mArticleBeans.addAll(0, list);
         }
-        Toast.makeText(mContext, R.string.item_refresh_finished, Toast.LENGTH_SHORT).show();
+        showToast(R.string.item_refresh_finished);
         updateUI();
     }
 
@@ -417,4 +424,31 @@ public class ArticleListFragment extends Fragment {
     private boolean isListEmpty(List list){
         return (list == null || list.isEmpty());
     }
+
+
+    /**
+     * 显示 Toast
+     * @param resId 资源 id
+     */
+    private void showToast(int resId){
+        if (mToast == null){
+            mToast = Toast.makeText(mContext, resId, Toast.LENGTH_SHORT);
+        }else {
+            mToast.setText(resId);
+            mToast.setDuration(Toast.LENGTH_SHORT);
+        }
+        mToast.show();
+    }
+
+
+    /**
+     * 取消 Toast
+     */
+    private void cancelToast(){
+        if (mToast == null){
+            return;
+        }
+        mToast.cancel();
+    }
+
 }

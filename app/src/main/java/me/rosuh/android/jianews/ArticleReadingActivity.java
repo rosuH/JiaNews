@@ -12,6 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import me.rosuh.android.jianews.bean.ArticleBean;
+import me.rosuh.android.jianews.util.Const;
+
 /**
  * 这个类是文章阅读页面的 AppCompatActivity 类
  * @author rosuh 2018-5-9

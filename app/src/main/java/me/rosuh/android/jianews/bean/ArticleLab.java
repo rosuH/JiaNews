@@ -1,9 +1,11 @@
 package me.rosuh.android.jianews;
 
-import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
+
 import java.util.List;
+
+import me.rosuh.android.jianews.bean.ArticleBean;
+import me.rosuh.android.jianews.util.Const;
 
 /**
  * 这个类用于创建、获取 ArticleBean 及其集合的单例类
@@ -13,16 +15,16 @@ import java.util.List;
 
 public class ArticleLab {
     private static final String TAG = "ArticleLab";
-    private static ArticleLab sArticleLab;
 
-    public static ArticleLab get(Context context){
-        if (sArticleLab == null){
-            sArticleLab = new ArticleLab(context);
-        }
-        return sArticleLab;
+    private static class ArticleLabHolder{
+        private static final ArticleLab INSTANCE = new ArticleLab();
     }
 
-    private ArticleLab(Context context){
+    public static ArticleLab getInstance(){
+        return ArticleLabHolder.INSTANCE;
+    }
+
+    private ArticleLab(){
     }
 
     /**

@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews;
+package me.rosuh.android.jianews.network;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,10 +7,14 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import static me.rosuh.android.jianews.Const.URL_CAMPUS_ACTIVITIES;
-import static me.rosuh.android.jianews.Const.URL_CAMPUS_ANNOUNCEMENT;
-import static me.rosuh.android.jianews.Const.URL_MAJOR_NEWS;
-import static me.rosuh.android.jianews.Const.URL_MEDIA_REPORTS;
+
+import me.rosuh.android.jianews.bean.ArticleBean;
+import me.rosuh.android.jianews.util.Const;
+
+import static me.rosuh.android.jianews.util.Const.URL_CAMPUS_ACTIVITIES;
+import static me.rosuh.android.jianews.util.Const.URL_CAMPUS_ANNOUNCEMENT;
+import static me.rosuh.android.jianews.util.Const.URL_MAJOR_NEWS;
+import static me.rosuh.android.jianews.util.Const.URL_MEDIA_REPORTS;
 
 /**
  * @author rosuh

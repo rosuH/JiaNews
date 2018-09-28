@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews;
+package me.rosuh.android.jianews.util;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

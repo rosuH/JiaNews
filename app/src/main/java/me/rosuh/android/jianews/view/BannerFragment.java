@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews;
+package me.rosuh.android.jianews.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,10 +25,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
+import me.rosuh.android.jianews.R;
+import me.rosuh.android.jianews.bean.ArticleBean;
+import me.rosuh.android.jianews.bean.ArticleLab;
+import me.rosuh.android.jianews.util.Const;
+import me.rosuh.android.jianews.util.DepthPageTransformer;
+import me.rosuh.android.jianews.util.FixedSpeedScroller;
 
-import static me.rosuh.android.jianews.Const.VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
-import static me.rosuh.android.jianews.Const.VALUE_BANNER_START_PAGE;
+import static me.rosuh.android.jianews.util.Const.VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
+import static me.rosuh.android.jianews.util.Const.VALUE_BANNER_START_PAGE;
 
 /**
  * 这个类是轮播图的 fragment 类
@@ -65,7 +70,7 @@ public class BannerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArticleLab = ArticleLab.get(mContext);
+        mArticleLab = ArticleLab.getInstance();
         getData(mArticleLab);
         GetDataTask getDataTask = new GetDataTask(BannerFragment.this);
         getDataTask.execute();
