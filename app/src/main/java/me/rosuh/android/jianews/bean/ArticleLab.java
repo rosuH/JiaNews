@@ -1,10 +1,10 @@
-package me.rosuh.android.jianews;
+package me.rosuh.android.jianews.bean;
 
 import android.text.TextUtils;
 
 import java.util.List;
 
-import me.rosuh.android.jianews.bean.ArticleBean;
+import me.rosuh.android.jianews.network.WebSpider;
 import me.rosuh.android.jianews.util.Const;
 
 /**

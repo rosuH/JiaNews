@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews;
+package me.rosuh.android.jianews.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;

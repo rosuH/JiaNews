@@ -33,6 +33,7 @@ public class ArticleReadingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme);
         setContentView(R.layout.article_reading_activity);
         Toolbar mToolbar = findViewById(R.id.tb_reading);
         mToolbar.setTitle("");
