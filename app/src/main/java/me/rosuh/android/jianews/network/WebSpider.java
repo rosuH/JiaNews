@@ -109,7 +109,9 @@ public class WebSpider {
                 }else {
                     articleBean.setContent(contentNode.getElementsByTag("p").toString());
                 }
-                String summary = Jsoup.parse(articleBean.getContent()).text();
+                String tmpString = Jsoup.parse(articleBean.getContent()).text();
+                // 取出文章开头缩进
+                String summary = tmpString.replaceFirst("　　", "");
                 articleBean.setSummary(summary);
                 /**
                  * 获取第一张图片链接作为缩略图

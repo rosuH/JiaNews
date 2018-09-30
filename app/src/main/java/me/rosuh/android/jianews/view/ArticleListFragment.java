@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -164,7 +165,7 @@ public class ArticleListFragment extends Fragment {
             getTargetFragment().onActivityResult(Const.REQUEST_CODE_ARTICLE_LIST_REFRESH
                     , Activity.RESULT_OK, new Intent());
         }
-        if (mSwipeRefreshLayout.isRefreshing()){
+        if (mSwipeRefreshLayout.isRefreshing() && mArticleBeans != null){
             mSwipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -244,7 +245,7 @@ public class ArticleListFragment extends Fragment {
 
             Glide.with(mContext).load(R.drawable.logo_no).apply(mRequestOptions).into(mThumbnailImageView);
             mTitleTextView.setText(R.string.item_loading);
-            mSummaryTextView.setText(R.string.item_loading);
+            mSummaryTextView.setText("...");
         }
     }
 

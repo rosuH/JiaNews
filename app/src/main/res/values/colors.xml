@@ -27,6 +27,7 @@
     <color name="blue">#0000FF</color>
     <color name="navy">#000080</color>
     <color name="black">#000000</color>
+    <color name="black_pearl">#000f23</color>
 
     <color name="tab_selected">@color/colorAccent</color>
     <color name="tool_bar_color">#007fca</color>
