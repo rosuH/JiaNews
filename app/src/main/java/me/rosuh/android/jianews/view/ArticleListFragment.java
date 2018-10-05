@@ -4,32 +4,35 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.schedulers.Schedulers;
 import me.rosuh.android.jianews.ArticleReadingActivity;
 import me.rosuh.android.jianews.R;
 import me.rosuh.android.jianews.bean.ArticleBean;
 import me.rosuh.android.jianews.bean.ArticleLab;
+import me.rosuh.android.jianews.precenter.ArticleListViewPresenter;
 import me.rosuh.android.jianews.util.Const;
 
 /**
@@ -44,28 +47,25 @@ import me.rosuh.android.jianews.util.Const;
  * @author rosuh 2018-5-9
  * @version 0.1
  */
-public class ArticleListFragment extends Fragment {
-
+public class ArticleListFragment extends Fragment implements IView {
+    private static final String TAG = "ArticleListFragment";
     private RecyclerView mArticleRecyclerView;
     private ArticleAdapter mArticleAdapter;
     private List<ArticleBean> mArticleBeans;
-    private List<ArticleBean> mArticlesSync = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Context mContext;
-    private String mRequestUrl;
-    private GetDataTask mGetDataTask;
+    private String mRequestUrl = Const.URL_MAJOR_NEWS;
     private Toast mToast;
     private RequestOptions mRequestOptions = new RequestOptions().centerCrop().fallback(R.drawable.logo_no)
             .placeholder(R.drawable.logo_no).error(R.drawable.logo_no);
+    private ArticleListViewPresenter mArticleListViewPresenter = ArticleListViewPresenter.getInstance();
 
 
     /**
-     * New instance fragment.
-     *
      * @param position TabLayout 选中的 item 位置
      * @return 附带有 position 的 fragment 实例
      */
-    public static Fragment newInstance(int position) {
+    public static Fragment getInstances(int position) {
         Bundle args = new Bundle();
         args.putInt(Const.KEY_ARGS_ARTICLES_POSITION, position);
         Fragment fragment = new ArticleListFragment();
@@ -84,30 +84,34 @@ public class ArticleListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 把 Viewpager 的 position 转换为相对应的文章类型页面链接
-        int position;
-       if (getArguments() != null){
-           position = getArguments().getInt(Const.KEY_ARGS_ARTICLES_POSITION, 1);
-       }else {
-           position = 1;
-       }
-        switch (position){
+        int position = 0;
+        if (getArguments() != null) {
+            position = getArguments().getInt(Const.KEY_ARGS_ARTICLES_POSITION, 0);
+        }
+        mRequestUrl = getCorrectUrl(position);
+        // 执行数据获取工作
+        mArticleListViewPresenter.setIView(ArticleListFragment.this);
+        loadHeadData();
+    }
+
+    /**
+     * 从传入的 Viewpager 的 position 获取对应的链接
+     *
+     * @param pos ViewPager 的索引值
+     * @return 正确的链接
+     */
+    private String getCorrectUrl(int pos) {
+        switch (pos) {
             case 1:
-                mRequestUrl = Const.URL_CAMPUS_ANNOUNCEMENT;
-                break;
+                return Const.URL_CAMPUS_ANNOUNCEMENT;
             case 2:
-                mRequestUrl = Const.URL_CAMPUS_ACTIVITIES;
-                break;
+                return Const.URL_CAMPUS_ACTIVITIES;
             case 3:
-                mRequestUrl = Const.URL_MEDIA_REPORTS;
-                break;
+                return Const.URL_MEDIA_REPORTS;
             case 0:
             default:
-                mRequestUrl = Const.URL_MAJOR_NEWS;
+                return Const.URL_MAJOR_NEWS;
         }
-
-        // 执行数据获取工作
-        mGetDataTask = new GetDataTask(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START);
-        mGetDataTask.execute();
     }
 
     @Nullable
@@ -125,7 +129,7 @@ public class ArticleListFragment extends Fragment {
                 int layoutPos = layout.findLastCompletelyVisibleItemPosition();
                 int lastType = mArticleAdapter.getItemViewType(layoutPos);
                 // 如果最后一个 item 的类型是 VALUE_LIST_FOO_TYPE，那么调用加载更多数据方法
-                if (lastType == Const.VALUE_LIST_FOO_TYPE){
+                if (lastType == Const.VALUE_LIST_FOO_TYPE) {
                     loadMoreData(layoutPos);
                 }
             }
@@ -135,8 +139,7 @@ public class ArticleListFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mGetDataTask = new GetDataTask(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START);
-                mGetDataTask.execute();
+                loadHeadData();
             }
         });
         mSwipeRefreshLayout.setRefreshing(true);
@@ -144,28 +147,40 @@ public class ArticleListFragment extends Fragment {
         return view;
     }
 
+    private void loadHeadData(){
+        Schedulers.io().scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                mArticleListViewPresenter.requestData(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START, mRequestUrl);
+            }
+        });
+    }
 
     /**
      * @param position 传入 layout.findLastCompletelyVisibleItemPosition() 作为当前可是列表最后项
      */
-    private void loadMoreData(int position){
-        mGetDataTask = new GetDataTask(ArticleListFragment.this, position);
-        mGetDataTask.execute();
+    private void loadMoreData(final int position) {
+        Schedulers.io().scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                mArticleListViewPresenter.requestData(ArticleListFragment.this, position, mRequestUrl);
+            }
+        });
     }
 
     /**
      * 功能：根据数据创建适配器，将之设置给列表，后更新 UI
      */
-    public void updateUI(){
+    public void updateUI() {
         mArticleAdapter = new ArticleAdapter(mArticleBeans);
         mArticleRecyclerView.setAdapter(mArticleAdapter);
         mArticleAdapter.notifyDataSetChanged();
         // 发送消息给 ArticleViewPagerFragment 告知更新 ViewPager
-        if (getTargetFragment() != null && !isListEmpty(mArticleBeans)){
+        if (getTargetFragment() != null && !isListEmpty(mArticleBeans)) {
             getTargetFragment().onActivityResult(Const.REQUEST_CODE_ARTICLE_LIST_REFRESH
                     , Activity.RESULT_OK, new Intent());
         }
-        if (mSwipeRefreshLayout.isRefreshing() && mArticleBeans != null){
+        if (mSwipeRefreshLayout.isRefreshing() && mArticleBeans != null) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
     }
@@ -173,14 +188,14 @@ public class ArticleListFragment extends Fragment {
     /**
      * 文章类 Holder
      */
-    private class ArticleHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private class ArticleHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ArticleBean mArticleBean;
         private TextView mTitleTextView;
         private TextView mSummaryTextView;
         private TextView mPublishTimeTextView;
         private ImageView mThumbnailImageView;
 
-        private ArticleHolder(LayoutInflater inflater, ViewGroup parent){
+        private ArticleHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.article_list_item_fragment, parent, false));
             mTitleTextView = itemView.findViewById(R.id.tv_article_title);
             mSummaryTextView = itemView.findViewById(R.id.tv_article_summary);
@@ -188,20 +203,22 @@ public class ArticleListFragment extends Fragment {
             mPublishTimeTextView = itemView.findViewById(R.id.tv_list_publish_time);
             itemView.setOnClickListener(this);
         }
+
         /**
          * 功能：被 Adapter 调用来绑定数据和视图
-         *      1. 由 adapter 传入一个 articleBean 对象
-         *      2. 由本方法绑定
+         * 1. 由 adapter 传入一个 articleBean 对象
+         * 2. 由本方法绑定
+         *
          * @param articleBean 传入已填充数据的 articleBean 对象
          */
-        private void bind(ArticleBean articleBean){
+        private void bind(ArticleBean articleBean) {
             this.mArticleBean = articleBean;
             mTitleTextView.setText(mArticleBean.getTitle());
-            if (mArticleBean.getThumbnail() != null){
+            if (mArticleBean.getThumbnail() != null) {
                 Glide.with(mContext).load(mArticleBean.getThumbnail()).apply(mRequestOptions)
                         .into(mThumbnailImageView);
             }
-            if (mArticleBean.getContent() != null){
+            if (mArticleBean.getContent() != null) {
                 mSummaryTextView.setText(mArticleBean.getSummary());
             }
             mPublishTimeTextView.setText(mArticleBean.getPublishTime());
@@ -209,12 +226,12 @@ public class ArticleListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            if (mArticleBean.getContent() == null && mArticleBean.getThumbnail() == null){
+            if (mArticleBean.getContent() == null && mArticleBean.getThumbnail() == null) {
                 // 实现点击启动特定 article 的阅读页面
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(mArticleBean.getUrl()));
                 startActivity(intent);
-            }else {
+            } else {
                 startActivity(ArticleReadingActivity.newIntent(mArticleBean, getActivity()));
             }
         }
@@ -223,7 +240,6 @@ public class ArticleListFragment extends Fragment {
     /**
      * @author rosuh 2018-4-26 21:00:34
      * 功能：空视图 Holder 类，在真正的数据还没有获得前，加载本 holder
-     *
      */
     private class EmptyHolder extends RecyclerView.ViewHolder {
         private ArticleBean mArticleBean;
@@ -237,7 +253,7 @@ public class ArticleListFragment extends Fragment {
          * @param inflater the inflater
          * @param parent   the parent
          */
-        public EmptyHolder(LayoutInflater inflater, ViewGroup parent){
+        public EmptyHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.article_list_item_fragment, parent, false));
             mTitleTextView = itemView.findViewById(R.id.tv_article_title);
             mSummaryTextView = itemView.findViewById(R.id.tv_article_summary);
@@ -252,7 +268,6 @@ public class ArticleListFragment extends Fragment {
     /**
      * @author rosuh 2018-4-28 21:43:21
      * 功能：上拉加载 Holder 类。当用户上拉到底的时候，加载本 holder
-     *
      */
     private class FooterHolder extends RecyclerView.ViewHolder {
         /**
@@ -261,7 +276,7 @@ public class ArticleListFragment extends Fragment {
          * @param inflater the inflater
          * @param parent   the parent
          */
-        public FooterHolder(LayoutInflater inflater, ViewGroup parent){
+        public FooterHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_footer, parent, false));
         }
     }
@@ -270,9 +285,9 @@ public class ArticleListFragment extends Fragment {
         private List<ArticleBean> mArticleBeans;
         private ArticleBean mArticleBean;
 
-        private ArticleAdapter(List<ArticleBean> articleBeans){
+        private ArticleAdapter(List<ArticleBean> articleBeans) {
             mArticleBeans = articleBeans;
-            if (mArticleBeans == null){
+            if (mArticleBeans == null) {
                 mArticleBeans = new ArrayList<>();
             }
         }
@@ -281,7 +296,7 @@ public class ArticleListFragment extends Fragment {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            switch (viewType){
+            switch (viewType) {
                 case Const.VALUE_LIST_EMPTY_TYPE:
                     return new EmptyHolder(layoutInflater, parent);
                 case Const.VALUE_LIST_FOO_TYPE:
@@ -295,20 +310,20 @@ public class ArticleListFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             int type = getItemViewType(position);
 
-            if (type == Const.VALUE_LIST_DEFAULT_TYPE){
+            if (type == Const.VALUE_LIST_DEFAULT_TYPE) {
                 mArticleBean = mArticleBeans.get(position);
-                ArticleHolder viewHolder = (ArticleHolder)holder;
+                ArticleHolder viewHolder = (ArticleHolder) holder;
                 viewHolder.bind(mArticleBean);
             }
         }
 
         @Override
         public int getItemViewType(int position) {
-            if (position == getItemCount() - 1){
+            if (position == getItemCount() - 1) {
                 // 返回上拉加载
                 return Const.VALUE_LIST_FOO_TYPE;
             }
-            if (mArticleBeans.size() == 0){
+            if (mArticleBeans.size() == 0) {
                 // 返回空视图
                 return Const.VALUE_LIST_EMPTY_TYPE;
             }
@@ -317,124 +332,100 @@ public class ArticleListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            if (isListEmpty(mArticleBeans)){
+            if (isListEmpty(mArticleBeans)) {
                 return Const.VALUE_LIST_DEFAULT_SIZE;
             }
             return mArticleBeans.size();
         }
 
-        private void addItems(List<ArticleBean> articleBeans){
+        private void addItems(List<ArticleBean> articleBeans) {
             mArticleBeans.addAll(articleBeans);
         }
     }
 
-    /**
-     * 功能： 通过链接和页码获取文章数据
-     */
-    private static class GetDataTask extends AsyncTask<Integer, Void, Void>{
-        private WeakReference<ArticleListFragment> mWeakReference;
-        private List<ArticleBean> list;
-        private String mUrl;
-        private int mIndex;
-        private ArticleLab mArticleLab;
+    @Override
+    public void onStartRequest(List<ArticleBean> list) {
+        stopRefresh(list);
+    }
 
-        /**
-         * Instantiates a new Get data task.
-         *
-         * @param context the context
-         * @param index   the index
-         */
-        GetDataTask(ArticleListFragment context, int index){
-            this.mWeakReference = new WeakReference<>(context);
-            this.list = mWeakReference.get().mArticleBeans;
-            this.mUrl = mWeakReference.get().mRequestUrl;
-            this.mIndex = index;
-        }
+    @Override
+    public void onUpdateDataFinished(List<ArticleBean> list, int nextPos) {
+        stopLoading(list, nextPos);
+    }
 
-        @Override
-        protected Void doInBackground(Integer...integers) {
-            mArticleLab = ArticleLab.getInstance();
-            List<ArticleBean> temps = mArticleLab.getArticleList(mUrl, mIndex);
-            // 获取到数据则通知列表更新
-            if (temps != null && !temps.isEmpty()){
-                list = temps;
-            }
-            return null;
-        }
+    @Override
+    public void onUpdateDataFailed(Throwable t) {
+        t.printStackTrace();
+        Toast.makeText(mContext, "更新数据失败", Toast.LENGTH_SHORT).show();
+    }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (mWeakReference.get().mArticlesSync == null){
-                return;
-            }
-            mWeakReference.get().mArticlesSync = list;
-            if (mIndex == Const.VALUE_ARTICLE_INDEX_START){
-                mWeakReference.get().stopRefresh();
-            }else {
-                mWeakReference.get().stopLoading();
-            }
-        }
+    @Override
+    public void scrollToTop() {
+        mArticleRecyclerView.smoothScrollToPosition(0);
     }
 
     /**
      * 功能：此方法在更新网络请求完成后被调用
-     *      1. 暂停下拉刷新动画
-     *      2. 通知列表数据改变
+     * 1. 暂停下拉刷新动画
+     * 2. 通知列表数据改变
      */
-    private void stopRefresh(){
-        if (isListEmpty(mArticlesSync)){
+    private void stopRefresh(List<ArticleBean> list) {
+        if (isListEmpty(list)) {
             return;
         }
-        if (isListEmpty(mArticleBeans)){
+        if (isListEmpty(mArticleBeans)) {
             // 如果为空，则直接赋值
-            mArticleBeans = mArticlesSync;
-        }else if (isNewData(mArticleBeans, mArticlesSync)){
+            mArticleBeans = list;
+        } else if (isNewData(mArticleBeans, list)) {
             // 先获取增加的数据，然后把新数据复制到 mArticleBeans 头部
-            int index = mArticlesSync.indexOf(mArticleBeans.get(0));
-            List<ArticleBean> list = mArticlesSync.subList(0, index);
-            mArticleBeans.addAll(0, list);
+            int index = list.indexOf(mArticleBeans.get(0));
+            List<ArticleBean> tmpList = list.subList(0, index);
+            mArticleBeans.addAll(0, tmpList);
         }
         showToast(R.string.item_refresh_finished);
         updateUI();
     }
 
-    private void stopLoading(){
-        if (isListEmpty(mArticlesSync)){
+    private void stopLoading(List<ArticleBean> list, int nextPos) {
+        if (isListEmpty(list)) {
             return;
         }
-        int size = mArticleBeans.size();
-        mArticleAdapter.addItems(mArticlesSync);
-        mArticleAdapter.notifyItemRangeInserted(size, mArticleBeans.size());
+        int preSize = mArticleBeans.size();
+        mArticleAdapter.addItems(list);
+        mArticleAdapter.notifyItemRangeInserted(preSize, mArticleBeans.size());
+        mArticleRecyclerView.scrollToPosition(nextPos);
     }
 
     /**
      * 功能：比较两个列表是否一致，以确认是否有新数据
-     * @param ori   原始列表
-     * @param des   新的列表
-     * @return  如果有新数据，返回 true，没有则返回 false
+     *
+     * @param ori 原始列表
+     * @param des 新的列表
+     * @return 如果有新数据，返回 true，没有则返回 false
      */
-    private boolean isNewData(List<ArticleBean> ori, List<ArticleBean> des){
+    private boolean isNewData(List<ArticleBean> ori, List<ArticleBean> des) {
         return !ori.get(0).getId().equals(des.get(0).getId());
     }
 
     /**
      * 功能：若 mArticleBeans 无意义，则 ismArticlesEmpty 为真
+     *
      * @return 若 mArticleBeans 无意义，则 ismArticlesEmpty 为真
      */
-    private boolean isListEmpty(List list){
+    private boolean isListEmpty(List list) {
         return (list == null || list.isEmpty());
     }
 
 
     /**
      * 显示 Toast
+     *
      * @param resId 资源 id
      */
-    private void showToast(int resId){
-        if (mToast == null){
+    private void showToast(int resId) {
+        if (mToast == null) {
             mToast = Toast.makeText(mContext, resId, Toast.LENGTH_SHORT);
-        }else {
+        } else {
             mToast.setText(resId);
             mToast.setDuration(Toast.LENGTH_SHORT);
         }
@@ -445,8 +436,8 @@ public class ArticleListFragment extends Fragment {
     /**
      * 取消 Toast
      */
-    private void cancelToast(){
-        if (mToast == null){
+    private void cancelToast() {
+        if (mToast == null) {
             return;
         }
         mToast.cancel();

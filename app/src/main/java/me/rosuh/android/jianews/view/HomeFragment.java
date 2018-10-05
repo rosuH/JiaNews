@@ -8,14 +8,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import me.rosuh.android.jianews.R;
 import me.rosuh.android.jianews.util.Const;
+import me.rosuh.android.jianews.util.FragmentPagerAdapterWrapper;
 
 /**
  * @author rosu
@@ -26,47 +33,32 @@ public class HomeFragment extends Fragment {
         return new HomeFragment();
     }
 
+    FragmentPagerAdapter mStatePagerAdapter;
+    private static final String TAG = "HomeFragment";
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment, container, false);
 
 
-        ViewPager mViewPager = view.findViewById(R.id.vp_article_list);
+        ViewPager viewPager = view.findViewById(R.id.vp_article_list);
 
 //         文章列表
-        FragmentPagerAdapter mStatePagerAdapter = new FragmentPagerAdapter(Objects.requireNonNull(getActivity()).getSupportFragmentManager()){
+        mStatePagerAdapter = new FragmentPagerAdapterWrapper(Objects.requireNonNull(getActivity()).getSupportFragmentManager());
+        viewPager.setAdapter(mStatePagerAdapter);
+        viewPager.setCurrentItem(Const.VALUE_ARTICLE_START_PAGE);
 
-            @Override
-            public Fragment getItem(int position) {
-                return  ArticleListFragment.newInstance(position);
-            }
-
-            @Override
-            public int getCount() {
-                return Const.VALUE_ARTICLE_MAX_PAGES;
-            }
-
-            @Override
-            public int getItemPosition(@NonNull Object object) {
-                return PagerAdapter.POSITION_NONE;
-            }
-        };
-        mViewPager.setAdapter(mStatePagerAdapter);
-        mViewPager.setOffscreenPageLimit(1);
-        mViewPager.setCurrentItem(Const.VALUE_ARTICLE_START_PAGE);
-
-        initTabLayout(mViewPager, view);
-
+        initTabLayout(viewPager, view);
 
         return view;
     }
 
     /**
      * 初始化导航栏
-     * @param mViewPager 传入设置好的 ViewPager 和 TabLayout 关联起来
+     * @param viewPager 传入设置好的 ViewPager 和 TabLayout 关联起来
      */
-    private void initTabLayout(ViewPager mViewPager, View view){
+    private void initTabLayout(final ViewPager viewPager, View view){
         TabLayout tabLayout = view.findViewById(R.id.tb_layout_nav);
 
         tabLayout.addTab(tabLayout.newTab());
@@ -74,8 +66,33 @@ public class HomeFragment extends Fragment {
         tabLayout.addTab(tabLayout.newTab());
         tabLayout.addTab(tabLayout.newTab());
 
-        tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager){
+            private Long sDoubleClickedInterval = 400L;
+            private long mLastSelectedTime;
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                super.onTabSelected(tab);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                super.onTabUnselected(tab);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                super.onTabReselected(tab);
+                Long newestSelectedTime = System.currentTimeMillis();
+                if (newestSelectedTime - mLastSelectedTime < sDoubleClickedInterval){
+                    int tabPos = tab.getPosition();
+                    FragmentPagerAdapter adapter = (FragmentPagerAdapter)viewPager.getAdapter();
+                    ArticleListFragment articleListFragment = (ArticleListFragment) adapter.getItem(tabPos);
+                    articleListFragment.scrollToTop();
+                }
+                mLastSelectedTime = newestSelectedTime;
+            }
+        });
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setText(R.string.tab_home)
                 .setContentDescription(R.string.tab_home);

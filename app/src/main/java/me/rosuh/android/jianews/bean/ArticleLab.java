@@ -34,18 +34,10 @@ public class ArticleLab {
      * @return 返回获取的文章数据
      */
     public List<ArticleBean> getArticleList(String url, int index){
-        List<ArticleBean> articleBeans;
         if (TextUtils.isEmpty(url)){
             return null;
         }
-        switch (url){
-            case Const.URL_HOME_PAGE:
-                articleBeans = WebSpider.getBannerList();
-                break;
-            default:
-                articleBeans = WebSpider.getArticlesList(url, index);
-        }
 
-        return articleBeans;
+        return WebSpider.getArticlesList(url, index);
     }
 }
