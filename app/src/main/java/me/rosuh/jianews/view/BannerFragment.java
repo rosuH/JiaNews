@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.view;
+package me.rosuh.jianews.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,14 +26,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import me.rosuh.android.jianews.R;
-import me.rosuh.android.jianews.bean.ArticleBean;
-import me.rosuh.android.jianews.bean.ArticleLab;
-import me.rosuh.android.jianews.util.Const;
-import me.rosuh.android.jianews.util.DepthPageTransformer;
-import me.rosuh.android.jianews.util.FixedSpeedScroller;
+import me.rosuh.jianews.bean.ArticleBean;
+import me.rosuh.jianews.bean.ArticleLab;
+import me.rosuh.jianews.util.Const;
+import me.rosuh.jianews.util.DepthPageTransformer;
+import me.rosuh.jianews.util.FixedSpeedScroller;
 
-import static me.rosuh.android.jianews.util.Const.VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
-import static me.rosuh.android.jianews.util.Const.VALUE_BANNER_START_PAGE;
+import static me.rosuh.jianews.util.Const.VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE;
+import static me.rosuh.jianews.util.Const.VALUE_BANNER_START_PAGE;
 
 /**
  * 这个类是轮播图的 fragment 类

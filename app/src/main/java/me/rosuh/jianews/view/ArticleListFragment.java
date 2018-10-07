@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.view;
+package me.rosuh.jianews.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,17 +22,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.schedulers.Schedulers;
-import me.rosuh.android.jianews.ArticleReadingActivity;
+import me.rosuh.jianews.ArticleReadingActivity;
 import me.rosuh.android.jianews.R;
-import me.rosuh.android.jianews.bean.ArticleBean;
-import me.rosuh.android.jianews.bean.ArticleLab;
-import me.rosuh.android.jianews.precenter.ArticleListViewPresenter;
-import me.rosuh.android.jianews.util.Const;
+import me.rosuh.jianews.bean.ArticleBean;
+import me.rosuh.jianews.precenter.ArticleListViewPresenter;
+import me.rosuh.jianews.util.Const;
 
 /**
  * 这个类是文章列表的 Fragment 类，在这里类中实现了：
@@ -90,8 +87,7 @@ public class ArticleListFragment extends Fragment implements IView {
         }
         mRequestUrl = getCorrectUrl(position);
         // 执行数据获取工作
-        mArticleListViewPresenter.setIView(ArticleListFragment.this);
-        loadHeadData();
+        loadHeaderData();
     }
 
     /**
@@ -139,7 +135,7 @@ public class ArticleListFragment extends Fragment implements IView {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadHeadData();
+                loadHeaderData();
             }
         });
         mSwipeRefreshLayout.setRefreshing(true);
@@ -147,11 +143,14 @@ public class ArticleListFragment extends Fragment implements IView {
         return view;
     }
 
-    private void loadHeadData(){
+    /**
+     * 获取首部数据
+     */
+    private void loadHeaderData(){
         Schedulers.io().scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                mArticleListViewPresenter.requestData(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START, mRequestUrl);
+                mArticleListViewPresenter.requestHeaderData(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START, mRequestUrl);
             }
         });
     }
@@ -163,7 +162,7 @@ public class ArticleListFragment extends Fragment implements IView {
         Schedulers.io().scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                mArticleListViewPresenter.requestData(ArticleListFragment.this, position, mRequestUrl);
+                mArticleListViewPresenter.requestMoreData(ArticleListFragment.this, position, mRequestUrl);
             }
         });
     }
@@ -221,7 +220,7 @@ public class ArticleListFragment extends Fragment implements IView {
             if (mArticleBean.getContent() != null) {
                 mSummaryTextView.setText(mArticleBean.getSummary());
             }
-            mPublishTimeTextView.setText(mArticleBean.getPublishTime());
+            mPublishTimeTextView.setText(mArticleBean.getDate());
         }
 
         @Override

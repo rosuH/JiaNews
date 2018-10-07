@@ -1,6 +1,8 @@
-package me.rosuh.android.jianews;
+package me.rosuh.jianews;
 
 import android.app.Application;
+
+import me.rosuh.android.jianews.R;
 
 /**
  * @author rosu

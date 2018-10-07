@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.util;
+package me.rosuh.jianews.util;
 
 
 /**

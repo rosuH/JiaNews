@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.precenter;
+package me.rosuh.jianews.precenter;
 
 /**
  * @author rosu

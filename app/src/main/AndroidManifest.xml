@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher"
         >
-        <activity android:name=".HomeActivity"
+        <activity android:name="me.rosuh.jianews.HomeActivity"
             android:launchMode="singleTop"
             android:alwaysRetainTaskState="true"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -24,9 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ArticleReadingActivity"
-            android:parentActivityName=".HomeActivity"/>
-        <activity android:name=".view.AboutPageDialog"
+        <activity android:name="me.rosuh.jianews.ArticleReadingActivity"
+            android:parentActivityName="me.rosuh.jianews.HomeActivity"/>
+        <activity android:name="me.rosuh.jianews.view.AboutPageDialog"
             android:theme="@style/Theme.DialogTemplate.Font"
             android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>

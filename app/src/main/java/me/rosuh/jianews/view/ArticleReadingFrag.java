@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.view;
+package me.rosuh.jianews.view;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

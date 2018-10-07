@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.util;
+package me.rosuh.jianews.util;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -8,7 +8,7 @@ import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
-import me.rosuh.android.jianews.view.ArticleListFragment;
+import me.rosuh.jianews.view.ArticleListFragment;
 
 /**
  * @author rosua

@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.network;
+package me.rosuh.jianews.network;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,13 +8,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.rosuh.android.jianews.bean.ArticleBean;
-import me.rosuh.android.jianews.util.Const;
+import me.rosuh.jianews.bean.ArticleBean;
+import me.rosuh.jianews.util.Const;
 
-import static me.rosuh.android.jianews.util.Const.URL_CAMPUS_ACTIVITIES;
-import static me.rosuh.android.jianews.util.Const.URL_CAMPUS_ANNOUNCEMENT;
-import static me.rosuh.android.jianews.util.Const.URL_MAJOR_NEWS;
-import static me.rosuh.android.jianews.util.Const.URL_MEDIA_REPORTS;
+import static me.rosuh.jianews.util.Const.URL_CAMPUS_ACTIVITIES;
+import static me.rosuh.jianews.util.Const.URL_CAMPUS_ANNOUNCEMENT;
+import static me.rosuh.jianews.util.Const.URL_MAJOR_NEWS;
+import static me.rosuh.jianews.util.Const.URL_MEDIA_REPORTS;
 
 /**
  * @author rosuh
@@ -97,7 +97,7 @@ public class WebSpider {
             for (int i = cirStart; i < index; i++){
                 Element link = links.get(i);
                 ArticleBean articleBean = new ArticleBean();
-                articleBean.setPublishTime(dates.get(i).text());
+                articleBean.setDate(dates.get(i).text());
                 articleBean.setUrl(link.attr("href"));
                 articleBean.setTitle(link.text());
                 // 获取文章内容
@@ -121,7 +121,11 @@ public class WebSpider {
                 if (!imgLinks.isEmpty()){
                     articleBean.setThumbnail(imgLinks.get(0).attr("src"));
                 }
-                articleBean.setId(articleBean.getUrl());
+                String idStr = articleBean.getUrl();
+                int dotIndex = idStr.lastIndexOf(".");
+                int spaIndex = idStr.lastIndexOf("/");
+                idStr = idStr.substring(spaIndex + 1, dotIndex);
+                articleBean.setId(idStr);
 
                 articleBeans.add(articleBean);
             }
@@ -174,7 +178,7 @@ public class WebSpider {
         for (int i = 0; i < links.size(); i++){
             Element link = links.get(i);
             ArticleBean articleBean = new ArticleBean();
-            articleBean.setPublishTime(dates.get(i).text());
+            articleBean.setDate(dates.get(i).text());
             articleBean.setUrl(link.attr("href"));
             articleBean.setTitle(link.text());
             articleBean.setId(articleBean.getUrl());

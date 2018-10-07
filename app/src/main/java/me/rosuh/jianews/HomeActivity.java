@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews;
+package me.rosuh.jianews;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -15,8 +15,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import me.rosuh.android.jianews.view.AboutPageDialog;
-import me.rosuh.android.jianews.view.HomeFragment;
+
+import me.rosuh.android.jianews.R;
+import me.rosuh.jianews.view.AboutPageDialog;
+import me.rosuh.jianews.view.HomeFragment;
 
 /**
  * 首页 Activity

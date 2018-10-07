@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.view;
+package me.rosuh.jianews.view;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -6,23 +6,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import me.rosuh.android.jianews.R;
-import me.rosuh.android.jianews.util.Const;
-import me.rosuh.android.jianews.util.FragmentPagerAdapterWrapper;
+import me.rosuh.jianews.util.Const;
+import me.rosuh.jianews.util.FragmentPagerAdapterWrapper;
 
 /**
  * @author rosu
@@ -41,9 +34,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home_fragment, container, false);
 
-
         ViewPager viewPager = view.findViewById(R.id.vp_article_list);
-
 //         文章列表
         mStatePagerAdapter = new FragmentPagerAdapterWrapper(Objects.requireNonNull(getActivity()).getSupportFragmentManager());
         viewPager.setAdapter(mStatePagerAdapter);

@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.view;
+package me.rosuh.jianews.view;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,10 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import jp.wasabeef.glide.transformations.BlurTransformation;
-import me.rosuh.android.jianews.ArticleReadingActivity;
+import me.rosuh.jianews.ArticleReadingActivity;
 import me.rosuh.android.jianews.R;
-import me.rosuh.android.jianews.bean.ArticleBean;
-import me.rosuh.android.jianews.util.Const;
+import me.rosuh.jianews.bean.ArticleBean;
+import me.rosuh.jianews.util.Const;
 
 import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 

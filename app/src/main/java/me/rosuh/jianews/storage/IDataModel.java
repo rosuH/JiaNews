@@ -1,8 +1,8 @@
-package me.rosuh.android.jianews.storage;
+package me.rosuh.jianews.storage;
 
 import java.util.List;
 
-import me.rosuh.android.jianews.bean.ArticleBean;
+import me.rosuh.jianews.bean.ArticleBean;
 
 /**
  * @author rosu

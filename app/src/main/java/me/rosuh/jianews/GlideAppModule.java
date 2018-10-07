@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews;
+package me.rosuh.jianews;
 
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;
