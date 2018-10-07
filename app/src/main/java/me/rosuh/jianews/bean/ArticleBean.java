@@ -1,4 +1,4 @@
-package me.rosuh.android.jianews.bean;
+package me.rosuh.jianews.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -25,8 +25,7 @@ public class ArticleBean implements Parcelable{
     private String summary;
     private String thumbnail;
     private String content;
-    private String publishTime;
-    private int clickCount;
+    private String date;
 
     public ArticleBean(){ }
 
@@ -36,8 +35,7 @@ public class ArticleBean implements Parcelable{
         this.title = in.readString();;
         this.thumbnail = in.readString();;
         this.content = in.readString();;
-        this.publishTime = in.readString();;
-        this.clickCount = in.readInt();
+        this.date = in.readString();;
     }
 
     public String getId() {
@@ -80,20 +78,12 @@ public class ArticleBean implements Parcelable{
         this.content = content;
     }
 
-    public String getPublishTime() {
-        return publishTime;
+    public String getDate() {
+        return date;
     }
 
-    public void setPublishTime(String publishTime) {
-        this.publishTime = publishTime;
-    }
-
-    public int getClickCount() {
-        return clickCount;
-    }
-
-    public void setClickCount(int clickCount) {
-        this.clickCount = clickCount;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public static final Creator<ArticleBean> CREATOR = new Creator<ArticleBean>() {
@@ -128,7 +118,6 @@ public class ArticleBean implements Parcelable{
         dest.writeString(this.title);
         dest.writeString(this.thumbnail);
         dest.writeString(this.content);
-        dest.writeString(this.publishTime);
-        dest.writeInt(this.clickCount);
+        dest.writeString(this.date);
     }
 }

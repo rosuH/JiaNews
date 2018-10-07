@@ -1,11 +1,10 @@
-package me.rosuh.android.jianews.bean;
+package me.rosuh.jianews.bean;
 
 import android.text.TextUtils;
 
 import java.util.List;
 
-import me.rosuh.android.jianews.network.WebSpider;
-import me.rosuh.android.jianews.util.Const;
+import me.rosuh.jianews.network.WebSpider;
 
 /**
  * 这个类用于创建、获取 ArticleBean 及其集合的单例类
@@ -24,8 +23,7 @@ public class ArticleLab {
         return ArticleLabHolder.INSTANCE;
     }
 
-    private ArticleLab(){
-    }
+    private ArticleLab(){}
 
     /**
      * 功能：根据传入的链接，调用 WebSpider 获取数据
