@@ -1,5 +1,7 @@
 package me.rosuh.jianews.network;
 
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,6 +12,7 @@ import java.util.List;
 
 import me.rosuh.jianews.bean.ArticleBean;
 import me.rosuh.jianews.util.Const;
+import me.rosuh.jianews.util.StringUtils;
 
 import static me.rosuh.jianews.util.Const.URL_CAMPUS_ACTIVITIES;
 import static me.rosuh.jianews.util.Const.URL_CAMPUS_ANNOUNCEMENT;
@@ -20,49 +23,52 @@ import static me.rosuh.jianews.util.Const.URL_MEDIA_REPORTS;
  * @author rosuh
  */
 public class WebSpider {
+    private static final int ARTICLES_COUNT_PER_PAGE = 50;
+    private static final int ARTICLES_LIST_PER_QUEUE = 10;
+
+    private static final String TAG = "WebSpider";
     /**
      * 功能：根据传入的 url 和 index，进行文章数据的获取
      *      1. index 有两种情况
      *          - index 为 0，这个时候是刷新或者初次载入列表的时候获取的，代表获取网页第一页，前 10 篇文章
      *          - index 不为零，此时是用来加载更多的时候传入的列表最后一个 item 的 position
      *      2. 如果到了 50 条件记录，也就是 index == 5 的时候，获取的网页链接索引会递增
-     * @param url   传入的网页链接
+     * @param pageURL   传入的网页枚举变量
      * @param index 传入的索引值
      * @return  获取的文章列表
      */
-    public static List<ArticleBean> getArticlesList(String url, int index){
-        /**
-         * 链接判断和页码判断
-         */
-        boolean isUrlPointless = !url.equals(URL_MAJOR_NEWS) &&
-                !url.equals(URL_CAMPUS_ACTIVITIES) &&
-                !url.equals(URL_MEDIA_REPORTS) &&
-                !url.equals(URL_CAMPUS_ANNOUNCEMENT);
+    public static List<ArticleBean> getArticlesList(Const.PageURL pageURL, int index){
+        // 链接判断和页码判断
+//        boolean isUrlPointless = !url.equals(URL_MAJOR_NEWS) &&
+//                !url.equals(URL_CAMPUS_ACTIVITIES) &&
+//                !url.equals(URL_MEDIA_REPORTS) &&
+//                !url.equals(URL_CAMPUS_ANNOUNCEMENT);
 
         String mUrl;
-        final int articlesCountPerPage = 50;
-        final int articlesListPerQueue = 10;
+        String url = StringUtils.INSTANCE.getCorrectUrl(pageURL);
 
         // 传入的 position 总是为 9、19、29，所以需要 +1 以便判断
-        int count = (index+1) / articlesCountPerPage;
+        int count = (index + 1) / ARTICLES_COUNT_PER_PAGE;
+        Log.i(TAG, "getArticlesList: position =========>>> " + index);
+        Log.i(TAG, "getArticlesList: count =========>>> " + count);
 
 
-        if (isUrlPointless||index < 0) {
+        if (index < 0) {
             return null;
         } else if (index == 0) {
             // 文章索引为 0，也就是刷新或者首次载入列表的时候
             // 文章页链接为 第一页链接，index 的值需要重设为 10，方便后面做循环
             mUrl = url + ".html";
-            index = index + articlesListPerQueue;
+            index = index + ARTICLES_LIST_PER_QUEUE;
         }else if (count == 0){
             // count 计算的是网页的页码，如果文章索引低于 50，那么就是在第一页之内
             mUrl = url + ".html";
             // 因为 index = 0 时，是为刷新的情况，所以 9 的时候，是为加载下一页的情况，为了方便循环，这里为之加上 10
-            index = index + articlesListPerQueue + 1;
+            index = index + ARTICLES_LIST_PER_QUEUE + 1;
         }else {
             // 当文章索引值超过了 50，那么需要请求下一页，此时 index 需通过页码的倍数进行计算
             mUrl = url + "_" + count + ".html";
-            index = index + articlesListPerQueue + 1 - articlesCountPerPage * count;
+            index = index + ARTICLES_LIST_PER_QUEUE + 1 - ARTICLES_COUNT_PER_PAGE * count;
         }
 
         try {

@@ -2,14 +2,10 @@ package me.rosuh.jianews.storage;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.CrossProcessCursorWrapper;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.Icon;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import me.rosuh.jianews.bean.ArticleBean;
 import me.rosuh.jianews.storage.ArticleDbSchema.ArticleTable;
 import me.rosuh.jianews.storage.ArticleDbSchema.ArticleTable.Cols;

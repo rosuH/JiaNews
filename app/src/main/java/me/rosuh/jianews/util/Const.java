@@ -91,4 +91,23 @@ public class Const {
      */
     public static final String URL_HOME_PAGE = "http://www.jyu.edu.cn";
 
+    public enum PageURL{
+        /**
+         * 综合要闻
+         */
+        URL_MAJOR_NEWS,
+        /**
+         * 校园公告
+         */
+        URL_CAMPUS_ANNOUNCEMENT,
+        /**
+         * 校园动态
+         */
+        URL_CAMPUS_ACTIVITIES,
+        /**
+         * 媒体报道
+         */
+        URL_MEDIA_REPORTS
+    }
+
 }

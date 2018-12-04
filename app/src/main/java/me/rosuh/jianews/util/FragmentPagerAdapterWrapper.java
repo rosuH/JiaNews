@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import me.rosuh.jianews.view.ArticleListFragment;
 
 /**
- * @author rosua
+ * @author rosu
  * @date 2018/10/5
  */
 public class FragmentPagerAdapterWrapper extends FragmentPagerAdapter {

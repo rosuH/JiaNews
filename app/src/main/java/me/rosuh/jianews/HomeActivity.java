@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
                 .findFragmentById(R.id.home_fragment_layout);
 
         if (homeFragment == null){
-            homeFragment = HomeFragment.getInstance();
+            homeFragment = HomeFragment.Companion.getInstance();
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.content_fragment, homeFragment)
@@ -54,8 +54,8 @@ public class HomeActivity extends AppCompatActivity {
      * 初始化顶部工具栏
      */
     private void initToolBar(){
-        Toolbar mToolbar = findViewById(R.id.tb_home);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = findViewById(R.id.tb_home);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);

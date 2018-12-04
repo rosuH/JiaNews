@@ -18,6 +18,8 @@ public class ArticleBean implements Parcelable{
      * 文章内容
      * 文章发布时间
      * 文章点击数
+     * 文章的类型
+     * 是否已被阅读
      */
     private String id;
     private String url;
@@ -26,16 +28,20 @@ public class ArticleBean implements Parcelable{
     private String thumbnail;
     private String content;
     private String date;
+    private String type;
+    private boolean isRead;
 
     public ArticleBean(){ }
 
     protected ArticleBean(Parcel in){
         this.id = in.readString();
-        this.url = in.readString();;
-        this.title = in.readString();;
-        this.thumbnail = in.readString();;
-        this.content = in.readString();;
-        this.date = in.readString();;
+        this.url = in.readString();
+        this.title = in.readString();
+        this.thumbnail = in.readString();
+        this.content = in.readString();
+        this.date = in.readString();
+        this.type = in.readString();
+        this.isRead = in.readByte() != 0;
     }
 
     public String getId() {
@@ -86,6 +92,22 @@ public class ArticleBean implements Parcelable{
         this.date = date;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
+
     public static final Creator<ArticleBean> CREATOR = new Creator<ArticleBean>() {
         @Override
         public ArticleBean createFromParcel(Parcel source) {
@@ -119,5 +141,7 @@ public class ArticleBean implements Parcelable{
         dest.writeString(this.thumbnail);
         dest.writeString(this.content);
         dest.writeString(this.date);
+        dest.writeSerializable(this.type);
+        dest.writeByte((byte)(this.isRead ? 1 : 0));
     }
 }

@@ -51,11 +51,11 @@ public class ArticleListFragment extends Fragment implements IView {
     private List<ArticleBean> mArticleBeans;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Context mContext;
-    private String mRequestUrl = Const.URL_MAJOR_NEWS;
+    private Const.PageURL mRequestUrl = Const.PageURL.URL_MAJOR_NEWS;
     private Toast mToast;
     private RequestOptions mRequestOptions = new RequestOptions().centerCrop().fallback(R.drawable.logo_no)
             .placeholder(R.drawable.logo_no).error(R.drawable.logo_no);
-    private ArticleListViewPresenter mArticleListViewPresenter = ArticleListViewPresenter.getInstance();
+    private ArticleListViewPresenter mArticleListViewPresenter = ArticleListViewPresenter.INSTANCE;
 
 
     /**
@@ -96,17 +96,17 @@ public class ArticleListFragment extends Fragment implements IView {
      * @param pos ViewPager 的索引值
      * @return 正确的链接
      */
-    private String getCorrectUrl(int pos) {
+    private Const.PageURL getCorrectUrl(int pos) {
         switch (pos) {
             case 1:
-                return Const.URL_CAMPUS_ANNOUNCEMENT;
+                return Const.PageURL.URL_CAMPUS_ANNOUNCEMENT;
             case 2:
-                return Const.URL_CAMPUS_ACTIVITIES;
+                return Const.PageURL.URL_CAMPUS_ACTIVITIES;
             case 3:
-                return Const.URL_MEDIA_REPORTS;
+                return Const.PageURL.URL_MEDIA_REPORTS;
             case 0:
             default:
-                return Const.URL_MAJOR_NEWS;
+                return Const.PageURL.URL_MAJOR_NEWS;
         }
     }
 
@@ -144,15 +144,12 @@ public class ArticleListFragment extends Fragment implements IView {
     }
 
     /**
-     * 获取首部数据
+     * 异步获取首部数据
      */
     private void loadHeaderData(){
-        Schedulers.io().scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                mArticleListViewPresenter.requestHeaderData(ArticleListFragment.this, Const.VALUE_ARTICLE_INDEX_START, mRequestUrl);
-            }
-        });
+        Schedulers.io().scheduleDirect(() ->
+                mArticleListViewPresenter.requestHeaderData(ArticleListFragment.this,
+                        Const.VALUE_ARTICLE_INDEX_START, Const.PageURL.URL_MAJOR_NEWS));
     }
 
     /**
@@ -253,14 +250,7 @@ public class ArticleListFragment extends Fragment implements IView {
          * @param parent   the parent
          */
         public EmptyHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.article_list_item_fragment, parent, false));
-            mTitleTextView = itemView.findViewById(R.id.tv_article_title);
-            mSummaryTextView = itemView.findViewById(R.id.tv_article_summary);
-            mThumbnailImageView = itemView.findViewById(R.id.iv_article_thumbnail);
-
-            Glide.with(mContext).load(R.drawable.logo_no).apply(mRequestOptions).into(mThumbnailImageView);
-            mTitleTextView.setText(R.string.item_loading);
-            mSummaryTextView.setText("...");
+            super(inflater.inflate(R.layout.list_item_empty, parent, false));
         }
     }
 
