@@ -38,10 +38,10 @@ public class Const {
     /**
      * Web Spider
      */
-    public static final String URL_MAJOR_NEWS = "http://www.jyu.edu.cn/news/index_2";
-    public static final String URL_CAMPUS_ANNOUNCEMENT = "http://www.jyu.edu.cn/news/index_3";
-    public static final String URL_CAMPUS_ACTIVITIES = "http://www.jyu.edu.cn/news/index_44";
-    public static final String URL_MEDIA_REPORTS = "http://www.jyu.edu.cn/news/index_52";
+    public static final String URL_MAJOR_NEWS = "http://www.jyu.edu.cn/index/zhyw1";
+    public static final String URL_CAMPUS_ANNOUNCEMENT = "http://www.jyu.edu.cn/index/xygg1";
+    public static final String URL_CAMPUS_ACTIVITIES = "http://www.jyu.edu.cn/index/xydt1";
+    public static final String URL_MEDIA_REPORTS = "http://www.jyu.edu.cn/index/mtjy1";
     public static final String URL_HOME_PAGE = "http://www.jyu.edu.cn";
 
 }

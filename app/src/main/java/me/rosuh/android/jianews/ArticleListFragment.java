@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -190,10 +191,11 @@ public class ArticleListFragment extends Fragment {
         private void bind(Article article){
             this.mArticle = article;
             mTitleTextView.setText(mArticle.getTitle());
-            if (mArticle.getThumbnail() != null){
-                Glide.with(mContext).load(mArticle.getThumbnail()).apply(mRequestOptions)
-                        .into(mThumbnailImageView);
-            }
+            GlideApp.with(mContext)
+                    .load(mArticle.getThumbnail())
+                    .error(R.drawable.logo_no)
+                    .apply(mRequestOptions)
+                    .into(mThumbnailImageView);
             if (mArticle.getContent() != null){
                 mSummaryTextView.setText(mArticle.getSummary());
             }

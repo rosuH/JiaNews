@@ -40,13 +40,13 @@ public class ArticleReadingActivity extends AppCompatActivity {
 
         WebView webView = findViewById(R.id.wv_reading);
         webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setJavaScriptEnabled(false);
         webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setLoadWithOverviewMode(true);
         String imageFixStr = "<style>img{display: inline;height: auto;max-width: 100%;}</style>";
         mArticle = getIntent().getParcelableExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM);
         if (mArticle != null){
-            webView.loadDataWithBaseURL(null, imageFixStr + mArticle.getContent()
+            webView.loadDataWithBaseURL(Const.URL_HOME_PAGE, imageFixStr + mArticle.getContent()
                     , "text/html", "UTF-8", null);
         }else {
             webView.loadDataWithBaseURL(null, imageFixStr + getString(R.string.content_not_found)
