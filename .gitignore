@@ -64,3 +64,6 @@ fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
 \.idea/fileTemplates/includes/File Header\.java
+app/debug/output.json
+app/release/output.json
+gradle.properties
