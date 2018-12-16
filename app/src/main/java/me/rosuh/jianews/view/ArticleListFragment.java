@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
@@ -207,14 +208,15 @@ public class ArticleListFragment extends Fragment implements IView {
          *
          * @param articleBean 传入已填充数据的 articleBean 对象
          */
-        private void bind(ArticleBean articleBean) {
+        private void bind(ArticleBean articleBean){
             this.mArticleBean = articleBean;
             mTitleTextView.setText(mArticleBean.getTitle());
-            if (mArticleBean.getThumbnail() != null) {
-                Glide.with(mContext).load(mArticleBean.getThumbnail()).apply(mRequestOptions)
-                        .into(mThumbnailImageView);
-            }
-            if (mArticleBean.getContent() != null) {
+            GlideApp.with(mContext)
+                    .load(mArticleBean.getThumbnail())
+                    .error(R.drawable.logo_no)
+                    .apply(mRequestOptions)
+                    .into(mThumbnailImageView);
+            if (mArticleBean.getContent() != null){
                 mSummaryTextView.setText(mArticleBean.getSummary());
             }
             mPublishTimeTextView.setText(mArticleBean.getDate());

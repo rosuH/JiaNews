@@ -73,22 +73,10 @@ public class Const {
     /**
      * Web Spider
      */
-    public static final String URL_MAJOR_NEWS = "http://www.jyu.edu.cn/news/index_2";
-    /**
-     * The constant URL_CAMPUS_ANNOUNCEMENT.
-     */
-    public static final String URL_CAMPUS_ANNOUNCEMENT = "http://www.jyu.edu.cn/news/index_3";
-    /**
-     * The constant URL_CAMPUS_ACTIVITIES.
-     */
-    public static final String URL_CAMPUS_ACTIVITIES = "http://www.jyu.edu.cn/news/index_44";
-    /**
-     * The constant URL_MEDIA_REPORTS.
-     */
-    public static final String URL_MEDIA_REPORTS = "http://www.jyu.edu.cn/news/index_52";
-    /**
-     * The constant URL_HOME_PAGE.
-     */
+    public static final String URL_MAJOR_NEWS = "http://www.jyu.edu.cn/index/zhyw1";
+    public static final String URL_CAMPUS_ANNOUNCEMENT = "http://www.jyu.edu.cn/index/xygg1";
+    public static final String URL_CAMPUS_ACTIVITIES = "http://www.jyu.edu.cn/index/xydt1";
+    public static final String URL_MEDIA_REPORTS = "http://www.jyu.edu.cn/index/mtjy1";
     public static final String URL_HOME_PAGE = "http://www.jyu.edu.cn";
 
     public enum PageURL{

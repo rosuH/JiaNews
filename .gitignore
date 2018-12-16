@@ -67,3 +67,9 @@ fastlane/readme.md
 app/debug/output.json
 app/release/output.json
 gradle.properties
+app/debug/output.json
+app/release/output.json
+.idea/caches/build_file_checksums.ser
+.idea/misc.xml
+.idea/caches/build_file_checksums.ser
+.idea/misc.xml

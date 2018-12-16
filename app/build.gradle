@@ -3,13 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "me.rosuh.android.jianews"
         minSdkVersion 22
-        targetSdkVersion 27
-        versionCode 1
-        versionName "0.1"
+        targetSdkVersion 28
+        versionCode 2
+        versionName "0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 //    signingConfigs {
