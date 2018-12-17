@@ -9,6 +9,7 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import me.rosuh.jianews.view.ArticleListFragment;
+import me.rosuh.jianews.view.HomeFragment;
 
 /**
  * @author rosu
@@ -19,22 +20,15 @@ public class FragmentPagerAdapterWrapper extends FragmentPagerAdapter {
         super(fm);
     }
 
-    private SparseArray<ArticleListFragment> mArticleListFragmentMap = new SparseArray<>();
     @NonNull
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        Object object = super.instantiateItem(container, position);
-        mArticleListFragmentMap.put(position, (ArticleListFragment) object);
-        return object;
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        return super.instantiateItem(container, position);
     }
 
     @Override
     public Fragment getItem(int position) {
-        ArticleListFragment articleListFragment = mArticleListFragmentMap.get(position);
-        if (articleListFragment != null){
-            return articleListFragment;
-        }
-        return  ArticleListFragment.getInstances(position);
+        return  ArticleListFragment.getInstances(Const.getCorrectURL(position));
     }
 
     @Override
