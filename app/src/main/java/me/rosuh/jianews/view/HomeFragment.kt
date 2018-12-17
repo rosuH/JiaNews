@@ -3,17 +3,14 @@ package me.rosuh.jianews.view
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import java.util.Objects
-
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.util.Const
-import me.rosuh.jianews.util.FragmentPagerAdapterWrapper
+import me.rosuh.jianews.adapter.FragmentPagerAdapter
 
 /**
  * @author rosu
@@ -21,17 +18,16 @@ import me.rosuh.jianews.util.FragmentPagerAdapterWrapper
  */
 class HomeFragment : Fragment() {
 
-    internal var mStatePagerAdapter: FragmentPagerAdapter ?= null
+    var mStatePagerAdapter: FragmentPagerAdapter?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.home_fragment, container, false)
 
         val viewPager = view.findViewById<ViewPager>(R.id.vp_article_list)
-        //         文章列表
-        mStatePagerAdapter = FragmentPagerAdapterWrapper(activity!!.supportFragmentManager)
+        // 文章列表
+        mStatePagerAdapter = FragmentPagerAdapter(activity!!.supportFragmentManager)
         viewPager.adapter = mStatePagerAdapter
         viewPager.currentItem = Const.VALUE_ARTICLE_START_PAGE
-
         initTabLayout(viewPager, view)
 
         return view
@@ -60,7 +56,7 @@ class HomeFragment : Fragment() {
                 if (newestSelectedTime - mLastSelectedTime < sDoubleClickedInterval) {
                     val tabPos = tab!!.position
                     val adapter = viewPager.adapter as FragmentPagerAdapter?
-                    val articleListFragment = adapter!!.getItem(tabPos) as ArticleListFragment
+                    val articleListFragment = adapter!!.getItemFromContainer(viewPager, tabPos) as ArticleListFragment
                     articleListFragment.scrollToTop()
                 }
                 mLastSelectedTime = newestSelectedTime

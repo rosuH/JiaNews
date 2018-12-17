@@ -1,5 +1,6 @@
 package me.rosuh.jianews.precenter
 
+import android.util.Log
 import java.util.concurrent.ConcurrentHashMap
 
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -7,7 +8,6 @@ import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.bean.ArticleLab
 import me.rosuh.jianews.storage.IDataModel
 import me.rosuh.jianews.util.Const
-import me.rosuh.jianews.util.StringUtils
 import me.rosuh.jianews.util.ViewUtils
 import me.rosuh.jianews.view.ArticleListFragment
 import me.rosuh.jianews.view.IView
@@ -23,21 +23,22 @@ object ArticleListViewPresenter: IDataModel {
      * 获取数据
      * @param context
      * @param index 数据页索引
-     * @param url   数据页链接
+     * @param pageURL   数据页链接
      */
     fun requestHeaderData(context: ArticleListFragment?, index: Int, pageURL: Const.PageURL) {
         context?:return
 
         mIViewMap[pageURL] = context
+        Log.v("requestHeaderData", "pageURL ===========>>> $pageURL")
         // 获取到数据则通知列表更新
         if (index != Const.VALUE_ARTICLE_INDEX_START) {
             return
         }
-        val list = ArticleLab.getArticleList(Const.PageURL.URL_MAJOR_NEWS, index)
+        val list = ArticleLab.getArticleList(pageURL, index)
         if (ViewUtils.isInMainThread()) {
-            mIViewMap[pageURL]!!.onStartRequest(list)
+            mIViewMap[pageURL]!!.onHeaderRequestFinished(list)
         } else {
-            AndroidSchedulers.mainThread().scheduleDirect { mIViewMap[pageURL]!!.onStartRequest(list) }
+            AndroidSchedulers.mainThread().scheduleDirect { mIViewMap[pageURL]!!.onHeaderRequestFinished(list) }
         }
 
     }

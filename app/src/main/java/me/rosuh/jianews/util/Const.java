@@ -3,6 +3,7 @@ package me.rosuh.jianews.util;
 
 /**
  * 常量类
+ *
  * @author rosu
  */
 public class Const {
@@ -28,7 +29,7 @@ public class Const {
     /**
      * The constant VALUE_BANNER_START_PAGE.
      */
-    public static final int VALUE_BANNER_START_PAGE = VALUE_BANNER_MAX_PAGES/2;
+    public static final int VALUE_BANNER_START_PAGE = VALUE_BANNER_MAX_PAGES / 2;
     /**
      * ArticleBean View Pager
      */
@@ -62,9 +63,9 @@ public class Const {
      */
     public static final String KEY_ARGS_BANNER_ARTICLE = "argsBannerArticles";
     /**
-     * The constant KEY_ARGS_ARTICLES_POSITION.
+     * The constant KEY_ARGS_ARTICLES_PAGE_URL.
      */
-    public static final String KEY_ARGS_ARTICLES_POSITION = "argsArticlesPosition";
+    public static final String KEY_ARGS_ARTICLES_PAGE_URL = "argsArticlesPosition";
 
     /**
      * Activity Intent key
@@ -79,7 +80,7 @@ public class Const {
     public static final String URL_MEDIA_REPORTS = "http://www.jyu.edu.cn/index/mtjy1";
     public static final String URL_HOME_PAGE = "http://www.jyu.edu.cn";
 
-    public enum PageURL{
+    public enum PageURL {
         /**
          * 综合要闻
          */
@@ -98,4 +99,17 @@ public class Const {
         URL_MEDIA_REPORTS
     }
 
+    public static PageURL getCorrectURL(int pos) {
+        switch (pos) {
+            case 1:
+                return PageURL.URL_CAMPUS_ANNOUNCEMENT;
+            case 2:
+                return PageURL.URL_CAMPUS_ACTIVITIES;
+            case 3:
+                return PageURL.URL_MEDIA_REPORTS;
+            case 0:
+            default:
+                return PageURL.URL_MAJOR_NEWS;
+        }
+    }
 }

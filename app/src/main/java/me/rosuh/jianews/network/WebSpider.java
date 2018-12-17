@@ -13,10 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.rosuh.android.jianews.Const.URL_CAMPUS_ACTIVITIES;
-import static me.rosuh.android.jianews.Const.URL_CAMPUS_ANNOUNCEMENT;
-import static me.rosuh.android.jianews.Const.URL_MAJOR_NEWS;
-import static me.rosuh.android.jianews.Const.URL_MEDIA_REPORTS;
+import me.rosuh.jianews.bean.ArticleBean;
+import me.rosuh.jianews.util.Const;
+import me.rosuh.jianews.util.StringUtils;
 
 /**
  * @author rosuh
@@ -24,6 +23,7 @@ import static me.rosuh.android.jianews.Const.URL_MEDIA_REPORTS;
 public class WebSpider {
     private static final int ARTICLES_COUNT_PER_PAGE = 50;
     private static final int ARTICLES_LIST_PER_QUEUE = 10;
+    private static final String TAG = "WebSpider";
     /**
      * 功能：根据传入的 url 和 index，进行文章数据的获取
      * 1. index 有两种情况
@@ -31,7 +31,7 @@ public class WebSpider {
      * - index 不为零，此时是用来加载更多的时候传入的列表最后一个 item 的 position
      * 2. 如果到了 50 条件记录，也就是 index == 5 的时候，获取的网页链接索引会递增
      *
-     * @param url   传入的网页链接
+     * @param pageURL   传入的网页链接
      * @param index 传入的索引值
      * @return 获取的文章列表
      */
@@ -94,7 +94,7 @@ public class WebSpider {
             for (int i = cirStart; i < index; i++) {
                 Element link = links.get(i);
                 ArticleBean articleBean = new ArticleBean();
-                articleBean.setPublishTime(dates.get(i).text());
+                articleBean.setDate(dates.get(i).text());
                 articleBean.setUrl(link.attr("abs:href"));
                 articleBean.setTitle(link.text());
                 Element contentBody = Jsoup
@@ -155,7 +155,7 @@ public class WebSpider {
                 articleBean.setTitle(linkTag.getElementsByTag("img").get(0).attr("alt"));
                 articleBean.setThumbnail(linkTag.getElementsByTag("img").get(0).attr("abs:src"));
                 articleBean.setUrl(linkTag.getElementsByTag("a").get(0).attr("href"));
-                String content = Jsoup.connect(Const.URL_HOME_PAGE + "/" + article.getUrl()).get().body()
+                String content = Jsoup.connect(Const.URL_HOME_PAGE + "/" + articleBean.getUrl()).get().body()
                         .select("[bgcolor=#FFFFFF]").get(0)
                         .getElementsByTag("tbody").get(0)
                         .getElementsByTag("p").toString();
@@ -164,12 +164,12 @@ public class WebSpider {
                 articleBean.setSummary(summary);
                 // 暂时使用 URL 作为 id
                 articleBean.setId(articleBean.getUrl());
-                articleBeans.add(articleBean);
+                articles.add(articleBean);
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-        return articleBeans;
+        return articles;
     }
 
     private static List<ArticleBean> dataFilterForMedia(Elements links, Elements dates){

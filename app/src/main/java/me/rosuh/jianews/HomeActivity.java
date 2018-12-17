@@ -70,21 +70,18 @@ public class HomeActivity extends AppCompatActivity {
     private void initNavigationView(){
         // 侧滑栏
         final NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.nav_item_about:
-                        startActivity(new Intent(HomeActivity.this, AboutPageDialog.class));
-                        break;
-                    default:
-                }
-                if (item.isChecked()){
-                    item.setChecked(false);
-                }
-                mDrawerLayout.closeDrawers();
-                return true;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.nav_item_about:
+                    startActivity(new Intent(HomeActivity.this, AboutPageDialog.class));
+                    break;
+                default:
             }
+            if (item.isChecked()){
+                item.setChecked(false);
+            }
+            mDrawerLayout.closeDrawers();
+            return true;
         });
     }
 

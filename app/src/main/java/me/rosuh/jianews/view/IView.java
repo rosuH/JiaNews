@@ -9,7 +9,7 @@ import me.rosuh.jianews.bean.ArticleBean;
  * @date 2018/9/30
  */
 public interface IView {
-    void onStartRequest(List<ArticleBean> list);
+    void onHeaderRequestFinished(List<ArticleBean> list);
 
     void onUpdateDataFinished(List<ArticleBean> list, int nextPos);
 
