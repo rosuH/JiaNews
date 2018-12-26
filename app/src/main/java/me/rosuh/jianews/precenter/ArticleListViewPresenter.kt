@@ -29,7 +29,6 @@ object ArticleListViewPresenter: IDataModel {
         context?:return
 
         mIViewMap[pageURL] = context
-        Log.v("requestHeaderData", "pageURL ===========>>> $pageURL")
         // 获取到数据则通知列表更新
         if (index != Const.VALUE_ARTICLE_INDEX_START) {
             return
@@ -56,9 +55,9 @@ object ArticleListViewPresenter: IDataModel {
 
         val list = ArticleLab.getArticleList(pageURL, index)
         if (ViewUtils.isInMainThread()) {
-            mIViewMap[pageURL]?.onUpdateDataFinished(list, index + 1)
+            mIViewMap[pageURL]?.onUpdateDataFinished(list, index)
         } else {
-            AndroidSchedulers.mainThread().scheduleDirect { mIViewMap[pageURL]?.onUpdateDataFinished(list, index + 1) }
+            AndroidSchedulers.mainThread().scheduleDirect { mIViewMap[pageURL]?.onUpdateDataFinished(list, index) }
         }
     }
 

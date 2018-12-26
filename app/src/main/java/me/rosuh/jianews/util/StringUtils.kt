@@ -12,10 +12,10 @@ object StringUtils{
      */
     fun getCorrectUrl(pageURL: Const.PageURL):String{
         when(pageURL){
-            Const.PageURL.URL_MEDIA_REPORTS -> return URL_MEDIA_REPORTS;
-            Const.PageURL.URL_CAMPUS_ACTIVITIES -> return URL_CAMPUS_ACTIVITIES;
-            Const.PageURL.URL_CAMPUS_ANNOUNCEMENT -> return URL_CAMPUS_ANNOUNCEMENT;
-            else -> return URL_MAJOR_NEWS;
+            Const.PageURL.URL_MEDIA_REPORTS -> return URL_MEDIA_REPORTS
+            Const.PageURL.URL_CAMPUS_ACTIVITIES -> return URL_CAMPUS_ACTIVITIES
+            Const.PageURL.URL_CAMPUS_ANNOUNCEMENT -> return URL_CAMPUS_ANNOUNCEMENT
+            else -> return URL_MAJOR_NEWS
         }
     }
 }

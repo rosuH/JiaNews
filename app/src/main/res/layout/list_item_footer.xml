@@ -6,11 +6,11 @@
     android:orientation="horizontal"
     android:layout_marginBottom="5dp"
     android:gravity="center">
-    <ProgressBar
+    <android.support.v4.widget.ContentLoadingProgressBar
         android:id="@+id/pb_item_footer"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
-        style="?android:attr/progressTintMode"
+        style="?android:attr/progressBarStyle"
         />
     <TextView
         android:id="@+id/tv_item_footer"

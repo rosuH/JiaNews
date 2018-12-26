@@ -1,4 +1,4 @@
-package me.rosuh.jianews;
+package me.rosuh.jianews.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -41,6 +41,7 @@ public class ArticleReadingActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_back);
         }
 
         WebView webView = findViewById(R.id.wv_reading);

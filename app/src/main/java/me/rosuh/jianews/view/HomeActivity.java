@@ -1,11 +1,16 @@
-package me.rosuh.jianews;
+package me.rosuh.jianews.view;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintLayout.LayoutParams;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,11 +19,19 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.rosuh.android.jianews.R;
-import me.rosuh.jianews.view.AboutPageDialog;
-import me.rosuh.jianews.view.HomeFragment;
+import me.rosuh.jianews.util.GlideApp;
 
 /**
  * 首页 Activity
@@ -70,6 +83,26 @@ public class HomeActivity extends AppCompatActivity {
     private void initNavigationView(){
         // 侧滑栏
         final NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.inflateHeaderView(R.layout.nav_header);
+        ImageView imageView = headerView.findViewById(R.id.iv_nav_header);
+        imageView.setOnClickListener(v -> {
+            ImageView iv = new ImageView(HomeActivity.this);
+            iv.setBackgroundColor(Color.parseColor("#99000000"));
+            GlideApp.with(this)
+                    .load(R.drawable.easter_egg)
+                    .into(iv);
+            if (iv.getParent() != null){
+                ((ViewGroup)iv.getParent()).removeView(iv);
+            }
+            iv.animate().alpha(1).setDuration(1000).start();
+            iv.setOnClickListener(v1 -> {
+                iv.setImageAlpha(0);
+                if (iv.getParent() != null){
+                    ((ViewGroup)iv.getParent()).removeView(iv);
+                }
+            });
+            HomeActivity.this.addContentView(iv, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        });
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()){
                 case R.id.nav_item_about:
@@ -77,11 +110,8 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 default:
             }
-            if (item.isChecked()){
-                item.setChecked(false);
-            }
             mDrawerLayout.closeDrawers();
-            return true;
+            return false;
         });
     }
 
@@ -91,6 +121,7 @@ public class HomeActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.home_activity, menu);
         MenuItem item = menu.findItem(R.id.menu_item_search);
         SearchView searchView = (SearchView) item.getActionView();
+        searchView.setVisibility(View.INVISIBLE);
         searchView.setQueryHint("请输入关键词");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -117,6 +148,4 @@ public class HomeActivity extends AppCompatActivity {
         }
         return true;
     }
-
-
 }

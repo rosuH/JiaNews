@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTranslucentStatus">false</item>
+        <!--<item name="android:windowTranslucentStatus">false</item>-->
     </style>
 
     <style name="Theme.DialogTemplate" parent="Theme.AppCompat.Dialog">
@@ -25,12 +25,16 @@
     </style>
 
     <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/bg</item>
-        <item name="colorPrimary">@color/launcher_status_bar_color</item>
-        <item name="colorPrimaryDark">@color/launcher_status_bar_color</item>
-        <item name="colorAccent">@color/launcher_status_bar_color</item>
-        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowBackground">@drawable/img_logo_launcher</item>
+        <!--<item name="colorPrimary">@color/launcher_status_bar_color</item>-->
+        <!--<item name="colorPrimaryDark">@color/launcher_status_bar_color</item>-->
+        <!--<item name="colorAccent">@color/launcher_status_bar_color</item>-->
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
+
+    <style name="AppTheme.Launcher.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.Launcher.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
 </resources>

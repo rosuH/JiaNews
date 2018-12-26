@@ -8,10 +8,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.schedulers.Schedulers;
-import me.rosuh.jianews.ArticleReadingActivity;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import me.rosuh.android.jianews.R;
 import me.rosuh.jianews.bean.ArticleBean;
 import me.rosuh.jianews.precenter.ArticleListViewPresenter;
 import me.rosuh.jianews.util.Const;
 import me.rosuh.jianews.util.GlideApp;
+import me.rosuh.jianews.util.MyGlideExtension;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
 
@@ -44,20 +46,31 @@ import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
  * 4. 通过 item 的点击来启动对应的文章阅读页面
  *
  * @author rosuh 2018-5-9
- * @version 0.1
+ * @version 0.1l
  */
 public class ArticleListFragment extends Fragment implements IView {
+
     private static final String TAG = "ArticleListFragment";
+
     private RecyclerView mArticleRecyclerView;
+
     private ArticleAdapter mArticleAdapter;
-    private List<ArticleBean> mArticleBeans;
+
+    private List<ArticleBean> mArticleBeans = new ArrayList<>();
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
     private Context mContext;
+
     private Const.PageURL mRequestUrl = Const.PageURL.URL_MAJOR_NEWS;
+
     private Toast mToast;
-    private RequestOptions mRequestOptions = new RequestOptions().centerCrop().fallback(R.drawable.logo_no)
-            .placeholder(R.drawable.logo_no).error(R.drawable.logo_no);
+
+    private LinearLayoutManager mLinearLayoutManager;
+
     private ArticleListViewPresenter mViewPresenter = ArticleListViewPresenter.INSTANCE;
+
+    private AtomicBoolean mIsRequesting = new AtomicBoolean(false);
 
 
     /**
@@ -92,18 +105,18 @@ public class ArticleListFragment extends Fragment implements IView {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.article_list_page_fragment, container, false);
         mArticleRecyclerView = view.findViewById(R.id.rv_article_list);
         mSwipeRefreshLayout = view.findViewById(R.id.srl_list);
-        final LinearLayoutManager layout = new LinearLayoutManager(getActivity());
-        mArticleRecyclerView.setLayoutManager(layout);
+        mArticleRecyclerView.setLayoutManager(mLinearLayoutManager = new LinearLayoutManager(getActivity()));
         mArticleRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                int lastVisibleItemPos = layout.findLastCompletelyVisibleItemPosition();
-                int firstVisibleItemPos = layout.findFirstCompletelyVisibleItemPosition();
+                int lastVisibleItemPos = mLinearLayoutManager.findLastVisibleItemPosition();
+                int firstVisibleItemPos = mLinearLayoutManager.findFirstCompletelyVisibleItemPosition();
                 int lastType = mArticleAdapter.getItemViewType(lastVisibleItemPos);
                 // 如果最后一个 item 的类型是 VALUE_LIST_FOO_TYPE，那么调用加载更多数据方法
                 switch (newState) {
@@ -130,34 +143,35 @@ public class ArticleListFragment extends Fragment implements IView {
      * 异步获取数据
      */
     private void loadHeaderData() {
-        Log.i(TAG, "loadHeaderData: ======================>>>> mRequestUrl = " + mRequestUrl);
-        Schedulers.io().scheduleDirect(() ->
-                mViewPresenter.requestHeaderData(ArticleListFragment.this,
-                        Const.VALUE_ARTICLE_INDEX_START, mRequestUrl));
+        if (mIsRequesting.compareAndSet(false, true)) {
+            Schedulers.io().scheduleDirect(() ->
+                    mViewPresenter.requestHeaderData(ArticleListFragment.this,
+                            Const.VALUE_ARTICLE_INDEX_START, mRequestUrl));
+        }
     }
 
     /**
-     * @param position 传入 layout.findLastCompletelyVisibleItemPosition() 作为当前可是列表最后项
+     * @param position 传入 mLinearLayoutManager.findLastCompletelyVisibleItemPosition() 作为当前可是列表最后项
      */
     private void loadMoreData(final int position) {
-        Schedulers.io().scheduleDirect(() ->
-                mViewPresenter
-                        .requestMoreData(ArticleListFragment.this, position, mRequestUrl));
+        if (mIsRequesting.compareAndSet(false, true)) {
+            Schedulers.io().scheduleDirect(() ->
+                    mViewPresenter
+                            .requestMoreData(ArticleListFragment.this, position, mRequestUrl));
+        }
     }
 
     /**
      * 功能：根据数据创建适配器，将之设置给列表，后更新 UI
      */
     public void updateUI() {
-        Log.i(TAG, "updateUI: ======================>>>>> mRequestUrl = " + mRequestUrl);
         mArticleAdapter = new ArticleAdapter(mArticleBeans);
         mArticleRecyclerView.setAdapter(mArticleAdapter);
-        mArticleAdapter.notifyDataSetChanged();
 
-        // 发送消息给 ArticleViewPagerFragment 告知更新 ViewPager
-//        if (getTargetFragment() != null && !isListEmpty(mArticleBeans)) {
-//
-//        }
+        mArticleAdapter.setFooterHolder(
+                new FooterHolder(Objects.requireNonNull(getActivity()).getLayoutInflater(), mArticleRecyclerView)
+        );
+        mArticleAdapter.notifyItemInserted(mArticleBeans.size());
         if (mSwipeRefreshLayout.isRefreshing() && mArticleBeans != null) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
@@ -167,16 +181,18 @@ public class ArticleListFragment extends Fragment implements IView {
      * 文章类 Holder
      */
     private class ArticleHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         private ArticleBean mArticleBean;
+
         private TextView mTitleTextView;
-        private TextView mSummaryTextView;
+
         private TextView mPublishTimeTextView;
+
         private ImageView mThumbnailImageView;
 
         private ArticleHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.article_list_item_fragment, parent, false));
             mTitleTextView = itemView.findViewById(R.id.tv_article_title);
-            mSummaryTextView = itemView.findViewById(R.id.tv_article_summary);
             mThumbnailImageView = itemView.findViewById(R.id.iv_article_thumbnail);
             mPublishTimeTextView = itemView.findViewById(R.id.tv_list_publish_time);
             itemView.setOnClickListener(this);
@@ -194,12 +210,8 @@ public class ArticleListFragment extends Fragment implements IView {
             mTitleTextView.setText(mArticleBean.getTitle());
             GlideApp.with(mContext)
                     .load(mArticleBean.getThumbnail())
-                    .error(R.drawable.logo_no)
-                    .apply(mRequestOptions)
+                    .apply(MyGlideExtension.getOptions(new RequestOptions(), mContext, 3))
                     .into(mThumbnailImageView);
-            if (mArticleBean.getContent() != null) {
-                mSummaryTextView.setText(mArticleBean.getSummary());
-            }
             mPublishTimeTextView.setText(mArticleBean.getDate());
         }
 
@@ -221,18 +233,13 @@ public class ArticleListFragment extends Fragment implements IView {
      * 功能：空视图 Holder 类，在真正的数据还没有获得前，加载本 holder
      */
     private class EmptyHolder extends RecyclerView.ViewHolder {
-        private ArticleBean mArticleBean;
-        private TextView mTitleTextView;
-        private TextView mSummaryTextView;
-        private ImageView mThumbnailImageView;
-
         /**
          * Instantiates a new Empty holder.
          *
          * @param inflater the inflater
          * @param parent   the parent
          */
-        public EmptyHolder(LayoutInflater inflater, ViewGroup parent) {
+        EmptyHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_empty, parent, false));
         }
     }
@@ -242,20 +249,32 @@ public class ArticleListFragment extends Fragment implements IView {
      * 功能：上拉加载 Holder 类。当用户上拉到底的时候，加载本 holder
      */
     private class FooterHolder extends RecyclerView.ViewHolder {
+
+        private TextView mTvTips;
+
+        private ContentLoadingProgressBar mProgressBar;
+
         /**
          * Instantiates a new Footer holder.
          *
          * @param inflater the inflater
          * @param parent   the parent
          */
-        public FooterHolder(LayoutInflater inflater, ViewGroup parent) {
+        FooterHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_footer, parent, false));
+            View view = inflater.inflate(R.layout.list_item_footer, parent, false);
+            mTvTips = view.findViewById(R.id.tv_item_footer);
+            mProgressBar = view.findViewById(R.id.pb_item_footer);
         }
     }
 
     private class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
         private List<ArticleBean> mArticleBeans;
+
         private ArticleBean mArticleBean;
+
+        private FooterHolder mFooterHolder;
 
         private ArticleAdapter(List<ArticleBean> articleBeans) {
             mArticleBeans = articleBeans;
@@ -272,7 +291,7 @@ public class ArticleListFragment extends Fragment implements IView {
                 case Const.VALUE_LIST_EMPTY_TYPE:
                     return new EmptyHolder(layoutInflater, parent);
                 case Const.VALUE_LIST_FOO_TYPE:
-                    return new FooterHolder(layoutInflater, parent);
+                    return mFooterHolder;
                 default:
                     return new ArticleHolder(layoutInflater, parent);
             }
@@ -280,9 +299,7 @@ public class ArticleListFragment extends Fragment implements IView {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            int type = getItemViewType(position);
-
-            if (type == Const.VALUE_LIST_DEFAULT_TYPE) {
+            if (holder instanceof  ArticleHolder){
                 mArticleBean = mArticleBeans.get(position);
                 ArticleHolder viewHolder = (ArticleHolder) holder;
                 viewHolder.bind(mArticleBean);
@@ -291,8 +308,8 @@ public class ArticleListFragment extends Fragment implements IView {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == getItemCount() - 1) {
-                // 返回上拉加载
+            if (mArticleBeans.size() != 0 && position >= mArticleBeans.size()) {
+                // 返回 footer 布局
                 return Const.VALUE_LIST_FOO_TYPE;
             }
             if (mArticleBeans.size() == 0) {
@@ -307,27 +324,33 @@ public class ArticleListFragment extends Fragment implements IView {
             if (isListEmpty(mArticleBeans)) {
                 return Const.VALUE_LIST_DEFAULT_SIZE;
             }
-            return mArticleBeans.size();
+            return mArticleBeans.size() + 1;
         }
 
         private void addItems(List<ArticleBean> articleBeans) {
             mArticleBeans.addAll(articleBeans);
         }
+
+        void setFooterHolder(final FooterHolder footerHolder) {
+            mFooterHolder = footerHolder;
+        }
     }
 
     @Override
     public void onHeaderRequestFinished(List<ArticleBean> list) {
+        mIsRequesting.compareAndSet(true, false);
         stopRefresh(list);
-
     }
 
     @Override
     public void onUpdateDataFinished(List<ArticleBean> list, int nextPos) {
-        stopLoading(list, nextPos);
+        mIsRequesting.compareAndSet(true, false);
+        stopLoading(list);
     }
 
     @Override
     public void onUpdateDataFailed(Throwable t) {
+        mIsRequesting.compareAndSet(true, false);
         t.printStackTrace();
         Toast.makeText(mContext, "更新数据失败", Toast.LENGTH_SHORT).show();
     }
@@ -355,19 +378,21 @@ public class ArticleListFragment extends Fragment implements IView {
             List<ArticleBean> tmpList = list.subList(0, index);
             mArticleBeans.addAll(0, tmpList);
         }
-        showToast(R.string.item_refresh_finished);
-        Log.i(TAG, "stopRefresh: ===========>>> pageUrl = " + mRequestUrl);
+//        showToast(R.string.item_refresh_finished);
         updateUI();
     }
 
-    private void stopLoading(List<ArticleBean> list, int nextPos) {
+    private void stopLoading(List<ArticleBean> list) {
+        int prePos = mArticleBeans.size();
         if (isListEmpty(list)) {
+            // 没有更多数据
+            showToast("没有更多文章啦~");
+            mArticleAdapter.setFooterHolder(null);
+            mArticleAdapter.notifyItemRemoved(mArticleAdapter.getItemCount() + 1);
             return;
         }
-        int preSize = mArticleBeans.size();
         mArticleAdapter.addItems(list);
-        mArticleAdapter.notifyItemRangeInserted(preSize, mArticleBeans.size());
-        mArticleRecyclerView.scrollToPosition(nextPos);
+        mArticleAdapter.notifyItemRangeInserted(prePos + 1, mArticleBeans.size());
     }
 
     /**
@@ -397,10 +422,14 @@ public class ArticleListFragment extends Fragment implements IView {
      * @param resId 资源 id
      */
     private void showToast(int resId) {
+        showToast(getString(resId));
+    }
+
+    private void showToast(String str){
         if (mToast == null) {
-            mToast = Toast.makeText(mContext, resId, Toast.LENGTH_SHORT);
+            mToast = Toast.makeText(mContext, str, Toast.LENGTH_SHORT);
         } else {
-            mToast.setText(resId);
+            mToast.setText(str);
             mToast.setDuration(Toast.LENGTH_SHORT);
         }
         mToast.show();

@@ -4,6 +4,9 @@ import android.util.Log;
 
 import android.util.Pair;
 
+import java.util.ListIterator;
+import java.util.WeakHashMap;
+import me.rosuh.jianews.util.Const.PageURL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,8 +25,9 @@ import me.rosuh.jianews.util.StringUtils;
  */
 public class WebSpider {
     private static final int ARTICLES_COUNT_PER_PAGE = 50;
-    private static final int ARTICLES_LIST_PER_QUEUE = 10;
+    private static int ARTICLES_LIST_PER_QUEUE = 10;
     private static final String TAG = "WebSpider";
+    private static WeakHashMap<String, List<String>> mURLListWeakHashMap = new WeakHashMap<>();
     /**
      * 功能：根据传入的 url 和 index，进行文章数据的获取
      * 1. index 有两种情况
@@ -36,29 +40,15 @@ public class WebSpider {
      * @return 获取的文章列表
      */
     public static List<ArticleBean> getArticlesList(Const.PageURL pageURL, int index){
-        // 链接判断和页码判断
-//        boolean isUrlPointless = !url.equals(URL_MAJOR_NEWS) &&
-//                !url.equals(URL_CAMPUS_ACTIVITIES) &&
-//                !url.equals(URL_MEDIA_REPORTS) &&
-//                !url.equals(URL_CAMPUS_ANNOUNCEMENT);
-
-        String mUrl;
         String url = StringUtils.INSTANCE.getCorrectUrl(pageURL);
-
-        // 传入的 position 总是为 9、19、29，所以需要 +1 以便判断
-        int count = (index + 1) / ARTICLES_COUNT_PER_PAGE;
-        Log.i(TAG, "getArticlesList: position =========>>> " + index);
-        Log.i(TAG, "getArticlesList: count =========>>> " + count);
 
         // 先获取可用的页码链接
         List<String> pagesLinks = getPagesLinks(url);
-
         if (pagesLinks == null || pagesLinks.isEmpty()){
             return null;
         }
 
         Pair<String, Integer> urlIndexPair = getCurrentPageLink(index, pagesLinks);
-
 
         try {
             Document doc = Jsoup.connect(urlIndexPair.first).get();
@@ -69,7 +59,7 @@ public class WebSpider {
             if (!url.equals(Const.URL_MEDIA_REPORTS)) {
                 return dataFilterForList(links, dates, urlIndexPair.second);
             } else {
-                return dataFilterForMedia(links, dates);
+                return dataFilterForMedia(links, dates, urlIndexPair.second);
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -90,13 +80,31 @@ public class WebSpider {
     private static List<ArticleBean> dataFilterForList(Elements links, Elements dates, int index){
         List<ArticleBean> articleBeans = new ArrayList<>();
         int cirStart = index - 10;
+        if (links.size() < 10){
+            index = links.size();
+        }
+        ListIterator<Element> elementListIterator = links.listIterator();
+        while (elementListIterator.hasNext()){
+            if (!elementListIterator.hasPrevious()){
+                elementListIterator.next();
+                continue;
+            }
+            String preStr = elementListIterator.previous().attr("abs:href" );
+            elementListIterator.next();
+            String nextStr = elementListIterator.next().attr("abs:href" );
+            if (preStr.equals(nextStr)){
+                elementListIterator.remove();
+            }
+        }
+
         try {
             for (int i = cirStart; i < index; i++) {
-                Element link = links.get(i);
+                Element currentLink = links.get(i);
+                Element currentDate = dates.get(i);
                 ArticleBean articleBean = new ArticleBean();
-                articleBean.setDate(dates.get(i).text());
-                articleBean.setUrl(link.attr("abs:href"));
-                articleBean.setTitle(link.text());
+                articleBean.setDate(currentDate.text());
+                articleBean.setUrl(currentLink.attr("abs:href"));
+                articleBean.setTitle(currentLink.text());
                 Element contentBody = Jsoup
                         .connect(articleBean.getUrl()).get().body();
                 Element contentTableNode = contentBody
@@ -105,17 +113,8 @@ public class WebSpider {
                 contentBody.children().first().remove();
                 Elements realContent = contentTableNode.select("p,span");
                 articleBean.setContent(realContent.toString());
-                articleBean.setSummary(realContent.text());
+                articleBean.setSummary(realContent.text().substring(0, 20));
 
-//                if (contentTableInsideTr.getElementsByTag("div").size() > 1){
-////                    articleBean.setContent(contentTableInsideTr.getElementsByTag("div").toString());
-////                }else {
-////                    articleBean.setContent(contentTableInsideTr.getElementsByTag("p").toString());
-////                }
-                /**
-                 * 获取第一张图片链接作为缩略图
-                 * 如果为空，则不获取，防止抛出异常
-                 */
                 Elements imgLinks = contentTableNode.getElementsByTag("img");
                 if (!imgLinks.isEmpty()) {
                     articleBean.setThumbnail(imgLinks.get(0).attr("abs:src"));
@@ -131,50 +130,30 @@ public class WebSpider {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+//        /**
+//         * 过滤因为标题换行而导致的重复链接元素
+//         */
+//        if (!articleBeans.isEmpty()){
+//            for (int i = 0; i < articleBeans.size(); i++){
+//                if (i == articleBeans.size() - 1) return articleBeans;
+//                if (articleBeans.get(i).getUrl().equals(articleBeans.get(i+1).getUrl())){
+//                    articleBeans.remove(articleBeans.get(i));
+//                }
+//            }
+//        }
+
         return articleBeans;
     }
 
-    public static List<ArticleBean> getBannerList(){
-        try {
-            Elements elements = Jsoup.connect(Const.URL_HOME_PAGE)
-                    .get()
-                    .select("td#demo1").get(0)
-                    .select("div.best-pic");
-            return dataFilterForBanner(elements);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        return null;
-    }
 
-    private static List<ArticleBean> dataFilterForBanner(Elements linkTags) {
-        List<ArticleBean> articles = new ArrayList<>();
-        try {
-            for (Element linkTag : linkTags) {
-                ArticleBean articleBean = new ArticleBean();
-                articleBean.setTitle(linkTag.getElementsByTag("img").get(0).attr("alt"));
-                articleBean.setThumbnail(linkTag.getElementsByTag("img").get(0).attr("abs:src"));
-                articleBean.setUrl(linkTag.getElementsByTag("a").get(0).attr("href"));
-                String content = Jsoup.connect(Const.URL_HOME_PAGE + "/" + articleBean.getUrl()).get().body()
-                        .select("[bgcolor=#FFFFFF]").get(0)
-                        .getElementsByTag("tbody").get(0)
-                        .getElementsByTag("p").toString();
-                articleBean.setContent(content);
-                String summary = Jsoup.parse(content).text();
-                articleBean.setSummary(summary);
-                // 暂时使用 URL 作为 id
-                articleBean.setId(articleBean.getUrl());
-                articles.add(articleBean);
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        return articles;
-    }
-
-    private static List<ArticleBean> dataFilterForMedia(Elements links, Elements dates){
+    private static List<ArticleBean> dataFilterForMedia(Elements links, Elements dates, int index){
         List<ArticleBean> articleBeans = new ArrayList<>();
-        for (int i = 0; i < links.size(); i++){
+        int cirStart = index - 10;
+        if (links.size() < 10){
+            index = links.size();
+        }
+        for (int i = cirStart; i < index; i++){
             Element link = links.get(i);
             ArticleBean articleBean = new ArticleBean();
             articleBean.setDate(dates.get(i).text());
@@ -192,23 +171,25 @@ public class WebSpider {
      * @return  可用的页码链接
      */
     private static List<String> getPagesLinks(String homePageUrl) {
-        List<String> pages = new ArrayList<>();
-        pages.add(homePageUrl + ".htm");
-        try {
 
-            Element currentBody = Jsoup.connect(homePageUrl + ".htm").get().body();
-
-            for (Element element : currentBody.select(".p_no")) {
-                pages.add(
-                        element.getElementsByTag("a")
-                                .first()
-                                .attr("abs:href")
-                );
+        List<String> pages = mURLListWeakHashMap.get(homePageUrl);
+        if (pages == null){
+            pages = new ArrayList<>();
+            pages.add(homePageUrl + ".htm");
+            try {
+                Element currentBody = Jsoup.connect(homePageUrl + ".htm").get().body();
+                for (Element element : currentBody.select(".p_no")) {
+                    pages.add(
+                            element.getElementsByTag("a")
+                                    .first()
+                                    .attr("abs:href")
+                    );
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            mURLListWeakHashMap.put(homePageUrl, pages);
         }
-
         return pages;
     }
 
@@ -219,9 +200,6 @@ public class WebSpider {
      * @return
      */
     private static Pair<String, Integer> getCurrentPageLink(int pos, List<String> pagesLinks){
-        final int articlesListPerQueue = 10;
-
-        // 传入的 position 总是为 9、19、29，所以需要 +1 以便判断
         int pageCount = (pos + 1) / ARTICLES_COUNT_PER_PAGE;
         boolean isMorePage = pageCount >= 1;
         String pageUrl;
@@ -239,7 +217,7 @@ public class WebSpider {
         }else if (!isMorePage){
             // count 计算的是网页的页码，如果文章索引低于 50，那么就是在第一页之内
             // 因为 pos = 0 时，是为刷新的情况，所以 9 的时候，是为加载下一页的情况，为了方便循环，这里为之加上 10
-            pos = pos + 1 + ARTICLES_LIST_PER_QUEUE;
+            pos = pos + ARTICLES_LIST_PER_QUEUE;
         }else {
             // 当文章索引值超过了 50，那么需要请求下一页，此时 pos 需通过页码的倍数进行计算
             pos = pos + ARTICLES_LIST_PER_QUEUE - ARTICLES_COUNT_PER_PAGE * pageCount;
