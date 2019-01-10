@@ -28,6 +28,8 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.rosuh.android.jianews.R;
+import me.rosuh.jianews.adapter.ArticleAdapter;
+import me.rosuh.jianews.adapter.ArticleAdapter.FooterHolder;
 import me.rosuh.jianews.bean.ArticleBean;
 import me.rosuh.jianews.precenter.ArticleListViewPresenter;
 import me.rosuh.jianews.util.Const;
@@ -125,6 +127,8 @@ public class ArticleListFragment extends Fragment implements IView {
                             loadMoreData(lastVisibleItemPos);
                         } else if (lastType == Const.VALUE_LIST_DEFAULT_TYPE && firstVisibleItemPos == 0) {
                             loadHeaderData();
+                        }else if (mArticleBeans.isEmpty()){
+                            loadHeaderData();
                         }
                         break;
                     default:
@@ -165,176 +169,17 @@ public class ArticleListFragment extends Fragment implements IView {
      * 功能：根据数据创建适配器，将之设置给列表，后更新 UI
      */
     public void updateUI() {
-        mArticleAdapter = new ArticleAdapter(mArticleBeans);
+        mArticleAdapter = new ArticleAdapter(Objects.requireNonNull(this.getActivity()), mArticleBeans);
         mArticleRecyclerView.setAdapter(mArticleAdapter);
-
         mArticleAdapter.setFooterHolder(
                 new FooterHolder(Objects.requireNonNull(getActivity()).getLayoutInflater(), mArticleRecyclerView)
         );
         mArticleAdapter.notifyItemInserted(mArticleBeans.size());
-        if (mSwipeRefreshLayout.isRefreshing() && mArticleBeans != null) {
+        if (mSwipeRefreshLayout.isRefreshing() && !mArticleBeans.isEmpty()) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 
-    /**
-     * 文章类 Holder
-     */
-    private class ArticleHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        private ArticleBean mArticleBean;
-
-        private TextView mTitleTextView;
-
-        private TextView mPublishTimeTextView;
-
-        private ImageView mThumbnailImageView;
-
-        private ArticleHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.article_list_item_fragment, parent, false));
-            mTitleTextView = itemView.findViewById(R.id.tv_article_title);
-            mThumbnailImageView = itemView.findViewById(R.id.iv_article_thumbnail);
-            mPublishTimeTextView = itemView.findViewById(R.id.tv_list_publish_time);
-            itemView.setOnClickListener(this);
-        }
-
-        /**
-         * 功能：被 Adapter 调用来绑定数据和视图
-         * 1. 由 adapter 传入一个 articleBean 对象
-         * 2. 由本方法绑定
-         *
-         * @param articleBean 传入已填充数据的 articleBean 对象
-         */
-        private void bind(ArticleBean articleBean) {
-            this.mArticleBean = articleBean;
-            mTitleTextView.setText(mArticleBean.getTitle());
-            GlideApp.with(mContext)
-                    .load(mArticleBean.getThumbnail())
-                    .apply(MyGlideExtension.getOptions(new RequestOptions(), mContext, 3))
-                    .into(mThumbnailImageView);
-            mPublishTimeTextView.setText(mArticleBean.getDate());
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (mArticleBean.getContent() == null && mArticleBean.getThumbnail() == null) {
-                // 实现点击启动特定 article 的阅读页面
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mArticleBean.getUrl()));
-                startActivity(intent);
-            } else {
-                startActivity(ArticleReadingActivity.newIntent(mArticleBean, getActivity()));
-            }
-        }
-    }
-
-    /**
-     * @author rosuh 2018-4-26 21:00:34
-     * 功能：空视图 Holder 类，在真正的数据还没有获得前，加载本 holder
-     */
-    private class EmptyHolder extends RecyclerView.ViewHolder {
-        /**
-         * Instantiates a new Empty holder.
-         *
-         * @param inflater the inflater
-         * @param parent   the parent
-         */
-        EmptyHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_empty, parent, false));
-        }
-    }
-
-    /**
-     * @author rosuh 2018-4-28 21:43:21
-     * 功能：上拉加载 Holder 类。当用户上拉到底的时候，加载本 holder
-     */
-    private class FooterHolder extends RecyclerView.ViewHolder {
-
-        private TextView mTvTips;
-
-        private ContentLoadingProgressBar mProgressBar;
-
-        /**
-         * Instantiates a new Footer holder.
-         *
-         * @param inflater the inflater
-         * @param parent   the parent
-         */
-        FooterHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_footer, parent, false));
-            View view = inflater.inflate(R.layout.list_item_footer, parent, false);
-            mTvTips = view.findViewById(R.id.tv_item_footer);
-            mProgressBar = view.findViewById(R.id.pb_item_footer);
-        }
-    }
-
-    private class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-        private List<ArticleBean> mArticleBeans;
-
-        private ArticleBean mArticleBean;
-
-        private FooterHolder mFooterHolder;
-
-        private ArticleAdapter(List<ArticleBean> articleBeans) {
-            mArticleBeans = articleBeans;
-            if (mArticleBeans == null) {
-                mArticleBeans = new ArrayList<>();
-            }
-        }
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            switch (viewType) {
-                case Const.VALUE_LIST_EMPTY_TYPE:
-                    return new EmptyHolder(layoutInflater, parent);
-                case Const.VALUE_LIST_FOO_TYPE:
-                    return mFooterHolder;
-                default:
-                    return new ArticleHolder(layoutInflater, parent);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof  ArticleHolder){
-                mArticleBean = mArticleBeans.get(position);
-                ArticleHolder viewHolder = (ArticleHolder) holder;
-                viewHolder.bind(mArticleBean);
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (mArticleBeans.size() != 0 && position >= mArticleBeans.size()) {
-                // 返回 footer 布局
-                return Const.VALUE_LIST_FOO_TYPE;
-            }
-            if (mArticleBeans.size() == 0) {
-                // 返回空视图
-                return Const.VALUE_LIST_EMPTY_TYPE;
-            }
-            return Const.VALUE_LIST_DEFAULT_TYPE;
-        }
-
-        @Override
-        public int getItemCount() {
-            if (isListEmpty(mArticleBeans)) {
-                return Const.VALUE_LIST_DEFAULT_SIZE;
-            }
-            return mArticleBeans.size() + 1;
-        }
-
-        private void addItems(List<ArticleBean> articleBeans) {
-            mArticleBeans.addAll(articleBeans);
-        }
-
-        void setFooterHolder(final FooterHolder footerHolder) {
-            mFooterHolder = footerHolder;
-        }
-    }
 
     @Override
     public void onHeaderRequestFinished(List<ArticleBean> list) {

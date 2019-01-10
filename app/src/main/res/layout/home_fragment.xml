@@ -5,25 +5,18 @@
     android:id="@+id/home_fragment_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:weightSum="15"
-    android:background="#f5f5f5"
-    >
+    android:background="#f5f5f5">
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tb_layout_nav"
         style="@style/TabLayoutStyle"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="40dp"
         android:background="@color/white"
-        android:elevation="4dp"
-        android:textAlignment="center"
-        />
+        android:textAlignment="center" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_article_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="14"
-        />
+        android:layout_height="wrap_content"/>
 </LinearLayout>
