@@ -3,7 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#c7c7c7</color>
     <color name="colorAccent">#00bcd4</color>
-    <color name="indicator_normal">@color/silver</color>
+    <color name="indicator_normal">#a3a3a3</color>
     <color name="indicator_select">#007fca</color>
     <color name="banner_text_color">#007fca</color>
     <color name="banner_text_background">#ac007fca</color>
@@ -29,7 +29,7 @@
     <color name="black">#000000</color>
     <color name="black_pearl">#000f23</color>
 
-    <color name="tab_selected">@color/colorAccent</color>
+    <!--<color name="tab_selected">@drawable/shape_tab_indicator_color</color>-->
     <color name="tool_bar_color">#fefefe</color>
 
     <color name="launcher_status_bar_color">#373737</color>

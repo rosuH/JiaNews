@@ -3,20 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dl_home"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="0dp"
-        >
+        android:elevation="0dp">
+
         <android.support.design.widget.AppBarLayout
             android:id="@+id/abl_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="0dp"
-            >
+            android:elevation="0dp">
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tb_home"
                 android:layout_width="match_parent"
@@ -24,8 +23,7 @@
                 android:background="@color/tool_bar_color"
                 android:elevation="0dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:layout_scrollFlags="scroll|enterAlways"
-                />
+                app:layout_scrollFlags="scroll|enterAlways" />
         </android.support.design.widget.AppBarLayout>
 
         <FrameLayout

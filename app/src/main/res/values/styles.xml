@@ -18,9 +18,7 @@
     </style>
 
     <style name="TabLayoutStyle" parent="Widget.Design.TabLayout">
-        <item name="tabIndicatorColor">@color/tab_selected</item>
-        <item name="tabIndicatorHeight">2dp</item>
-        <!--<item name="tabBackground">?attr/selectableItemBackground</item>-->
+        <item name="tabIndicatorHeight">7dp</item>
         <item name="tabSelectedTextColor">@android:color/black</item>
     </style>
 

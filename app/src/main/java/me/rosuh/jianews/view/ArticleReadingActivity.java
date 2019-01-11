@@ -1,20 +1,35 @@
 package me.rosuh.jianews.view;
 
+import static android.text.Html.FROM_HTML_MODE_COMPACT;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.Html;
+import android.text.Html.TagHandler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import android.widget.TextView;
+import kotlin.coroutines.CoroutineContext;
+import kotlinx.coroutines.CoroutineScope;
+import kotlinx.coroutines.Dispatchers;
 import me.rosuh.android.jianews.R;
 import me.rosuh.jianews.bean.ArticleBean;
 import me.rosuh.jianews.util.Const;
+import me.rosuh.jianews.util.TextViewImageGetter;
+import org.jetbrains.annotations.NotNull;
+import org.xml.sax.XMLReader;
 
 /**
  * 这个类是文章阅读页面的 AppCompatActivity 类
@@ -22,7 +37,13 @@ import me.rosuh.jianews.util.Const;
  * @version 0.1
  */
 
-public class ArticleReadingActivity extends AppCompatActivity {
+public class ArticleReadingActivity extends AppCompatActivity implements CoroutineScope {
+
+    @NotNull
+    @Override
+    public CoroutineContext getCoroutineContext() {
+        return Dispatchers.getMain();
+    }
 
     private ArticleBean mArticleBean;
     public static Intent newIntent(ArticleBean articleBean, Activity activity){
@@ -37,26 +58,25 @@ public class ArticleReadingActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
         setContentView(R.layout.article_reading_frag);
         Toolbar mToolbar = findViewById(R.id.tb_reading);
-        mToolbar.setTitle("");
+        TextView tvToolbarTitle = findViewById(R.id.tv_tool_bar_reading);
+        TextView tvContent = findViewById(R.id.tv_article_content);
+        mArticleBean = getIntent().getParcelableExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM);
+
+        tvToolbarTitle.setText(mArticleBean.getTitle());
+        tvToolbarTitle.setSelected(true);
+        mToolbar.setSubtitle(mArticleBean.getDate());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_back);
         }
 
-        WebView webView = findViewById(R.id.wv_reading);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setJavaScriptEnabled(false);
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        String imageFixStr = "<style>img{display: inline;height: auto;max-width: 100%;}</style>";
-        mArticleBean = getIntent().getParcelableExtra(Const.KEY_INTENT_ARTICLE_READING_ITEM);
-        if (mArticleBean != null){
-            webView.loadDataWithBaseURL(Const.URL_HOME_PAGE, imageFixStr + mArticleBean.getContent(),
-                    "text/html", "UTF-8", null);
+        if (VERSION.SDK_INT >= VERSION_CODES.N){
+            tvContent.setText(Html.fromHtml(mArticleBean.getContent(), FROM_HTML_MODE_COMPACT,
+                    new TextViewImageGetter(this, this, tvContent), null));
         }else {
-            webView.loadDataWithBaseURL(null, imageFixStr + getString(R.string.content_not_found),
-                    "text/html", "UTF-8", null);
+            tvContent.setText(Html.fromHtml(mArticleBean.getContent(), new TextViewImageGetter(this, this, tvContent), null));
         }
     }
 
