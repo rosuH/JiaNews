@@ -9,17 +9,15 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <!--<WebView-->
-            <!--android:id="@+id/wv_reading"-->
-            <!--android:layout_below="@+id/tb_reading"-->
-            <!--android:padding="16dp"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent" />-->
         <TextView
             android:id="@+id/tv_article_content"
             android:layout_below="@+id/tb_reading"
             android:padding="16dp"
+            android:textSize="15sp"
+            android:textIsSelectable="true"
+            android:textColor="#000"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </android.support.v4.widget.NestedScrollView>
@@ -34,17 +32,6 @@
             android:elevation="7dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:layout_scrollFlags="scroll|enterAlways">
-            <TextView
-                android:id="@+id/tv_tool_bar_reading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit ="marquee_forever"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:scrollHorizontally="true"
-                />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>

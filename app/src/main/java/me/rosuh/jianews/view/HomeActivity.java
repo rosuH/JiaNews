@@ -126,7 +126,7 @@ public class HomeActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(HomeActivity.this, query, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(HomeActivity.this, query, Toast.LENGTH_SHORT).show();
                 return false;
             }
 

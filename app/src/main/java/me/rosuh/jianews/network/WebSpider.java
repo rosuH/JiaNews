@@ -112,7 +112,13 @@ public class WebSpider {
                         .first();
                 contentBody.children().first().remove();
                 Elements realContent = contentTableNode.select("p,span");
-                articleBean.setContent(realContent.toString());
+                int lastClickJsIndex = realContent.toString().indexOf("发布日期");
+                // 过滤发布日期后面的字符串
+                if (lastClickJsIndex > -1){
+                    articleBean.setContent(realContent.toString().substring(0, lastClickJsIndex));
+                } else {
+                    articleBean.setContent(realContent.toString());
+                }
                 articleBean.setSummary(realContent.text().substring(0, 20));
 
                 Elements imgLinks = contentTableNode.getElementsByTag("img");
@@ -130,19 +136,6 @@ public class WebSpider {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        /**
-//         * 过滤因为标题换行而导致的重复链接元素
-//         */
-//        if (!articleBeans.isEmpty()){
-//            for (int i = 0; i < articleBeans.size(); i++){
-//                if (i == articleBeans.size() - 1) return articleBeans;
-//                if (articleBeans.get(i).getUrl().equals(articleBeans.get(i+1).getUrl())){
-//                    articleBeans.remove(articleBeans.get(i));
-//                }
-//            }
-//        }
-
         return articleBeans;
     }
 

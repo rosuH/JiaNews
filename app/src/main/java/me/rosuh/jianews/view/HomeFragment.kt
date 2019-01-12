@@ -8,9 +8,12 @@ import android.support.design.widget.TabLayout.Tab
 import android.support.design.widget.TabLayout.TabLayoutOnPageChangeListener
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TableLayout
 import android.widget.TextView
 
 import me.rosuh.android.jianews.R
@@ -29,7 +32,7 @@ class HomeFragment : Fragment() {
     lateinit var customViewList: ArrayList<View>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.home_fragment, container, false)
+        val view = inflater.inflate(R.layout.home_container_fragment, container, false)
 
         val viewPager = view.findViewById<ViewPager>(R.id.vp_article_list)
         // 文章列表
@@ -107,7 +110,7 @@ class HomeFragment : Fragment() {
     private fun fillList(resIdList: List<Int>, tabLayout: TabLayout) {
         tabLayout.removeAllTabs()
         for (resId in resIdList) {
-            val view = getTabView(activity!!, resources.getString(resId), 64, 16, 13, resIdList.indexOf(resId) == 0)
+            val view = getTabView(activity!!, resources.getString(resId), 78, 16, 13, resIdList.indexOf(resId) == 0)
             customViewList.add(view)
             tabLayout.addTab(
                 tabLayout.newTab().setCustomView(view).setContentDescription(resId)
