@@ -26,9 +26,6 @@ public class MyGlideExtension {
         int px = Math.round(cornerRadius * (context.getResources().getDisplayMetrics().xdpi
                 / DisplayMetrics.DENSITY_DEFAULT));
         return options
-                .fallback(R.drawable.icon_error)
-                .placeholder(R.drawable.icon_error)
-                .error(R.drawable.icon_error)
                 .transform(new RoundedCorners(px));
     }
 }

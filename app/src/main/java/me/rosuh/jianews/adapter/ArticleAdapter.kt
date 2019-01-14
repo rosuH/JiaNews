@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.support.constraint.Guideline
 import android.support.v4.widget.ContentLoadingProgressBar
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -25,7 +26,7 @@ import java.util.ArrayList
  * @author rosuh
  * @date 2018/12/21
  */
-class ArticleAdapter (private val context: Activity, articleBeans: MutableList<ArticleBean>) :
+class ArticleAdapter(private val context: Activity, articleBeans: MutableList<ArticleBean>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var mArticleBeans: MutableList<ArticleBean>? = null
@@ -34,7 +35,7 @@ class ArticleAdapter (private val context: Activity, articleBeans: MutableList<A
 
     private var mFooterHolder: FooterHolder? = null
 
-    lateinit var itemClickListener:View.OnClickListener
+    lateinit var itemClickListener: View.OnClickListener
 
     init {
         mArticleBeans = articleBeans
@@ -116,6 +117,11 @@ class ArticleAdapter (private val context: Activity, articleBeans: MutableList<A
         fun bind(context: Context, articleBean: ArticleBean) {
             this.mArticleBean = articleBean
             mTitleTextView.text = mArticleBean!!.title
+            if (mArticleBean!!.thumbnail == null){
+                itemView.findViewById<ImageView>(R.id.iv_article_thumbnail).visibility = View.GONE
+            }else {
+                itemView.findViewById<ImageView>(R.id.iv_article_thumbnail).visibility = View.VISIBLE
+            }
             GlideApp.with(context)
                 .load(mArticleBean!!.thumbnail)
                 .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3))
@@ -146,7 +152,7 @@ class ArticleAdapter (private val context: Activity, articleBeans: MutableList<A
      * @author rosuh 2018-4-28 21:43:21
      * 功能：上拉加载 Holder 类。当用户上拉到底的时候，加载本 holder
      */
-    class FooterHolder (inflater: LayoutInflater, parent: ViewGroup) :
+    class FooterHolder(inflater: LayoutInflater, parent: ViewGroup) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_footer, parent, false)) {
 
         private val mTvTips: TextView

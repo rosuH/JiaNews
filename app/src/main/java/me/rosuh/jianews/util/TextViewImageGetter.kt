@@ -24,7 +24,7 @@ class TextViewImageGetter(private val context: Context, private val scope: Corou
 
     override fun getDrawable(source: String?): Drawable {
         val listDrawable = LevelListDrawable()
-        val drawable = context.resources.getDrawable(R.drawable.icon_error, context.theme)
+        val drawable = context.resources.getDrawable(R.drawable.ic_img_placeholder, context.theme)
         listDrawable.addLevel(0, 0, drawable)
         listDrawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
         launch(Dispatchers.Default){

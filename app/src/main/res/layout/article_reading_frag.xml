@@ -15,7 +15,7 @@
             android:id="@+id/tv_article_content"
             android:layout_below="@+id/tb_reading"
             android:padding="16dp"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:textIsSelectable="true"
             android:textColor="#000"
             android:layout_width="match_parent"

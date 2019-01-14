@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import jp.wasabeef.glide.transformations.BlurTransformation;
 import me.rosuh.android.jianews.R;
 import me.rosuh.jianews.util.GlideApp;
 
@@ -83,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
     private void initNavigationView(){
         // 侧滑栏
         final NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setItemIconTintList(null);
         View headerView = navigationView.inflateHeaderView(R.layout.nav_header);
         ImageView imageView = headerView.findViewById(R.id.iv_nav_header);
         imageView.setOnClickListener(v -> {

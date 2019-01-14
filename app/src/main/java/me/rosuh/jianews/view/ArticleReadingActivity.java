@@ -1,6 +1,7 @@
 package me.rosuh.jianews.view;
 
 import static android.text.Html.FROM_HTML_MODE_COMPACT;
+import static android.text.Html.FROM_HTML_MODE_LEGACY;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,8 +13,14 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.Html;
+import android.text.Html.TagHandler;
+import android.text.Spannable;
 import android.text.Spanned;
+import android.text.style.ImageSpan;
+import android.text.style.URLSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +36,7 @@ import me.rosuh.jianews.bean.ArticleBean;
 import me.rosuh.jianews.util.Const;
 import me.rosuh.jianews.util.TextViewImageGetter;
 import org.jetbrains.annotations.NotNull;
+import org.xml.sax.XMLReader;
 
 /**
  * 这个类是文章阅读页面的 AppCompatActivity 类
@@ -43,10 +51,6 @@ public class ArticleReadingActivity extends AppCompatActivity
     private PopupMenu mFontPopupMenu;
 
     private TextView tvContent;
-
-    private Spanned sourceSpannedContent;
-
-    private Spanned sourceTitleSpanned;
 
     @NotNull
     @Override
@@ -80,20 +84,44 @@ public class ArticleReadingActivity extends AppCompatActivity
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_back);
         }
+        tvContent.setText(produceContent(mArticleBean));
+    }
 
-        if (VERSION.SDK_INT >= VERSION_CODES.N) {
-            sourceSpannedContent = Html.fromHtml(mArticleBean.getContent(), FROM_HTML_MODE_COMPACT,
-                    new TextViewImageGetter(this, this, tvContent), null);
-
-            sourceTitleSpanned = Html
-                    .fromHtml("<h1>" + mArticleBean.getTitle() + "</h1>", FROM_HTML_MODE_COMPACT, null, null);
-        } else {
-            sourceSpannedContent = Html
-                    .fromHtml(mArticleBean.getContent(), new TextViewImageGetter(this, this, tvContent), null);
-            sourceTitleSpanned = Html.fromHtml("<h1>" + mArticleBean.getTitle() + "</h1>", null, null);
+    private Spanned produceContent(ArticleBean articleBean) {
+        if (articleBean == null) {
+            return null;
         }
-        tvContent.setText(sourceTitleSpanned);
-        tvContent.append(sourceSpannedContent);
+        Spannable contentSpanned;
+        if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            contentSpanned = (Spannable) Html.fromHtml(
+                    "<h1>" + mArticleBean.getTitle() + "</h1><br/>" + mArticleBean.getContent(),
+                    FROM_HTML_MODE_LEGACY,
+                    new TextViewImageGetter(this, this, tvContent), null
+            );
+        } else {
+            contentSpanned = (Spannable)Html.fromHtml(
+                    "<h1>" + mArticleBean.getTitle() + "</h1><br/>" +
+                            mArticleBean.getContent(),
+                    new TextViewImageGetter(this, this, tvContent),
+                    null
+            );
+        }
+
+        for (ImageSpan span : contentSpanned.getSpans(0, contentSpanned.length(), ImageSpan.class)){
+            int flags = contentSpanned.getSpanFlags(span);
+            int start = contentSpanned.getSpanStart(span);
+            int end = contentSpanned.getSpanEnd(span);
+
+            contentSpanned.setSpan(new URLSpan(span.getSource()){
+                @Override
+                public void onClick(final View widget) {
+                    super.onClick(widget);
+                    Log.i("Image Clicked", "onClick: ===================" + widget.toString());
+                }
+            }, start, end, flags);
+        }
+
+        return contentSpanned;
     }
 
     @Override
@@ -144,11 +172,11 @@ public class ArticleReadingActivity extends AppCompatActivity
         }
         switch (menuItem.getItemId()) {
             case R.id.item_tiny_font:
-                tvContent.setTextSize(13);
+                tvContent.setTextSize(15);
                 menuItem.setChecked(true);
                 break;
             case R.id.item_normal_font:
-                tvContent.setTextSize(15);
+                tvContent.setTextSize(18);
                 menuItem.setChecked(true);
                 break;
             case R.id.item_large_font:
