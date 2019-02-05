@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">新嘉闻</string>
-    <string name="tab_home">综合要闻</string>
-    <string name="tab_announce">校园公告</string>
-    <string name="tab_activity">校园动态</string>
-    <string name="tab_media">媒体报道</string>
+    <string name="tab_home">要闻</string>
+    <string name="tab_announce">公告</string>
+    <string name="tab_activity">动态</string>
+    <string name="tab_media">报道</string>
     <string name="iv_description">文章缩略图</string>
     <string name="item_loading">文章加载中&#8230;</string>
     <string name="item_refreshing">刷新中&#8230;</string>

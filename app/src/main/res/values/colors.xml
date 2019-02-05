@@ -7,6 +7,7 @@
     <color name="indicator_select">#007fca</color>
     <color name="banner_text_color">#007fca</color>
     <color name="banner_text_background">#ac007fca</color>
+    <color name="tab_selected_color">#02c690</color>
 
 
     <color name="white">#FFFFFF</color>

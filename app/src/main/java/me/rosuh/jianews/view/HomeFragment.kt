@@ -79,30 +79,30 @@ class HomeFragment : Fragment() {
 
             override fun onTabSelected(tab: Tab?) {
                 super.onTabSelected(tab)
-                viewPager.currentItem = tab!!.position
-                tabLayoutRef.get() ?: return
-                if (customViewList.isNullOrEmpty()) return
-                for (customView in customViewList) {
-                    val tv = customView.findViewById<TextView>(R.id.tab_item_text)
-                    val indicatorView: View = customView.findViewById(R.id.tab_item_indicator)
-                    if (customViewList.indexOf(customView) == tab.position) {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                            tv.setTextColor(resources.getColor(R.color.indicator_select, activity!!.theme))
-                        } else {
-                            tv.setTextColor(resources.getColor(R.color.indicator_select))
-                        }
-                        indicatorView.background =
-                                resources.getDrawable(R.drawable.shape_tab_indicator_color, activity!!.theme)
-                        indicatorView.visibility = View.VISIBLE
-                    } else {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                            tv.setTextColor(resources.getColor(R.color.indicator_normal, activity!!.theme))
-                        } else {
-                            tv.setTextColor(resources.getColor(R.color.indicator_normal))
-                        }
-                        indicatorView.visibility = View.INVISIBLE
-                    }
-                }
+//                viewPager.currentItem = tab!!.position
+//                tabLayoutRef.get() ?: return
+//                if (customViewList.isNullOrEmpty()) return
+//                for (customView in customViewList) {
+//                    val tv = customView.findViewById<TextView>(R.id.tab_item_text)
+//                    val indicatorView: View = customView.findViewById(R.id.tab_item_indicator)
+//                    if (customViewList.indexOf(customView) == tab.position) {
+//                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+//                            tv.setTextColor(resources.getColor(R.color.indicator_select, activity!!.theme))
+//                        } else {
+//                            tv.setTextColor(resources.getColor(R.color.indicator_select))
+//                        }
+//                        indicatorView.background =
+//                                resources.getDrawable(R.drawable.shape_tab_indicator_color, activity!!.theme)
+//                        indicatorView.visibility = View.VISIBLE
+//                    } else {
+//                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+//                            tv.setTextColor(resources.getColor(R.color.indicator_normal, activity!!.theme))
+//                        } else {
+//                            tv.setTextColor(resources.getColor(R.color.indicator_normal))
+//                        }
+//                        indicatorView.visibility = View.INVISIBLE
+//                    }
+//                }
             }
         })
     }
@@ -110,10 +110,10 @@ class HomeFragment : Fragment() {
     private fun fillList(resIdList: List<Int>, tabLayout: TabLayout) {
         tabLayout.removeAllTabs()
         for (resId in resIdList) {
-            val view = getTabView(activity!!, resources.getString(resId), 78, 16, 13, resIdList.indexOf(resId) == 0)
-            customViewList.add(view)
+//            val view = getTabView(activity!!, resources.getString(resId), 78, 16, 13, resIdList.indexOf(resId) == 0)
+//            customViewList.add(view)
             tabLayout.addTab(
-                tabLayout.newTab().setCustomView(view).setContentDescription(resId)
+                tabLayout.newTab().setText(resId).setContentDescription(resId)
             )
         }
     }
