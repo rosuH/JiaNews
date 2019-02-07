@@ -37,10 +37,10 @@ public class LocalStorageManager {
         if (articleBean == null){
             return;
         }
-        String id = articleBean.getId();
+        int id = articleBean.getId();
         ContentValues values = getContentValues(articleBean);
         mSQLiteDatabase.update(ArticleTable.NAME, values,
-                Cols.ID + " = ?", new String[]{id});
+                Cols.ID + " = ?", new String[]{String.valueOf(id)});
 
     }
 

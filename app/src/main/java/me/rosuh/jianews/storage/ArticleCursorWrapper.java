@@ -16,7 +16,7 @@ public class ArticleCursorWrapper extends CursorWrapper {
     }
 
     public ArticleBean getArticleBean(){
-        String id = getString(getColumnIndex(Cols.ID));
+        int id = getInt(getColumnIndex(Cols.ID));
         String url = getString(getColumnIndex(Cols.URL));
         String title = getString(getColumnIndex(Cols.TITLE));
         String summary = getString(getColumnIndex(Cols.SUMMARY));

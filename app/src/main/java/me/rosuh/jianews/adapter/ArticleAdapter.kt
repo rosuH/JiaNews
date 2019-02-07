@@ -103,6 +103,8 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
 
         private val mThumbnailImageView: ImageView = itemView.findViewById(R.id.iv_article_thumbnail)
 
+        private val tvViews:TextView = itemView.findViewById(R.id.tv_views)
+
         init {
             itemView.setOnClickListener(this)
         }
@@ -127,6 +129,11 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
                 .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3))
                 .into(mThumbnailImageView)
             mPublishTimeTextView.text = mArticleBean!!.date
+            tvViews.text = mArticleBean!!.views.toString()
+            if (articleBean.type == Const.PageType.MEDIA_REPORTS.toString()){
+                tvViews.visibility = View.INVISIBLE
+                itemView.findViewById<ImageView>(R.id.iv_views).visibility = View.INVISIBLE
+            }
         }
 
         override fun onClick(v: View) {

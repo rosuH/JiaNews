@@ -21,7 +21,7 @@ public class ArticleBean implements Parcelable{
      * 文章的类型
      * 是否已被阅读
      */
-    private String id;
+    private int id;
     private String url;
     private String title;
     private String summary;
@@ -29,12 +29,13 @@ public class ArticleBean implements Parcelable{
     private String content;
     private String date;
     private String type;
+    private int views;
     private boolean isRead;
 
     public ArticleBean(){ }
 
     protected ArticleBean(Parcel in){
-        this.id = in.readString();
+        this.id = in.readInt();
         this.url = in.readString();
         this.title = in.readString();
         this.thumbnail = in.readString();
@@ -42,13 +43,14 @@ public class ArticleBean implements Parcelable{
         this.date = in.readString();
         this.type = in.readString();
         this.isRead = in.readByte() != 0;
+        this.views = in.readInt();
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -108,6 +110,14 @@ public class ArticleBean implements Parcelable{
         isRead = read;
     }
 
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(final int views) {
+        this.views = views;
+    }
+
     public static final Creator<ArticleBean> CREATOR = new Creator<ArticleBean>() {
         @Override
         public ArticleBean createFromParcel(Parcel source) {
@@ -135,7 +145,7 @@ public class ArticleBean implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id);
+        dest.writeInt(this.id);
         dest.writeString(this.url);
         dest.writeString(this.title);
         dest.writeString(this.thumbnail);
@@ -143,5 +153,6 @@ public class ArticleBean implements Parcelable{
         dest.writeString(this.date);
         dest.writeSerializable(this.type);
         dest.writeByte((byte)(this.isRead ? 1 : 0));
+        dest.writeInt(this.views);
     }
 }

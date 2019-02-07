@@ -21,9 +21,7 @@
         app:layout_constraintEnd_toStartOf="@+id/iv_article_thumbnail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
-        tools:text="剪纸云：跨设备剪贴板云同步新选择
-随着跨设备剪贴板云同步功能越发受到厂商和开发者的重视，「在家『复制』在公司『粘贴』」也早已经成为了一个过时的段子。虽然我们可以借助 Pushbullet、AirDroid、SendAnywhere 等专业工具来解决这类需求，但无论哪一款工具在剪贴板云同步这件事情的具体操作方式上都略微有些繁琐。
-真正的剪贴板云同步，应该像「在这台设备上 Ctrl+c，在那台设备上 Ctrl+v」这么简单。而 Android 平台著名剪贴板管理工具剪纸堆开发者的新作剪纸云，恰好就能实现这样的效果。" />
+        tools:text="2月6日上午，应市人大常委会副主任、学院党委负责人李俊夫邀请，旅港乡贤、知名实业家刘汉兴、朱雪云伉俪来校参观访问。在参观校园和德龙会堂新办公室后，刘汉兴先生伉俪和李俊夫书记、政法系教授李春泰等亲切座谈，对我校新领导上任后的变化表示赞赏，欣然表示捐资10万元办学经费，支持学院事业的发展" />
 
     <ImageView
         android:id="@+id/iv_article_thumbnail"
@@ -85,6 +83,28 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.96" />
+
+    <ImageView
+        android:id="@+id/iv_views"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_list_publish_time"
+        app:layout_constraintStart_toEndOf="@+id/tv_list_publish_time"
+        app:layout_constraintTop_toTopOf="@+id/tv_list_publish_time"
+        app:srcCompat="@drawable/ic_article_views" />
+
+    <TextView xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/tv_views"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_list_publish_time"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/iv_views"
+        tools:text="10000" />
 
 
 </android.support.constraint.ConstraintLayout>

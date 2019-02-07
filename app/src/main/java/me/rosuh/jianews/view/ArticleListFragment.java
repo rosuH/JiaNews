@@ -12,6 +12,7 @@ import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,7 +128,7 @@ public class ArticleListFragment extends Fragment implements IView {
                             loadMoreData(lastVisibleItemPos);
                         } else if (lastType == Const.VALUE_LIST_DEFAULT_TYPE && firstVisibleItemPos == 0) {
                             loadHeaderData();
-                        }else if (mArticleBeans.isEmpty()){
+                        } else if (mArticleBeans.isEmpty()) {
                             loadHeaderData();
                         }
                         break;
@@ -158,6 +159,7 @@ public class ArticleListFragment extends Fragment implements IView {
      * @param position 传入 mLinearLayoutManager.findLastCompletelyVisibleItemPosition() 作为当前可是列表最后项
      */
     private void loadMoreData(final int position) {
+        Log.i(TAG, "loadMoreData: position ==== " + position);
         if (mIsRequesting.compareAndSet(false, true)) {
             Schedulers.io().scheduleDirect(() ->
                     mViewPresenter
@@ -248,7 +250,7 @@ public class ArticleListFragment extends Fragment implements IView {
      * @return 如果有新数据，返回 true，没有则返回 false
      */
     private boolean isNewData(List<ArticleBean> ori, List<ArticleBean> des) {
-        return !ori.get(0).getId().equals(des.get(0).getId());
+        return !(ori.get(0).getId() == des.get(0).getId());
     }
 
     /**
@@ -270,7 +272,7 @@ public class ArticleListFragment extends Fragment implements IView {
         showToast(getString(resId));
     }
 
-    private void showToast(String str){
+    private void showToast(String str) {
         if (mToast == null) {
             mToast = Toast.makeText(mContext, str, Toast.LENGTH_SHORT);
         } else {

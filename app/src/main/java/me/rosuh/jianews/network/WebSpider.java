@@ -40,7 +40,7 @@ public class WebSpider {
      * @return 获取的文章列表
      */
     public static List<ArticleBean> getArticlesList(Const.PageURL pageURL, int index){
-        String url = StringUtils.INSTANCE.getCorrectUrl(pageURL);
+        String url = StringUtils.getCorrectUrl(pageURL);
 
         // 先获取可用的页码链接
         List<String> pagesLinks = getPagesLinks(url);
@@ -129,7 +129,7 @@ public class WebSpider {
                 int dotIndex = idStr.lastIndexOf(".");
                 int spaIndex = idStr.lastIndexOf("/");
                 idStr = idStr.substring(spaIndex + 1, dotIndex);
-                articleBean.setId(idStr);
+//                articleBean.setId(idStr);
 
                 articleBeans.add(articleBean);
             }
@@ -152,7 +152,7 @@ public class WebSpider {
             articleBean.setDate(dates.get(i).text());
             articleBean.setUrl(link.attr("href"));
             articleBean.setTitle(link.text());
-            articleBean.setId(articleBean.getUrl());
+//            articleBean.setId(articleBean.getUrl());
             articleBeans.add(articleBean);
         }
         return articleBeans;
