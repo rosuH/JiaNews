@@ -10,14 +10,14 @@
         android:id="@+id/tv_article_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="5dp"
         android:ellipsize="end"
         android:maxLines="3"
         android:textColor="#000"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_list_publish_time"
+        app:layout_constraintBottom_toTopOf="@+id/tv_views"
         app:layout_constraintEnd_toStartOf="@+id/iv_article_thumbnail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
@@ -35,16 +35,15 @@
         app:layout_constraintTop_toTopOf="@+id/guideline2"
         app:layout_constraintVertical_bias="0"
         tools:src="@drawable/test_image"
-        tools:visibility="invisible"
-        />
+        tools:visibility="invisible" />
 
     <TextView
         android:id="@+id/tv_list_publish_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:textColor="#747474"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintStart_toStartOf="parent"
@@ -98,11 +97,8 @@
         android:id="@+id/tv_views"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/tv_list_publish_time"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_views"
         tools:text="10000" />
 

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -31,6 +30,15 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets{
+        main{
+            java {
+                exclude '**/network/WebSpider.java'
+                exclude '**/storage/*.java'
+            }
+        }
     }
 }
 

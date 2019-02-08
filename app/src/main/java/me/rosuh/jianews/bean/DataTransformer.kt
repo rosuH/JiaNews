@@ -1,6 +1,5 @@
 package me.rosuh.jianews.bean
 
-
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,19 +30,18 @@ class DataTransformer {
          * @param needThrow 表示是否需要显式抛出错误
          */
         @JvmStatic
-        fun <T> getDataFromResponse(needThrow: Boolean): ObservableTransformer<DataBean<T>, T> {
+        fun <T> getDataFromResponse(needThrow: Boolean, isImage:Boolean = false): ObservableTransformer<DataBean<T>, T> {
             return ObservableTransformer { upstream ->
                 upstream
                     .flatMap {
-                    if (it.isError() && needThrow) {
-                        Observable.error(Throwable(message = (it.code).toString() + it.msg))
-                    } else if(it.isError()){
-                        Observable.empty()
+                        if (it.isError() && needThrow) {
+                            Observable.error(Throwable(message = (it.code).toString() + it.msg))
+                        } else if (it.isError()) {
+                            Observable.empty()
+                        } else {
+                            Observable.just(it.data)
+                        }
                     }
-                    else {
-                        Observable.just(it.data)
-                    }
-                }
             }
         }
 
@@ -58,7 +56,7 @@ class DataTransformer {
                         Observable.fromIterable(it)
                     }
                     .flatMap {
-                        if (it.img == 1){
+                        if (it.img == 1) {
                             imageService
                                 .getImages(articleLink = it.link)
                                 .compose(DataTransformer.getDataFromResponse(needThrow = false))
@@ -66,7 +64,7 @@ class DataTransformer {
                                     it.imageList = imageItems
                                     Observable.just(it)
                                 }
-                        }else{
+                        } else {
                             Observable.just(it)
                         }
                     }

@@ -119,7 +119,7 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
         fun bind(context: Context, articleBean: ArticleBean) {
             this.mArticleBean = articleBean
             mTitleTextView.text = mArticleBean!!.title
-            if (mArticleBean!!.thumbnail == null){
+            if (articleBean.thumbnail.isEmpty()){
                 itemView.findViewById<ImageView>(R.id.iv_article_thumbnail).visibility = View.GONE
             }else {
                 itemView.findViewById<ImageView>(R.id.iv_article_thumbnail).visibility = View.VISIBLE
@@ -137,7 +137,7 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
         }
 
         override fun onClick(v: View) {
-            if (mArticleBean!!.content == null && mArticleBean!!.thumbnail == null) {
+            if (mArticleBean!!.content.isEmpty() && mArticleBean!!.thumbnail.isEmpty()) {
                 // 实现点击启动特定 article 的阅读页面
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(mArticleBean!!.url)

@@ -41,7 +41,7 @@ object ArticleLab {
      * @param url   文章类型链接
      * @return 返回获取的文章数据
      */
-    fun getArticleList(pageURL: Const.PageURL, index: Int): List<ArticleBean>? {
+    fun getArticleList(pageURL: Const.PageURL, index: Int): List<ArticleBean> {
 //        return WebSpider.getArticlesList(pageURL, index)
 
         return getArticleListFromServer(
@@ -66,7 +66,7 @@ object ArticleLab {
         return index / 20
     }
 
-    private fun getArticleListFromServer(pageType: PageType, index: Int): List<ArticleBean>? {
+    private fun getArticleListFromServer(pageType: PageType, index: Int): List<ArticleBean> {
         return articleService
             .getArticles(pageType.toString(), index.toString())
             .subscribeOn(Schedulers.io())
@@ -76,26 +76,33 @@ object ArticleLab {
             .map {
                 val listArticleBean: ArrayList<ArticleBean> = ArrayList()
                 for (item in it) {
-                    val tmpBean = ArticleBean()
-                    with(tmpBean) {
-                        id = item.id
-                        url = item.link
-                        title = item.title
-                        summary = if (item.content.isEmpty()) {
-                            null
-                        } else {
-                            item.content.substring(0, 20)
-                        }
-                        thumbnail = when (item.img) {
-                            1 -> item.imageList[0].link
-                            else -> null
-                        }
-                        content = item.content
-                        date = StringUtils.getFormattedTime(item.created)
-                        type = item.type
-                        views = item.views
-                    }
-                    listArticleBean.add(tmpBean)
+                    listArticleBean.add(
+                        ArticleBean(
+                            id = item.id,
+                            url = item.link,
+                            title = item.title,
+                            summary = if (item.content.isEmpty() || item.content.length <= 20) {
+                                ""
+                            } else {
+                                item.content.substring(0, 20)
+                            },
+                            imagesList = if (item.img == 1){
+                                item.imageList.map { imageDataItem -> imageDataItem.link }
+                            }else {
+                                ArrayList<String>()
+                            },
+                            thumbnail = if (item.imageList.isNullOrEmpty()) {
+                                ""
+                            } else {
+                                item.imageList[0].link
+                            },
+                            isRead = false,
+                            content = item.content,
+                            date = StringUtils.getFormattedTime(item.created),
+                            type = item.type,
+                            views = item.views
+                        )
+                    )
                 }
                 listArticleBean
             }

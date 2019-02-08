@@ -91,6 +91,14 @@ public class ArticleReadingActivity extends AppCompatActivity
         if (articleBean == null) {
             return null;
         }
+
+        for (String link : articleBean.getImagesList()){
+            String tmpStr = articleBean.getContent();
+            articleBean.setContent(tmpStr.concat(
+                    "<img src=\"" + link + "\" align=\"middle\" width=\"80%\">"
+            ));
+        }
+
         Spannable contentSpanned;
         if (VERSION.SDK_INT >= VERSION_CODES.N) {
             contentSpanned = (Spannable) Html.fromHtml(
