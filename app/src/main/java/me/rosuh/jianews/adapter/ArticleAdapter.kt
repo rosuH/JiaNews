@@ -126,6 +126,12 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
             }
             GlideApp.with(context)
                 .load(mArticleBean!!.thumbnail)
+                .thumbnail(
+                    GlideApp
+                        .with(context)
+                        .load(R.drawable.image_loading)
+                        .override(200)
+                )
                 .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3))
                 .into(mThumbnailImageView)
             mPublishTimeTextView.text = mArticleBean!!.date

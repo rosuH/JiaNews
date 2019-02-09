@@ -18,6 +18,7 @@ import android.text.Html;
 import android.text.Html.TagHandler;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
@@ -85,6 +86,7 @@ public class ArticleReadingActivity extends AppCompatActivity
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_back);
         }
         tvContent.setText(produceContent(mArticleBean));
+        tvContent.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private Spanned produceContent(ArticleBean articleBean) {
@@ -92,12 +94,13 @@ public class ArticleReadingActivity extends AppCompatActivity
             return null;
         }
 
-        for (String link : articleBean.getImagesList()){
-            String tmpStr = articleBean.getContent();
-            articleBean.setContent(tmpStr.concat(
-                    "<img src=\"" + link + "\" align=\"middle\" width=\"80%\">"
-            ));
+        String tmpStr = articleBean.getContent();
+        for (String link : articleBean.getImagesList()) {
+            tmpStr = tmpStr.concat(
+                    "<img src=\"" + link + "\" width=\"600\"/><br/><br/>"
+            );
         }
+        articleBean.setContent(tmpStr);
 
         Spannable contentSpanned;
         if (VERSION.SDK_INT >= VERSION_CODES.N) {
@@ -107,7 +110,7 @@ public class ArticleReadingActivity extends AppCompatActivity
                     new TextViewImageGetter(this, this, tvContent), null
             );
         } else {
-            contentSpanned = (Spannable)Html.fromHtml(
+            contentSpanned = (Spannable) Html.fromHtml(
                     "<h1>" + mArticleBean.getTitle() + "</h1><br/>" +
                             mArticleBean.getContent(),
                     new TextViewImageGetter(this, this, tvContent),
@@ -115,12 +118,12 @@ public class ArticleReadingActivity extends AppCompatActivity
             );
         }
 
-        for (ImageSpan span : contentSpanned.getSpans(0, contentSpanned.length(), ImageSpan.class)){
+        for (ImageSpan span : contentSpanned.getSpans(0, contentSpanned.length(), ImageSpan.class)) {
             int flags = contentSpanned.getSpanFlags(span);
             int start = contentSpanned.getSpanStart(span);
             int end = contentSpanned.getSpanEnd(span);
 
-            contentSpanned.setSpan(new URLSpan(span.getSource()){
+            contentSpanned.setSpan(new URLSpan(span.getSource()) {
                 @Override
                 public void onClick(final View widget) {
                     super.onClick(widget);
@@ -181,17 +184,15 @@ public class ArticleReadingActivity extends AppCompatActivity
         switch (menuItem.getItemId()) {
             case R.id.item_tiny_font:
                 tvContent.setTextSize(15);
-                menuItem.setChecked(true);
                 break;
             case R.id.item_normal_font:
                 tvContent.setTextSize(18);
-                menuItem.setChecked(true);
                 break;
             case R.id.item_large_font:
                 tvContent.setTextSize(20);
-                menuItem.setChecked(true);
                 break;
         }
+        menuItem.setChecked(true);
         return true;
     }
 

@@ -9,6 +9,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import me.rosuh.android.jianews.R
 import java.lang.Exception
@@ -22,21 +23,23 @@ class TextViewImageGetter(private val context: Context, private val scope: Corou
 
     override fun getDrawable(source: String?): Drawable {
         val listDrawable = LevelListDrawable()
-        val drawable = context.resources.getDrawable(R.drawable.ic_img_placeholder, context.theme)
+        val drawable = context.resources.getDrawable(R.drawable.image_loading, context.theme)
         listDrawable.addLevel(0, 0, drawable)
         listDrawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
         launch(Dispatchers.Default){
             try {
                 doRequest(source, listDrawable)
             }catch (e:Exception){
-                Toast.makeText(context, "获取图片失败", Toast.LENGTH_SHORT).show()
+                launch(Dispatchers.Main){
+                    Toast.makeText(context, "获取图片失败", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         return listDrawable
     }
 
     private fun doRequest(source: String?, listDrawable: LevelListDrawable){
-        val drawable = Glide
+        val drawable = GlideApp
             .with(context)
             .load(source)
             .submit().get()

@@ -5,6 +5,7 @@ import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import me.rosuh.jianews.network.ImageService
+import me.rosuh.jianews.util.ResponseThrowable
 
 /**
  *
@@ -35,7 +36,7 @@ class DataTransformer {
                 upstream
                     .flatMap {
                         if (it.isError() && needThrow) {
-                            Observable.error(Throwable(message = (it.code).toString() + it.msg))
+                            Observable.error(ResponseThrowable(message = it.msg, code = it.code))
                         } else if (it.isError()) {
                             Observable.empty()
                         } else {

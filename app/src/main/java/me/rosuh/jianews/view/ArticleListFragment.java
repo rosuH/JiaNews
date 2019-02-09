@@ -36,6 +36,7 @@ import me.rosuh.jianews.precenter.ArticleListViewPresenter;
 import me.rosuh.jianews.util.Const;
 import me.rosuh.jianews.util.GlideApp;
 import me.rosuh.jianews.util.MyGlideExtension;
+import me.rosuh.jianews.util.ResponseThrowable;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
 
@@ -149,9 +150,8 @@ public class ArticleListFragment extends Fragment implements IView {
      */
     private void loadHeaderData() {
         if (mIsRequesting.compareAndSet(false, true)) {
-            Schedulers.io().scheduleDirect(() ->
-                    mViewPresenter.requestHeaderData(ArticleListFragment.this,
-                            Const.VALUE_ARTICLE_INDEX_START, mRequestUrl));
+            mViewPresenter.requestHeaderData(ArticleListFragment.this,
+                    Const.VALUE_ARTICLE_INDEX_START, mRequestUrl);
         }
     }
 
@@ -161,9 +161,8 @@ public class ArticleListFragment extends Fragment implements IView {
     private void loadMoreData(final int position) {
         Log.i(TAG, "loadMoreData: position ==== " + position);
         if (mIsRequesting.compareAndSet(false, true)) {
-            Schedulers.io().scheduleDirect(() ->
-                    mViewPresenter
-                            .requestMoreData(ArticleListFragment.this, position, mRequestUrl));
+            mViewPresenter
+                    .requestMoreData(ArticleListFragment.this, position, mRequestUrl);
         }
     }
 
@@ -177,6 +176,10 @@ public class ArticleListFragment extends Fragment implements IView {
                 new FooterHolder(Objects.requireNonNull(getActivity()).getLayoutInflater(), mArticleRecyclerView)
         );
         mArticleAdapter.notifyItemInserted(mArticleBeans.size());
+        stopSwipeRefresh();
+    }
+
+    private void stopSwipeRefresh(){
         if (mSwipeRefreshLayout.isRefreshing() && !mArticleBeans.isEmpty()) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
@@ -199,7 +202,13 @@ public class ArticleListFragment extends Fragment implements IView {
     public void onUpdateDataFailed(Throwable t) {
         mIsRequesting.compareAndSet(true, false);
         t.printStackTrace();
-        Toast.makeText(mContext, "更新数据失败", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, t.getMessage().concat("\n 请稍后重试"), Toast.LENGTH_LONG).show();
+        if (t.getClass().equals(ResponseThrowable.class)){
+            mViewPresenter.disposeAll();
+        }
+        mSwipeRefreshLayout.setRefreshing(false);
+        mSwipeRefreshLayout.setVisibility(View.INVISIBLE);
+        mSwipeRefreshLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
