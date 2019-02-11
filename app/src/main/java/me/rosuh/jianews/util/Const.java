@@ -97,7 +97,7 @@ public class Const {
 
     public static final String URL_HOME_PAGE = "http://www.jyu.edu.cn";
 
-    public static final String SERVER_BASE_IP = "http://47.101.154.200:4000";
+    public static final String SERVER_BASE_IP = "http://evila.cc:4000";
 
     public enum PageType{
         MAJOR_NEWS{
