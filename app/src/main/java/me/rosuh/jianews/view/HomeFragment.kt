@@ -29,21 +29,22 @@ import java.lang.ref.WeakReference
  * @date 2018/9/29
  */
 class HomeFragment : Fragment() {
+
     private val endTextSize = 18f
     private var startTextSize = 14f
     private val animationDuration = 200L
-    private val indicatorSelectedColor:Int by lazy {
+    private val indicatorSelectedColor: Int by lazy {
         if (VERSION.SDK_INT >= VERSION_CODES.M) {
             resources.getColor(R.color.tab_selected_color, activity!!.theme)
-        }else{
+        } else {
             resources.getColor(R.color.tab_selected_color)
         }
     }
 
-    private val indicatorNormalColor:Int by lazy {
+    private val indicatorNormalColor: Int by lazy {
         if (VERSION.SDK_INT >= VERSION_CODES.M) {
             resources.getColor(R.color.indicator_normal, activity!!.theme)
-        }else{
+        } else {
             resources.getColor(R.color.indicator_normal)
         }
     }
@@ -81,7 +82,7 @@ class HomeFragment : Fragment() {
                 R.string.tab_media
             ), tabLayout
         )
-        (tabLayoutRef.get()?.getTabAt(0)?.customView as TextView).let{
+        (tabLayoutRef.get()?.getTabAt(0)?.customView as TextView).let {
             startTextSize = (it.textSize / resources.displayMetrics.scaledDensity)
             it
         }
@@ -109,8 +110,8 @@ class HomeFragment : Fragment() {
 
             override fun onTabSelected(tab: Tab?) {
                 super.onTabSelected(tab)
-                for (customView in tabCustomViewList){
-                    if (customView == tab?.customView as TextView){
+                for (customView in tabCustomViewList) {
+                    if (customView == tab?.customView as TextView) {
                         // 被选中的 Tab 的样式
                         customView.also {
                             ObjectAnimator
@@ -120,10 +121,10 @@ class HomeFragment : Fragment() {
                             it.setTypeface(it.typeface, Typeface.BOLD)
                             it.setTextColor(indicatorSelectedColor)
                         }
-                    }else{
+                    } else {
                         customView.also {
                             // 只能使用颜色作为判断，不能使用字体大小，因为上面属性动画有可能还未执行完毕，就进行下面的判断
-                            if (it.currentTextColor == indicatorSelectedColor){
+                            if (it.currentTextColor == indicatorSelectedColor) {
                                 ObjectAnimator
                                     .ofFloat(it, "textSize", endTextSize, startTextSize)
                                     .setDuration(animationDuration)
@@ -151,45 +152,6 @@ class HomeFragment : Fragment() {
                 ).setContentDescription(resId)
             )
         }
-    }
-
-    private fun getTabView(
-        activity: Context,
-        text: String,
-        indicatorWidth: Int,
-        indicatorHeight: Int,
-        textSize: Int, isFirstTab:Boolean
-    ): View {
-        val view = LayoutInflater.from(activity).inflate(R.layout.tab_item_layout, null)
-        val tabTextView = view.findViewById<TextView>(R.id.tab_item_text)
-        val indicatorView = view.findViewById<View>(R.id.tab_item_indicator)
-        if (indicatorWidth > 0) {
-            val indicator = view.findViewById<View>(R.id.tab_item_indicator)
-            val layoutParams = indicator.layoutParams
-            layoutParams.width = indicatorWidth
-            layoutParams.height = indicatorHeight
-            indicator.layoutParams = layoutParams
-        }
-        tabTextView.textSize = textSize.toFloat()
-        tabTextView.text = text
-        if (isFirstTab){
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                tabTextView.setTextColor(resources.getColor(R.color.indicator_select, activity!!.theme))
-            } else {
-                tabTextView.setTextColor(resources.getColor(R.color.indicator_select))
-            }
-            indicatorView.background =
-                    resources.getDrawable(R.drawable.shape_tab_indicator_color, activity!!.theme)
-            indicatorView.visibility = View.VISIBLE
-        }else{
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                tabTextView.setTextColor(resources.getColor(R.color.indicator_normal, activity!!.theme))
-            } else {
-                tabTextView.setTextColor(resources.getColor(R.color.indicator_normal))
-            }
-            indicatorView.visibility = View.INVISIBLE
-        }
-        return view
     }
 
     companion object {

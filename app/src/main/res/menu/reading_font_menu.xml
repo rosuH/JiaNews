@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:checkable="false"
-        android:title="字号"
+        android:title="@string/font_size"
         app:actionViewClass="android.widget.TextView"
         />
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/item_tiny_font"
-            android:title="小"
+            android:title="@string/tiny_font"
             android:checked="false"
             />
         <item
             android:id="@+id/item_normal_font"
-            android:title="中"
+            android:title="@string/medium_font"
             android:checked="true"
             />
         <item
             android:id="@+id/item_large_font"
-            android:title="大"
+            android:title="@string/large_font"
             android:checked="false"
             />
     </group>

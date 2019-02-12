@@ -3,7 +3,6 @@ package me.rosuh.jianews.storage;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.Nullable;
 
 import me.rosuh.jianews.storage.ArticleDbSchema.ArticleTable;
 

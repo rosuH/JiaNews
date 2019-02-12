@@ -1,13 +1,9 @@
 package me.rosuh.jianews.network;
 
-import android.util.Log;
-
 import android.util.Pair;
 
 import java.util.ListIterator;
-import java.util.Random;
 import java.util.WeakHashMap;
-import me.rosuh.jianews.util.Const.PageURL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

@@ -15,14 +15,19 @@
     <string name="menu_item_link">原文链接</string>
     <string name="menu_item_share">分享文章</string>
     <string name="dl_menu_item">侧边栏</string>
-    <string name="about_author">关于作者</string>
+    <string name="about_author">关于</string>
     <string name="about_page">关于作者</string>
 
     <string name="say_hi">你好，欢迎使用这个小应用 :P</string>
     <string name="home_page">我的主页：https://rosuh.me</string>
     <string name="my_blog">我的博客：https://blog.rosuh.me</string>
-    <string name="project_page">此项目主页：https://github.com/rosuH/JiaNews</string>
-    <string name="feedback">反馈可以在酷安评论，你也可以在上面的主页里，找到多种我的联系方式 w </string>
+    <string name="project_page">
+        · <a href="https://github.com/rosuH/JiaNews">开源地址</a> \n \n
+        · <a href="https:rosuh.me">我的主页</a> \n \n
+        · 可以在<a href="https://www.coolapk.com/apk/me.rosuh.searchindouban">酷安</a>评论反馈，你也可以在上面的主页里，找到多种我的联系方式 \n \n
+        · icon 部分来自 <a href="https://icons8.com/app">icon8</a> 和 <a href="http://iconfont.cn">iconfont</a> \n \n
+        · 部分文章、图片版权所有© <a href="http://www.jyu.edu.cn">嘉应学院</a>
+    </string>
 
     <string name="test_text_title">关于做好2017年归档材料移交工作的通知档案馆对2017年度学校各院</string>
     <string name="test_text_summary">各院、部，各部门：
@@ -31,4 +36,10 @@
     </string>
     <string name="test_public_time">18&#8211;04&#8211;23</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="tiny_font">小</string>
+    <string name="font_size">字号</string>
+    <string name="medium_font">中</string>
+    <string name="large_font">大</string>
+    <string name="article_views">阅读数</string>
+    <string name="banner">Banner</string>
 </resources>

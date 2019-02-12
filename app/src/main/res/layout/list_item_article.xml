@@ -88,6 +88,7 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginStart="8dp"
+        android:contentDescription="@string/article_views"
         app:layout_constraintBottom_toBottomOf="@+id/tv_list_publish_time"
         app:layout_constraintStart_toEndOf="@+id/tv_list_publish_time"
         app:layout_constraintTop_toTopOf="@+id/tv_list_publish_time"

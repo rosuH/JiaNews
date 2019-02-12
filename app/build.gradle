@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -8,8 +9,8 @@ android {
         applicationId "me.rosuh.android.jianews"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 6
-        versionName "0.6"
+        versionCode 7
+        versionName "0.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 //    signingConfigs {

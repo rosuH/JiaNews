@@ -1,14 +1,11 @@
 package me.rosuh.jianews.view;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,16 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.schedulers.Schedulers;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import me.rosuh.android.jianews.R;
@@ -34,8 +26,6 @@ import me.rosuh.jianews.adapter.ArticleAdapter.FooterHolder;
 import me.rosuh.jianews.bean.ArticleBean;
 import me.rosuh.jianews.precenter.ArticleListViewPresenter;
 import me.rosuh.jianews.util.Const;
-import me.rosuh.jianews.util.GlideApp;
-import me.rosuh.jianews.util.MyGlideExtension;
 import me.rosuh.jianews.util.ResponseThrowable;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
@@ -169,7 +159,7 @@ public class ArticleListFragment extends Fragment implements IView {
     /**
      * 功能：根据数据创建适配器，将之设置给列表，后更新 UI
      */
-    public void updateUI() {
+    private void updateUI() {
         mArticleAdapter = new ArticleAdapter(Objects.requireNonNull(this.getActivity()), mArticleBeans);
         mArticleRecyclerView.setAdapter(mArticleAdapter);
         mArticleAdapter.setFooterHolder(

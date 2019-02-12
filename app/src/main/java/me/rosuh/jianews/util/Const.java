@@ -22,7 +22,7 @@ public class Const {
      * Home Activity pages value
      * Banner
      */
-    public static final int VALUE_BANNER_MAX_PAGES = 1000;
+    private static final int VALUE_BANNER_MAX_PAGES = 1000;
 
     /**
      * The constant VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE.

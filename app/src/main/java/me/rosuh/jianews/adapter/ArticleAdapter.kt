@@ -1,6 +1,7 @@
 package me.rosuh.jianews.adapter
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -129,7 +130,7 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
                 .thumbnail(
                     GlideApp
                         .with(context)
-                        .load(R.drawable.image_loading)
+                        .load(R.drawable.rec_loading)
                         .override(200)
                 )
                 .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3))
@@ -143,13 +144,17 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
         }
 
         override fun onClick(v: View) {
+            // 实现点击启动特定 article 的阅读页面
             if (mArticleBean!!.content.isEmpty() && mArticleBean!!.thumbnail.isEmpty()) {
-                // 实现点击启动特定 article 的阅读页面
+                // 媒体报道直接打开浏览器
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(mArticleBean!!.url)
                 context.startActivity(intent)
             } else {
-                context.startActivity(ArticleReadingActivity.newIntent(mArticleBean, context))
+                context.startActivity(
+                    ArticleReadingActivity.newIntent(mArticleBean!!, context),
+                    ActivityOptions.makeSceneTransitionAnimation(context).toBundle()
+                )
             }
         }
     }

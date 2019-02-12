@@ -23,7 +23,7 @@ class TextViewImageGetter(private val context: Context, private val scope: Corou
 
     override fun getDrawable(source: String?): Drawable {
         val listDrawable = LevelListDrawable()
-        val drawable = context.resources.getDrawable(R.drawable.image_loading, context.theme)
+        val drawable = context.resources.getDrawable(R.drawable.rec_loading, context.theme)
         listDrawable.addLevel(0, 0, drawable)
         listDrawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
         launch(Dispatchers.Default){
@@ -39,9 +39,11 @@ class TextViewImageGetter(private val context: Context, private val scope: Corou
     }
 
     private fun doRequest(source: String?, listDrawable: LevelListDrawable){
+        val screenWidth = ViewUtils.getScreenWidthInPixel(context)
         val drawable = GlideApp
             .with(context)
             .load(source)
+            .override(screenWidth, screenWidth/4*3)
             .submit().get()
         launch(scope.coroutineContext){
             listDrawable.addLevel(1, 1, drawable)

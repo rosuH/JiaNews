@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_item_font"
         android:icon="@drawable/ic_action_font"
-        android:title="字体"
+        android:title="@string/font_size"
         app:showAsAction="always"
         />
     <item android:id="@+id/menu_item_link"
-        android:icon="@drawable/ic_menu_link"
+        android:icon="@drawable/ic_open_in_browser"
         android:title="@string/menu_item_link"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_item_share"
-        android:icon="@drawable/ic_menu_share"
+        android:icon="@drawable/ic_share"
         android:title="@string/menu_item_share"
         app:showAsAction="ifRoom"/>
 </menu>

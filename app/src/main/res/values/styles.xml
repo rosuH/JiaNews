@@ -9,6 +9,10 @@
         <item name="android:fontFamily">serif</item>
     </style>
 
+    <style name="ReadingTheme" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
     <style name="Theme.DialogTemplate" parent="Theme.AppCompat.Dialog">
         <item name="android:windowBackground">@drawable/dialog_template</item>
     </style>
@@ -51,7 +55,7 @@
     </style>
 
     <!-- Change Overflow Menu ListView Text Size and Text Size -->
-    <style name="PopupMenuTextView" parent="@style/android:Theme.Holo.Light">
+    <style name="PopupMenuTextView" parent="@android:style/Theme.Holo.Light">
         <item name="android:textColor">#00FF00</item>
         <item name="android:textSize">15sp</item>
     </style>
@@ -59,5 +63,10 @@
     <!-- Change Overflow Menu Background -->
     <style name="PopupMenu" parent="android:Widget.Holo.Light.ListPopupWindow">
         <item name="android:popupBackground">#e3e3e3</item>
+    </style>
+
+    <style name="animate_dialog">
+        <item name="android:windowEnterAnimation">@anim/anim_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_out</item>
     </style>
 </resources>
