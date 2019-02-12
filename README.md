@@ -2,7 +2,13 @@
 
 ## APP 展示
 
-![ezgif.com-gif-maker.gif](https://i.loli.net/2018/05/09/5af3089136cdd.gif)
+![Icon.png](https://i.loli.net/2019/02/12/5c62a326c5763.png)
+
+| 主界面                                                       | 阅读视图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![main_scrren_1.png](https://i.loli.net/2019/02/12/5c62a2c87fa33.png) | ![reading_screen_1.png](https://i.loli.net/2019/02/12/5c62a2c890a02.png) |
+
+
 
 ## 简介
 
