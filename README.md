@@ -19,7 +19,7 @@
 - APP： Kotlin + RxJava + Retrofit
 - 数据： Python 编写的爬虫获取
 - 服务端： Flask + Gunicorn + Nginx
-- [API](http://evila.cc:4004/static/swagger-ui/index.html)：Swagger + Restful
+- [API](https://rosuh.me/jyu-api/)：OpenAPI3.0 + Restful
 ## 下载
 
 - [GitHub](https://github.com/rosuH/JiaNews/releases/)
