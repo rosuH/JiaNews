@@ -25,13 +25,14 @@ import me.rosuh.jianews.util.GlideApp
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import me.rosuh.jianews.bean.ArticleBean
+import me.rosuh.jianews.util.DrawerLocker
 import me.rosuh.jianews.view.ArticleReadingFrag.Companion.READING_FRAGMENT_TAG
 
 /**
  * 首页 Activity
  * @author rosu
  */
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(), DrawerLocker{
 
     private var isExit = false
 
@@ -147,6 +148,14 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    override fun setDrawerLocked(shouldLock: Boolean) {
+        if (shouldLock){
+            dl_home.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        }else{
+            dl_home.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        }
+    }
+
     /**
      * 判断 Fragment 是否已经实例化
      */
@@ -170,8 +179,8 @@ class HomeActivity : AppCompatActivity() {
                 setCustomAnimations(
                     R.anim.push_left_in, R.anim.push_right_out
                 )
-                hide(readingFrag)
                 show(homeFragment)
+                hide(readingFrag)
                 commit()
             }
         }

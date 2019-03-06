@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.util.Const
+import me.rosuh.jianews.util.DrawerLocker
 
 /**
  * 这个类是文章阅读页面的 AppCompatActivity 类
@@ -59,6 +60,11 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
             webViewLoad(articleBean?.content ?: "空空如也？")
             this
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as DrawerLocker).setDrawerLocked(true)
     }
 
     private fun initWebView(view: View) {
@@ -140,17 +146,20 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
     override fun onHiddenChanged(hidden: Boolean) {
         if (hidden) {
             reset()
+            (activity as DrawerLocker).setDrawerLocked(false)
+        }else{
+            (activity as DrawerLocker).setDrawerLocked(true)
         }
         super.onHiddenChanged(hidden)
     }
 
     fun updateBean(newBean: ArticleBean) {
         this.articleBean = newBean
+        webView.loadUrl("")
         webViewLoad(newBean.content)
     }
 
     private fun reset(){
-        webView.loadUrl("")
         fontItemView = null
         mFontPopupMenu = null
     }
