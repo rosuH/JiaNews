@@ -1,4 +1,4 @@
-package me.rosuh.jianews.bean
+package me.rosuh.jianews.network
 
 
 import me.rosuh.android.jianews.BuildConfig

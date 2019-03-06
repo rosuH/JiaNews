@@ -1,17 +1,17 @@
 package me.rosuh.jianews.view
 
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.design.widget.TabLayout.Tab
 import android.support.design.widget.TabLayout.TabLayoutOnPageChangeListener
-import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.SearchView
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,11 +28,15 @@ import java.lang.ref.WeakReference
  * @author rosu
  * @date 2018/9/29
  */
-class HomeFragment : Fragment() {
+class HomeFragment : BaseFragment() {
 
+    // Tab 选中时字体大小
     private val endTextSize = 18f
+    // Tab 未选中时字体大小
     private var startTextSize = 14f
-    private val animationDuration = 200L
+    // Tab 字体大小变换时长
+    private val animationDuration = 85L
+
     private val indicatorSelectedColor: Int by lazy {
         if (VERSION.SDK_INT >= VERSION_CODES.M) {
             resources.getColor(R.color.tab_selected_color, activity!!.theme)
@@ -49,12 +53,12 @@ class HomeFragment : Fragment() {
         }
     }
 
-    var mStatePagerAdapter: FragmentPagerAdapter? = null
+    private var mStatePagerAdapter: FragmentPagerAdapter? = null
     private lateinit var tabLayoutRef: WeakReference<TabLayout>
     private var tabCustomViewList = ArrayList<TextView>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.home_container_fragment, container, false)
+        val view = inflater.inflate(R.layout.home_fragment, container, false)
 
         val viewPager = view.findViewById<ViewPager>(R.id.vp_article_list)
         // 文章列表
@@ -66,6 +70,39 @@ class HomeFragment : Fragment() {
         return view
     }
 
+    override fun bindMenu(): Int = R.menu.home_activity
+
+    override fun initToolBar() {
+        val toolbar = activity?.findViewById<Toolbar>(R.id.tb_home) ?: return
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+
+        toolbar.inflateMenu(R.menu.home_activity)
+        toolbar.setNavigationIcon(R.drawable.ic_menu_home)
+
+        (activity as? AppCompatActivity)?.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(false)
+            setDisplayShowTitleEnabled(false)
+        }
+
+        val searchView = toolbar.menu.findItem(R.id.menu_item_search).actionView as SearchView
+        initSearchView(searchView)
+    }
+
+    private fun initSearchView(searchView: SearchView) {
+        searchView.visibility = View.INVISIBLE
+        searchView.queryHint = "请输入关键词"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                //                Toast.makeText(HomeActivity.this, query, Toast.LENGTH_SHORT).show();
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
+        })
+    }
+
     /**
      * 初始化导航栏
      * @param viewPager 传入设置好的 ViewPager 和 TabLayout 关联起来
@@ -74,11 +111,10 @@ class HomeFragment : Fragment() {
         val tabLayout = view.findViewById<TabLayout>(R.id.tb_layout_nav)
         tabLayout.setupWithViewPager(viewPager)
         tabLayoutRef = WeakReference(tabLayout)
-        produceTabs(
+        setCustomViewFroTabs(
             arrayListOf(
                 R.string.tab_home,
                 R.string.tab_announce,
-                R.string.tab_activity,
                 R.string.tab_media
             ), tabLayout
         )
@@ -89,9 +125,10 @@ class HomeFragment : Fragment() {
         // 初始化首个 Tab 的样式
         (tabLayout.getTabAt(0)?.customView as TextView).also {
             it.textSize = endTextSize
-            it.setTypeface(it.typeface, Typeface.BOLD)
+            it.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
             it.setTextColor(indicatorSelectedColor)
         }
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
             private val sDoubleClickedInterval = 400L
             private var mLastSelectedTime: Long = 0
@@ -118,7 +155,7 @@ class HomeFragment : Fragment() {
                                 .ofFloat(it, "textSize", startTextSize, endTextSize)
                                 .setDuration(animationDuration)
                                 .start()
-                            it.setTypeface(it.typeface, Typeface.BOLD)
+                            it.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
                             it.setTextColor(indicatorSelectedColor)
                         }
                     } else {
@@ -129,7 +166,7 @@ class HomeFragment : Fragment() {
                                     .ofFloat(it, "textSize", endTextSize, startTextSize)
                                     .setDuration(animationDuration)
                                     .start()
-                                it.setTypeface(it.typeface, Typeface.NORMAL)
+                                it.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
                                 it.setTextColor(indicatorNormalColor)
                             }
                         }
@@ -139,24 +176,22 @@ class HomeFragment : Fragment() {
         })
     }
 
-    private fun produceTabs(resIdList: List<Int>, tabLayout: TabLayout) {
-        tabLayout.removeAllTabs()
-        for (resId in resIdList) {
-            tabLayout.addTab(
-                tabLayout.newTab().setCustomView(
-                    TextView(activity).apply {
-                        layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-                        setText(resId)
-                        tabCustomViewList.add(this)
-                    }
-                ).setContentDescription(resId)
-            )
+    private fun setCustomViewFroTabs(resIdList: List<Int>, tabLayout: TabLayout) {
+        for(i in 0..tabLayout.tabCount){
+            tabLayout.getTabAt(i)?.setCustomView(
+                TextView(activity).apply {
+                    layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                    setText(resIdList[i])
+                    tabCustomViewList.add(this)
+                    setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
+                }
+            )?.setContentDescription(resIdList[i])
         }
     }
 
     companion object {
         val instance: HomeFragment
             get() = HomeFragment()
-        private val TAG = "HomeFragment"
+        const val HOME_FRAGMENT_TAG = "HomeFragment"
     }
 }

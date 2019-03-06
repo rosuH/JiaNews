@@ -1,11 +1,9 @@
 package me.rosuh.jianews.adapter
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.constraint.Guideline
 import android.support.v4.widget.ContentLoadingProgressBar
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -14,12 +12,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.request.RequestOptions
+import kotlinx.coroutines.internal.artificialFrame
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.util.Const
 import me.rosuh.jianews.util.GlideApp
 import me.rosuh.jianews.util.MyGlideExtension
-import me.rosuh.jianews.view.ArticleReadingActivity
+import me.rosuh.jianews.view.ArticleListFragment
+import me.rosuh.jianews.view.ArticleReadingFrag
 import java.util.ArrayList
 
 /**
@@ -27,7 +27,7 @@ import java.util.ArrayList
  * @author rosuh
  * @date 2018/12/21
  */
-class ArticleAdapter(private val context: Activity, articleBeans: MutableList<ArticleBean>) :
+class ArticleAdapter(private val context: Activity, articleBeans: MutableList<ArticleBean>, val articleListFragment: ArticleListFragment) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var mArticleBeans: MutableList<ArticleBean>? = null
@@ -151,10 +151,7 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
                 intent.data = Uri.parse(mArticleBean!!.url)
                 context.startActivity(intent)
             } else {
-                context.startActivity(
-                    ArticleReadingActivity.newIntent(mArticleBean!!, context),
-                    ActivityOptions.makeSceneTransitionAnimation(context).toBundle()
-                )
+                articleListFragment.onItemClick(mArticleBean)
             }
         }
     }

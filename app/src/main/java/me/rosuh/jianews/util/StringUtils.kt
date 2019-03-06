@@ -26,7 +26,6 @@ class StringUtils{
         fun getCorrectUrl(pageURL: Const.PageURL):String{
             return when(pageURL){
                 Const.PageURL.URL_MEDIA_REPORTS -> URL_MEDIA_REPORTS
-                Const.PageURL.URL_CAMPUS_ACTIVITIES -> URL_CAMPUS_ACTIVITIES
                 Const.PageURL.URL_CAMPUS_ANNOUNCEMENT -> URL_CAMPUS_ANNOUNCEMENT
                 else -> URL_MAJOR_NEWS
             }
@@ -34,10 +33,10 @@ class StringUtils{
 
         @JvmStatic
         fun getFormattedTime(dateString: String):String{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                return LocalDate.parse(dateString, DateTimeFormatter.RFC_1123_DATE_TIME).toString()
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                LocalDate.parse(dateString, DateTimeFormatter.RFC_1123_DATE_TIME).toString()
             }else {
-                return ft.format(Date(dateString))
+                ft.format(Date(dateString))
             }
         }
     }

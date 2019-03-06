@@ -4,33 +4,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    >
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_scrollFlags="scroll|enterAlways"
+        >
+        <include
+            android:id="@+id/tb_reading"
+            layout="@layout/toolbar"/>
+    </android.support.design.widget.AppBarLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <TextView
-            android:id="@+id/tv_article_content"
-            android:layout_below="@+id/tb_reading"
-            android:padding="16dp"
-            android:textSize="18sp"
-            android:textIsSelectable="true"
-            android:textColor="#000"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+        <WebView
+            android:id="@+id/wv_reading"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            />
+
     </android.support.v4.widget.NestedScrollView>
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tb_reading"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:background="@color/tool_bar_color"
-            android:elevation="7dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:layout_scrollFlags="scroll|enterAlways">
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+
 </android.support.design.widget.CoordinatorLayout>

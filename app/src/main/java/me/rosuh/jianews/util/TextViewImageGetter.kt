@@ -30,9 +30,9 @@ class TextViewImageGetter(private val context: Context, private val scope: Corou
             try {
                 doRequest(source, listDrawable)
             }catch (e:Exception){
-                launch(Dispatchers.Main){
-                    Toast.makeText(context, "获取图片失败", Toast.LENGTH_SHORT).show()
-                }
+//                launch(Dispatchers.Main){
+//                    Toast.makeText(context, "获取图片失败", Toast.LENGTH_SHORT).show()
+//                }
             }
         }
         return listDrawable
@@ -44,6 +44,7 @@ class TextViewImageGetter(private val context: Context, private val scope: Corou
             .with(context)
             .load(source)
             .override(screenWidth, screenWidth/4*3)
+            .fitCenter()
             .submit().get()
         launch(scope.coroutineContext){
             listDrawable.addLevel(1, 1, drawable)

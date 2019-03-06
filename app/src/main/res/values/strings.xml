@@ -2,7 +2,7 @@
     <string name="app_name">新嘉闻</string>
     <string name="tab_home">要闻</string>
     <string name="tab_announce">公告</string>
-    <string name="tab_activity">动态</string>
+    <string name="tab_activity">动态（旧）</string>
     <string name="tab_media">报道</string>
     <string name="iv_description">文章缩略图</string>
     <string name="item_loading">文章加载中&#8230;</string>
@@ -11,7 +11,7 @@
     <string name="content_not_found">噢哦，文章内容不见了&#8230;</string>
 
 
-    <string name="sv_menu_item_search">搜索一下最近新闻</string>
+    <string name="sv_menu_item_search">搜索新闻</string>
     <string name="menu_item_link">原文链接</string>
     <string name="menu_item_share">分享文章</string>
     <string name="dl_menu_item">侧边栏</string>

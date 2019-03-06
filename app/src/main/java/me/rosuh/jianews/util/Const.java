@@ -37,7 +37,7 @@ public class Const {
     /**
      * ArticleBean View Pager
      */
-    public static final int VALUE_ARTICLE_MAX_PAGES = 4;
+    public static final int VALUE_ARTICLE_MAX_PAGES = 3;
 
     /**
      * The constant VALUE_ARTICLE_START_PAGE.
@@ -112,12 +112,6 @@ public class Const {
                 return "campus_announcement";
             }
         },
-        CAMPUS_ACTIVITIES{
-            @Override
-            public String toString() {
-                return "campus_activities";
-            }
-        },
         MEDIA_REPORTS{
             @Override
             public String toString() {
@@ -136,10 +130,6 @@ public class Const {
          */
         URL_CAMPUS_ANNOUNCEMENT,
         /**
-         * 校园动态
-         */
-        URL_CAMPUS_ACTIVITIES,
-        /**
          * 媒体报道
          */
         URL_MEDIA_REPORTS
@@ -150,8 +140,6 @@ public class Const {
             case 1:
                 return PageURL.URL_CAMPUS_ANNOUNCEMENT;
             case 2:
-                return PageURL.URL_CAMPUS_ACTIVITIES;
-            case 3:
                 return PageURL.URL_MEDIA_REPORTS;
             case 0:
             default:

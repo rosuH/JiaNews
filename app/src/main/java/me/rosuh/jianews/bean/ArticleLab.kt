@@ -4,12 +4,11 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import me.rosuh.jianews.network.ArticleService
 import me.rosuh.jianews.network.ImageService
+import me.rosuh.jianews.network.RetrofitClient
 import me.rosuh.jianews.util.Const
 import me.rosuh.jianews.util.Const.PageType
-import me.rosuh.jianews.util.Const.PageURL.URL_CAMPUS_ACTIVITIES
 import me.rosuh.jianews.util.Const.PageURL.URL_CAMPUS_ANNOUNCEMENT
 import me.rosuh.jianews.util.Const.PageURL.URL_MAJOR_NEWS
-import me.rosuh.jianews.util.ResponseThrowable
 import me.rosuh.jianews.util.StringUtils
 import retrofit2.HttpException
 import retrofit2.Retrofit
@@ -56,9 +55,6 @@ object ArticleLab {
                 URL_CAMPUS_ANNOUNCEMENT -> {
                     Const.PageType.CAMPUS_ANNOUNCEMENT
                 }
-                URL_CAMPUS_ACTIVITIES -> {
-                    Const.PageType.CAMPUS_ACTIVITIES
-                }
                 else -> {
                     Const.PageType.MEDIA_REPORTS
                 }
@@ -97,13 +93,14 @@ object ArticleLab {
             .toList()
             .map {
                 val listArticleBean: ArrayList<ArticleBean> = ArrayList()
+                val isMediaResports = pageType == PageType.MEDIA_REPORTS
                 for (item in it) {
                     listArticleBean.add(
                         ArticleBean(
                             id = item.id,
                             url = item.link,
                             title = item.title,
-                            summary = if (item.content.isEmpty() || item.content.length <= 20) {
+                            summary = if (isMediaResports || item.content.isEmpty() || item.content.length <= 20) {
                                 ""
                             } else {
                                 item.content.substring(0, 20)
@@ -119,7 +116,11 @@ object ArticleLab {
                                 item.imageList[0].link
                             },
                             isRead = false,
-                            content = item.content,
+                            content = if (item.content.isNullOrBlank()){
+                                ""
+                            }else {
+                                item.content
+                            },
                             date = StringUtils.getFormattedTime(item.created),
                             type = item.type,
                             views = item.views

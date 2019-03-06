@@ -50,7 +50,7 @@ public class ArticleListFragment extends Fragment implements IView {
 
     private ArticleAdapter mArticleAdapter;
 
-    private List<ArticleBean> mArticleBeans = new ArrayList<>();
+    private List<ArticleBean> mArticleBeans = new ArrayList<>(20);
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -160,7 +160,7 @@ public class ArticleListFragment extends Fragment implements IView {
      * 功能：根据数据创建适配器，将之设置给列表，后更新 UI
      */
     private void updateUI() {
-        mArticleAdapter = new ArticleAdapter(Objects.requireNonNull(this.getActivity()), mArticleBeans);
+        mArticleAdapter = new ArticleAdapter(Objects.requireNonNull(this.getActivity()), mArticleBeans, this);
         mArticleRecyclerView.setAdapter(mArticleAdapter);
         mArticleAdapter.setFooterHolder(
                 new FooterHolder(Objects.requireNonNull(getActivity()).getLayoutInflater(), mArticleRecyclerView)
@@ -261,6 +261,9 @@ public class ArticleListFragment extends Fragment implements IView {
         return (list == null || list.isEmpty());
     }
 
+    public void onItemClick(ArticleBean clickedBean){
+        ((HomeActivity)getActivity()).onItemClick(clickedBean);
+    }
 
     /**
      * 显示 Toast

@@ -1,6 +1,5 @@
-package me.rosuh.jianews.bean
+package me.rosuh.jianews.network
 
-import android.support.annotation.Nullable
 import me.rosuh.jianews.util.Const
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory

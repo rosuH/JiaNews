@@ -5,32 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
+    <FrameLayout
+        android:id="@+id/content_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/abl_home"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/tool_bar_color"
-            android:elevation="7dp">
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/tb_home"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@color/tool_bar_color"
-                android:elevation="7dp"
-                app:layout_scrollFlags="scroll|enterAlways" />
-        </android.support.design.widget.AppBarLayout>
-
-        <FrameLayout
-            android:id="@+id/content_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-    </android.support.design.widget.CoordinatorLayout>
-
+        android:layout_height="wrap_content" />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

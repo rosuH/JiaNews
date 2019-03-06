@@ -3,6 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">47.101.154.200</domain>
         <domain includeSubdomains="true">evila.cc</domain>
-        <domain includeSubdomains="true">www.jyu.edu.cn</domain>
+        <domain includeSubdomains="true">jyu.edu.cn</domain>
     </domain-config>
 </network-security-config>

@@ -1,30 +1,31 @@
 package me.rosuh.jianews.view
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout.LayoutParams
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.SearchView
-import android.view.KeyEvent
-import android.view.Menu
+import android.support.transition.Fade
+import android.support.transition.TransitionInflater
+import android.support.transition.TransitionSet
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
+import android.support.v4.widget.DrawerLayout
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.Toast
+import kotlinx.android.synthetic.main.article_reading_frag.tb_reading
 import kotlinx.android.synthetic.main.home_activity.dl_home
 import kotlinx.android.synthetic.main.home_activity.nav_view
-import kotlinx.android.synthetic.main.home_activity.tb_home
+import kotlinx.android.synthetic.main.home_fragment.tb_home
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.util.GlideApp
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import android.transition.Slide
-import android.view.Gravity
-import me.rosuh.android.jianews.R.color
+import me.rosuh.jianews.bean.ArticleBean
+import me.rosuh.jianews.view.ArticleReadingFrag.Companion.READING_FRAGMENT_TAG
 
 /**
  * 首页 Activity
@@ -34,59 +35,26 @@ class HomeActivity : AppCompatActivity() {
 
     private var isExit = false
 
+    private lateinit var readingFrag: ArticleReadingFrag
+
+    lateinit var homeFragment: HomeFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-//        val slideIn = TransitionInflater.from(this).inflateTransition(R.transition.slide_in)
-//        val slideOut = TransitionInflater.from(this).inflateTransition(R.transition.slide_out)
-//        window.apply {
-//            requestFeature(Window.FEATURE_CONTENT_TRANSITIONS)
-//            exitTransition = slideOut
-//        }
-        val slide = Slide(Gravity.START)
-        slide.excludeTarget(android.R.id.statusBarBackground, true)
-        slide.excludeTarget(android.R.id.navigationBarBackground, true)
-        window.apply {
-            enterTransition = slide
-            exitTransition = slide
-        }
         setContentView(R.layout.home_activity)
-
-        initToolBar()
         initNavigationView()
-
-        var homeFragment = supportFragmentManager
-            .findFragmentById(R.id.home_fragment_layout)
-
-        if (homeFragment == null) {
-            homeFragment = HomeFragment.instance
-        }
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.content_fragment, homeFragment)
-            .commit()
-    }
-
-    /**
-     * 初始化顶部工具栏
-     */
-    private fun initToolBar() {
-        setSupportActionBar(tb_home)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_home)
-            setDisplayShowTitleEnabled(false)
-        }
+        addHomeFragment()
+        tryPreLoadWebView()
     }
 
     /**
      * 初始化侧滑栏
      */
     private fun initNavigationView() {
-        // 侧滑栏
-        nav_view.itemIconTintList = null
         val headerView = nav_view.inflateHeaderView(R.layout.nav_header)
         val imageView = headerView.findViewById<ImageView>(R.id.iv_nav_header)
+        nav_view.itemIconTintList = null
         imageView.setOnClickListener {
             val iv = ImageView(this@HomeActivity)
             iv.setBackgroundColor(Color.parseColor("#99000000"))
@@ -117,48 +85,32 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.home_activity, menu)
-        val item = menu.findItem(R.id.menu_item_search)
-        val searchView = item.actionView as SearchView
-        searchView.visibility = View.INVISIBLE
-        searchView.queryHint = "请输入关键词"
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                //                Toast.makeText(HomeActivity.this, query, Toast.LENGTH_SHORT).show();
-                return false
-            }
+    /**
+     * 添加主视图
+     */
+    private fun addHomeFragment() {
+        homeFragment = supportFragmentManager
+            .findFragmentById(R.id.home_fragment_layout) as? HomeFragment ?: HomeFragment.instance
 
-            override fun onQueryTextChange(newText: String): Boolean {
-                return false
-            }
-        })
-        return true
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.content_fragment, homeFragment, HomeFragment.HOME_FRAGMENT_TAG)
+            .commit()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> dl_home.openDrawer(GravityCompat.START)
+            android.R.id.home -> {
+                dl_home.openDrawer(GravityCompat.START)
+                return true
+            }
         }
-        return true
+        return super.onOptionsItemSelected(item)
     }
 
     /**
-     * 返回键监听
+     * 双击退出实现
      */
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (event != null && event.action == KeyEvent.ACTION_DOWN) {
-            when (keyCode) {
-                KeyEvent.KEYCODE_BACK -> {
-                    exitAppByDoubleClick()
-                    return true
-                }
-            }
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
     private fun exitAppByDoubleClick() {
         val scheduledExecutorService = Executors.newScheduledThreadPool(1)
         if (isExit) {
@@ -168,6 +120,60 @@ class HomeActivity : AppCompatActivity() {
             Toast.makeText(this, "再点击一次退出", Toast.LENGTH_LONG)
                 .show()
             scheduledExecutorService.schedule({ isExit = false }, 2000, TimeUnit.MILLISECONDS)
+        }
+    }
+
+    /**
+     * 列表条目被点击，调用此方法来控制阅读视图和主视图的显隐性
+     */
+    fun onItemClick(clickedBean: ArticleBean) {
+        if (isFragmentExist(ArticleReadingFrag.READING_FRAGMENT_TAG)) {
+            readingFrag = supportFragmentManager.findFragmentByTag(READING_FRAGMENT_TAG) as ArticleReadingFrag
+            readingFrag.updateBean(clickedBean)
+        } else {
+            readingFrag = ArticleReadingFrag.newInstance(clickedBean)
+        }
+
+        supportFragmentManager.beginTransaction().apply {
+            if (!readingFrag.isAdded) {
+                add(R.id.content_fragment, readingFrag, ArticleReadingFrag.READING_FRAGMENT_TAG)
+            }
+            setCustomAnimations(
+                R.anim.push_right_in, R.anim.push_left_out
+            )
+            hide(homeFragment)
+            show(readingFrag)
+            commit()
+        }
+    }
+
+    /**
+     * 判断 Fragment 是否已经实例化
+     */
+    private fun isFragmentExist(tag: String): Boolean =
+        supportFragmentManager.findFragmentByTag(tag) != null
+
+    /**
+     * 预热WebView
+     */
+    private fun tryPreLoadWebView(){
+        WebView(this).destroy()
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.findFragmentByTag(ArticleReadingFrag.READING_FRAGMENT_TAG)?.isHidden == true) {
+            // 如果在首页 Fragment
+            exitAppByDoubleClick()
+        } else {
+            // 如果在阅读视图
+            supportFragmentManager.beginTransaction().apply {
+                setCustomAnimations(
+                    R.anim.push_left_in, R.anim.push_right_out
+                )
+                hide(readingFrag)
+                show(homeFragment)
+                commit()
+            }
         }
     }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout android:id="@+id/home_fragment_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include
+            android:id="@+id/tb_home"
+            android:transitionName="tb_home"
+            layout="@layout/toolbar"/>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tb_layout_nav"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:background="#fff"
+            app:tabIndicatorFullWidth="false"
+            app:tabGravity="fill"
+            app:tabMode="scrollable"
+            app:tabIndicatorHeight="4dp"
+            app:tabSelectedTextColor="@color/tab_selected_color"
+            />
+    </android.support.design.widget.AppBarLayout>
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_article_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
+</android.support.design.widget.CoordinatorLayout>

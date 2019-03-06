@@ -9,8 +9,8 @@ android {
         applicationId "me.rosuh.android.jianews"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 7
-        versionName "0.7"
+        versionCode 8
+        versionName "0.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 //    signingConfigs {
