@@ -40,7 +40,7 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
 
     private lateinit var webView: WebView
 
-    lateinit var fontItemView: View
+    private var fontItemView: View? = null
 
     private val imageFixStr = "<style>img{display: inline;height: auto;max-width: 100%;}</style>"
 //    private val fontsFixStr = "<style>@font-face { font-family: 'MyWebFont';src:url('file:///android_asset/fonts/SourceHanSerifCN-Regular.otf') format('opentype');font-weight: normal;font-style: normal;}</style>"
@@ -59,11 +59,6 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
             webViewLoad(articleBean?.content ?: "空空如也？")
             this
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        fontItemView = view.findViewById(R.id.menu_item_font)
     }
 
     private fun initWebView(view: View) {
@@ -98,9 +93,11 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
                 if (item == null) return false
                 when (item.itemId) {
                     R.id.menu_item_font -> {
+                        fontItemView = fontItemView?:view?.findViewById(R.id.menu_item_font)
+
                         if (mFontPopupMenu == null) {
                             // 实例化一个 字体弹出菜单
-                            mFontPopupMenu = PopupMenu(activity!!, fontItemView, Gravity.CENTER)
+                            mFontPopupMenu = PopupMenu(activity!!, fontItemView!!, Gravity.CENTER)
                             mFontPopupMenu!!.inflate(R.menu.menu_fonts)
                             mFontPopupMenu!!.setOnMenuItemClickListener {
                                 when (it.itemId) {
@@ -152,7 +149,11 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
         webViewLoad(newBean.content)
     }
 
-    private fun reset() = webView.loadUrl("")
+    private fun reset(){
+        webView.loadUrl("")
+        fontItemView = null
+        mFontPopupMenu = null
+    }
 
     private fun webViewLoad(content: String) =
         webView.loadDataWithBaseURL(Const.URL_HOME_PAGE,
