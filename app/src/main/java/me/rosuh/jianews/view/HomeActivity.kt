@@ -170,7 +170,7 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentByTag(ArticleReadingFrag.READING_FRAGMENT_TAG)?.isHidden == true) {
+        if (supportFragmentManager.findFragmentByTag(ArticleReadingFrag.READING_FRAGMENT_TAG)?.isHidden?:true) {
             // 如果在首页 Fragment
             exitAppByDoubleClick()
         } else {
