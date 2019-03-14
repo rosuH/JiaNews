@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="20dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="2dp"
+    android:descendantFocusability="blocksDescendants"
+    >
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/custom_ripple">
+
+        <ImageView
+            android:id="@+id/iv_article_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:contentDescription="@string/iv_description"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_article_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:background="#11C2C2C2"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_article_thumbnail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="2月6日上午，应市人大常委会副主任、学院党委负责人李俊夫邀请，旅港乡贤、知名实业家刘汉兴、朱雪云伉俪来校参观访问。在参观校园和德龙会堂新办公室后，刘汉兴先生伉俪和李俊夫书记、政法系教授李春泰等亲切座谈，对我校新领导上任后的变化表示赞赏，欣然表示捐资10万元办学经费，支持学院事业的发展" />
+
+        <TextView
+            android:id="@+id/tv_list_publish_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:textColor="#000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_article_title"
+            tools:text="@string/test_public_time" />
+
+
+        <ImageView
+            android:id="@+id/iv_views"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="@string/article_views"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_list_publish_time"
+            app:layout_constraintTop_toBottomOf="@+id/tv_list_publish_time"
+            app:srcCompat="@drawable/ic_article_views" />
+
+        <TextView xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/tv_views"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#000"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_views"
+            app:layout_constraintStart_toEndOf="@+id/iv_views"
+            app:layout_constraintTop_toTopOf="@+id/iv_views"
+            tools:text="10000" />
+
+        <TextView
+            android:id="@+id/button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:text="查看完整报道"
+            android:clickable="false"
+            android:focusable="false"
+            android:textColor="@color/indicator_select"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_article_thumbnail" />
+
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>
+

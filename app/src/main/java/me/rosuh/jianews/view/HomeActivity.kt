@@ -9,6 +9,7 @@ import android.support.transition.Fade
 import android.support.transition.TransitionInflater
 import android.support.transition.TransitionSet
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.widget.DrawerLayout
 import android.view.MenuItem
@@ -38,7 +39,7 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
 
     private lateinit var readingFrag: ArticleReadingFrag
 
-    lateinit var homeFragment: HomeFragment
+    private lateinit var homeFragment: HomeFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -48,6 +49,8 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
         addHomeFragment()
         tryPreLoadWebView()
     }
+
+    override fun onSaveInstanceState(outState: Bundle?) {}
 
     /**
      * 初始化侧滑栏

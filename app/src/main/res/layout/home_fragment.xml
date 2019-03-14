@@ -21,7 +21,7 @@
             app:tabIndicatorFullWidth="false"
             app:tabGravity="fill"
             app:tabMode="scrollable"
-            app:tabIndicatorHeight="4dp"
+            app:tabIndicatorHeight="2dp"
             app:tabSelectedTextColor="@color/tab_selected_color"
             />
     </android.support.design.widget.AppBarLayout>
@@ -31,7 +31,6 @@
         android:id="@+id/vp_article_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
 

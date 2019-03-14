@@ -9,12 +9,14 @@ import me.rosuh.jianews.util.Const
 import me.rosuh.jianews.util.Const.PageType
 import me.rosuh.jianews.util.Const.PageURL.URL_CAMPUS_ANNOUNCEMENT
 import me.rosuh.jianews.util.Const.PageURL.URL_MAJOR_NEWS
+import me.rosuh.jianews.util.Const.VALUE_LIST_DEFAULT_SIZE
 import me.rosuh.jianews.util.StringUtils
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
+import java.net.UnknownHostException
 
 /**
  * 这个类用于创建、获取 ArticleBean 及其集合的单例类
@@ -63,7 +65,7 @@ object ArticleLab {
     }
 
     private fun indexConverter(index: Int): Int {
-        return index / 20
+        return index / VALUE_LIST_DEFAULT_SIZE
     }
 
     private fun getArticleListFromServer(pageType: PageType, index: Int): Observable<ArrayList<ArticleBean>> {
@@ -71,7 +73,7 @@ object ArticleLab {
             .getArticles(pageType.toString(), index.toString())
             .subscribeOn(Schedulers.io())
             .onErrorReturn { t: Throwable ->
-                if (t is ConnectException){
+                if (t is ConnectException || t is UnknownHostException){
                     DataBean(code = 0, msg = "糟糕！网络好像不太稳定！(╬ﾟ ◣ ﾟ)", data = emptyList())
                 }else {
                     val errorCode = (t as HttpException).code()

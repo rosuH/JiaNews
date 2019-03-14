@@ -2,22 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:layout_height="56dp"
     android:layout_marginBottom="5dp"
-    android:gravity="center">
-    <android.support.v4.widget.ContentLoadingProgressBar
-        android:id="@+id/pb_item_footer"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        style="?android:attr/progressBarStyle"
-        />
+    android:gravity="center"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:orientation="vertical">
+
+
     <TextView
         android:id="@+id/tv_item_footer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/indicator_select"
+        android:background="@drawable/rec_loading"
+        android:textSize="18sp"
         android:text="@string/item_loading"
-        tools:text="@string/item_loading"
-        />
+        android:textAlignment="center"
+        android:gravity="center"
+        tools:text="@string/item_loading" />
 </LinearLayout>

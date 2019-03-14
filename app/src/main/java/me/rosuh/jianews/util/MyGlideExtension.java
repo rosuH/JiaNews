@@ -21,10 +21,11 @@ public class MyGlideExtension {
     @NonNull
     @GlideOption
 
-    public static RequestOptions getOptions(RequestOptions options, @NonNull Context context, int cornerRadius) {
+    public static RequestOptions getOptions(RequestOptions options, @NonNull Context context, int cornerRadius, int blurRadius) {
         int px = Math.round(cornerRadius * (context.getResources().getDisplayMetrics().xdpi
                 / DisplayMetrics.DENSITY_DEFAULT));
         return options
+                .transforms(new BlurTransformation(context, blurRadius))
                 .transform(new RoundedCorners(px));
     }
 }

@@ -69,12 +69,18 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
 
     private fun initWebView(view: View) {
         webView = view.findViewById(R.id.wv_reading)
-        with(webView.settings) {
-            textZoom = 125
-            setSupportZoom(true)
-            javaScriptEnabled = false
-            builtInZoomControls = false
-            loadWithOverviewMode = true
+        with(webView){
+            this.settings.apply {
+                textZoom = 125
+                setSupportZoom(true)
+                javaScriptEnabled = false
+                builtInZoomControls = false
+                loadWithOverviewMode = true
+
+            }
+            isVerticalScrollBarEnabled = true
+            scrollBarStyle = WebView.SCROLLBARS_OUTSIDE_OVERLAY
+            isScrollbarFadingEnabled = true
         }
     }
 

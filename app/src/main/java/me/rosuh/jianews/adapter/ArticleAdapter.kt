@@ -1,10 +1,12 @@
 package me.rosuh.jianews.adapter
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.v4.widget.ContentLoadingProgressBar
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -12,14 +14,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.coroutines.internal.artificialFrame
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.util.Const
 import me.rosuh.jianews.util.GlideApp
 import me.rosuh.jianews.util.MyGlideExtension
 import me.rosuh.jianews.view.ArticleListFragment
-import me.rosuh.jianews.view.ArticleReadingFrag
 import java.util.ArrayList
 
 /**
@@ -27,7 +27,11 @@ import java.util.ArrayList
  * @author rosuh
  * @date 2018/12/21
  */
-class ArticleAdapter(private val context: Activity, articleBeans: MutableList<ArticleBean>, val articleListFragment: ArticleListFragment) :
+class ArticleAdapter(
+    private val context: Activity,
+    articleBeans: MutableList<ArticleBean>,
+    val articleListFragment: ArticleListFragment
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var mArticleBeans: MutableList<ArticleBean>? = null
@@ -41,40 +45,51 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
     init {
         mArticleBeans = articleBeans
         if (mArticleBeans == null) {
-            mArticleBeans = ArrayList()
+            mArticleBeans = ArrayList(Const.VALUE_LIST_DEFAULT_SIZE)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(context)
-        when (viewType) {
-            Const.VALUE_LIST_EMPTY_TYPE -> return EmptyHolder(layoutInflater, parent)
-            Const.VALUE_LIST_FOO_TYPE -> return mFooterHolder!!
-            else -> return ArticleHolder(layoutInflater, parent)
+        return when (viewType) {
+            Const.VALUE_LIST_EMPTY_TYPE -> EmptyHolder(layoutInflater, parent)
+            Const.VALUE_LIST_FOO_TYPE -> mFooterHolder!!
+            Const.VALUE_LIST_DEFAULT_NOT_IMG_TYPE -> ArticleHolder(layoutInflater, parent, false)
+            else -> ArticleHolder(layoutInflater, parent, true)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is ArticleHolder) {
-            mArticleBean = mArticleBeans!![position]
-            holder.bind(context, mArticleBean!!)
+        when (holder) {
+            is ArticleHolder -> {
+                mArticleBean = mArticleBeans!![position]
+                holder.bind(context, mArticleBean!!)
+            }
+            is EmptyHolder -> {
+                beginAnimate(holder.itemView.findViewById(R.id.tv_article_title))
+                beginAnimate(holder.itemView.findViewById(R.id.tv_article_summary))
+            }
+            is FooterHolder -> beginAnimate(holder.itemView)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (mArticleBeans!!.size != 0 && position >= mArticleBeans!!.size) {
+        return if (mArticleBeans!!.size != 0 && position >= mArticleBeans!!.size) {
             // 返回 footer 布局
-            return Const.VALUE_LIST_FOO_TYPE
-        }
-        return if (mArticleBeans!!.size == 0) {
+            Const.VALUE_LIST_FOO_TYPE
+        } else if (mArticleBeans!!.size == 0) {
             // 返回空视图
             Const.VALUE_LIST_EMPTY_TYPE
-        } else Const.VALUE_LIST_DEFAULT_TYPE
+        } else if (mArticleBean?.imagesList?.isNotEmpty() == true) {
+            Const.VALUE_LIST_DEFAULT_TYPE
+        } else {
+            Const.VALUE_LIST_DEFAULT_NOT_IMG_TYPE
+        }
     }
 
     override fun getItemCount(): Int {
         return if (mArticleBeans.isNullOrEmpty()) {
-            Const.VALUE_LIST_DEFAULT_SIZE
+            Const.VALUE_LIST_EMPTY_SIZE
         } else mArticleBeans!!.size + 1
     }
 
@@ -89,10 +104,19 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
     /**
      * 文章类 Holder
      */
-    inner class ArticleHolder constructor(inflater: LayoutInflater, parent: ViewGroup) :
+    inner class ArticleHolder constructor(
+        inflater: LayoutInflater,
+        parent: ViewGroup,
+        private val hasImage: Boolean
+    ) :
         RecyclerView.ViewHolder(
             inflater.inflate(
-                R.layout.list_item_article, parent, false
+                if (hasImage) {
+                    R.layout.list_item_article_normal
+                } else {
+                    R.layout.list_item_article_not_pics
+                }
+                , parent, false
             )
         ), View.OnClickListener {
 
@@ -102,9 +126,9 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
 
         private val mPublishTimeTextView: TextView = itemView.findViewById(R.id.tv_list_publish_time)
 
-        private val mThumbnailImageView: ImageView = itemView.findViewById(R.id.iv_article_thumbnail)
+        private var mThumbnailImageView: ImageView? = null
 
-        private val tvViews:TextView = itemView.findViewById(R.id.tv_views)
+        private val tvViews: TextView = itemView.findViewById(R.id.tv_views)
 
         init {
             itemView.setOnClickListener(this)
@@ -120,24 +144,23 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
         fun bind(context: Context, articleBean: ArticleBean) {
             this.mArticleBean = articleBean
             mTitleTextView.text = mArticleBean!!.title
-            if (articleBean.thumbnail.isEmpty()){
-                itemView.findViewById<ImageView>(R.id.iv_article_thumbnail).visibility = View.GONE
-            }else {
-                itemView.findViewById<ImageView>(R.id.iv_article_thumbnail).visibility = View.VISIBLE
+
+            if (this.hasImage) {
+                mThumbnailImageView = itemView.findViewById(R.id.iv_article_thumbnail)
+                GlideApp.with(context)
+                    .load(mArticleBean!!.thumbnail)
+                    .thumbnail(
+                        GlideApp
+                            .with(context)
+                            .load(R.drawable.rec_loading)
+                    )
+                    .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3, 10))
+                    .into(mThumbnailImageView!!)
             }
-            GlideApp.with(context)
-                .load(mArticleBean!!.thumbnail)
-                .thumbnail(
-                    GlideApp
-                        .with(context)
-                        .load(R.drawable.rec_loading)
-                        .override(200)
-                )
-                .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3))
-                .into(mThumbnailImageView)
+
             mPublishTimeTextView.text = mArticleBean!!.date
             tvViews.text = mArticleBean!!.views.toString()
-            if (articleBean.type == Const.PageType.MEDIA_REPORTS.toString()){
+            if (articleBean.type == Const.PageType.MEDIA_REPORTS.toString()) {
                 tvViews.visibility = View.INVISIBLE
                 itemView.findViewById<ImageView>(R.id.iv_views).visibility = View.INVISIBLE
             }
@@ -151,7 +174,7 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
                 intent.data = Uri.parse(mArticleBean!!.url)
                 context.startActivity(intent)
             } else {
-                articleListFragment.onItemClick(mArticleBean)
+                articleListFragment.onItemClick(mArticleBean!!)
             }
         }
     }
@@ -168,16 +191,14 @@ class ArticleAdapter(private val context: Activity, articleBeans: MutableList<Ar
      * 功能：上拉加载 Holder 类。当用户上拉到底的时候，加载本 holder
      */
     class FooterHolder(inflater: LayoutInflater, parent: ViewGroup) :
-        RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_footer, parent, false)) {
+        RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_footer, parent, false))
 
-        private val mTvTips: TextView
-
-        private val mProgressBar: ContentLoadingProgressBar
-
-        init {
-            val view = inflater.inflate(R.layout.list_item_footer, parent, false)
-            mTvTips = view.findViewById(R.id.tv_item_footer)
-            mProgressBar = view.findViewById(R.id.pb_item_footer)
+    private fun beginAnimate(view: View) {
+        ObjectAnimator.ofFloat(view, "alpha", 1f, 0.4f, 1f).apply {
+            duration = 1500
+            repeatMode = ValueAnimator.RESTART
+            repeatCount = ValueAnimator.INFINITE
+            start()
         }
     }
 }

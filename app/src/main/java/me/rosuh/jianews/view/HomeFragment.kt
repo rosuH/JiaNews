@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.design.widget.TabLayout.Tab
 import android.support.design.widget.TabLayout.TabLayoutOnPageChangeListener
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.SearchView
@@ -21,7 +24,6 @@ import android.widget.TextView
 
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.util.Const
-import me.rosuh.jianews.adapter.FragmentPagerAdapter
 import java.lang.ref.WeakReference
 
 /**
@@ -53,19 +55,27 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    private var mStatePagerAdapter: FragmentPagerAdapter? = null
+    private var mStatePagerAdapter: FragmentStatePagerAdapter? = null
     private lateinit var tabLayoutRef: WeakReference<TabLayout>
     private var tabCustomViewList = ArrayList<TextView>()
-
+    lateinit var viewPager:ViewPager
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.home_fragment, container, false)
 
-        val viewPager = view.findViewById<ViewPager>(R.id.vp_article_list)
+         viewPager = view.findViewById(R.id.vp_article_list)
         // 文章列表
-        mStatePagerAdapter = FragmentPagerAdapter(activity!!.supportFragmentManager)
+        mStatePagerAdapter = object :FragmentStatePagerAdapter(activity!!.supportFragmentManager){
+            override fun getItem(position: Int): Fragment {
+                return ArticleListFragment.getInstances(Const.getCorrectURL(position))
+            }
+            override fun getCount(): Int {
+                return Const.VALUE_ARTICLE_MAX_PAGES
+            }
+        }
         viewPager.adapter = mStatePagerAdapter
         viewPager.currentItem = Const.VALUE_ARTICLE_START_PAGE
-        initTabLayout(viewPager, view)
+        viewPager.offscreenPageLimit = Const.VALUE_ARTICLE_MAX_PAGES
+        initTabLayout(view)
         viewPager.addOnPageChangeListener(TabLayoutOnPageChangeListener(tabLayoutRef.get()))
         return view
     }
@@ -107,7 +117,7 @@ class HomeFragment : BaseFragment() {
      * 初始化导航栏
      * @param viewPager 传入设置好的 ViewPager 和 TabLayout 关联起来
      */
-    private fun initTabLayout(viewPager: ViewPager, view: View) {
+    private fun initTabLayout(view: View) {
         val tabLayout = view.findViewById<TabLayout>(R.id.tb_layout_nav)
         tabLayout.setupWithViewPager(viewPager)
         tabLayoutRef = WeakReference(tabLayout)
@@ -137,10 +147,8 @@ class HomeFragment : BaseFragment() {
                 super.onTabReselected(tab)
                 val newestSelectedTime = System.currentTimeMillis()
                 if (newestSelectedTime - mLastSelectedTime < sDoubleClickedInterval) {
-                    val tabPos = tab!!.position
-                    val adapter = viewPager.adapter as FragmentPagerAdapter?
-                    val articleListFragment = adapter!!.getItemFromContainer(viewPager, tabPos) as ArticleListFragment
-                    articleListFragment.scrollToTop()
+                    val listFrag = viewPager.adapter?.instantiateItem(viewPager, viewPager.currentItem) as? ArticleListFragment
+                    listFrag?.scrollToTop()
                 }
                 mLastSelectedTime = newestSelectedTime
             }

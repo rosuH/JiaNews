@@ -14,27 +14,6 @@ public class Const {
     public static final String TAG_FRAGMENT_BANNER = "tagFragmentBanner";
 
     /**
-     * 请求文章列表父布局 ViewPager 刷新
-     */
-    public static final int REQUEST_CODE_ARTICLE_LIST_REFRESH = 1;
-
-    /**
-     * Home Activity pages value
-     * Banner
-     */
-    private static final int VALUE_BANNER_MAX_PAGES = 1000;
-
-    /**
-     * The constant VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE.
-     */
-    public static final int VALUE_BANNER_DEFAULT_ACTUAL_PAGES_SIZE = 10;
-
-    /**
-     * The constant VALUE_BANNER_START_PAGE.
-     */
-    public static final int VALUE_BANNER_START_PAGE = VALUE_BANNER_MAX_PAGES / 2;
-
-    /**
      * ArticleBean View Pager
      */
     public static final int VALUE_ARTICLE_MAX_PAGES = 3;
@@ -65,9 +44,19 @@ public class Const {
     public static final int VALUE_LIST_DEFAULT_TYPE = 4;
 
     /**
+     * The constant VALUE_LIST_DEFAULT_TYPE.
+     */
+    public static final int VALUE_LIST_DEFAULT_NOT_IMG_TYPE = 5;
+
+    /**
      * The constant VALUE_LIST_DEFAULT_SIZE.
      */
-    public static final int VALUE_LIST_DEFAULT_SIZE = 10;
+    public static final int VALUE_LIST_DEFAULT_SIZE = 20;
+
+    /**
+     * The constant VALUE_LIST_DEFAULT_SIZE.
+     */
+    public static final int VALUE_LIST_EMPTY_SIZE = 2;
 
     /**
      * Fragment arguments key
