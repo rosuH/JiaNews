@@ -2,6 +2,7 @@ package me.rosuh.jianews.view
 
 import android.animation.ObjectAnimator
 import android.graphics.Typeface
+import android.graphics.drawable.Animatable
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -9,28 +10,39 @@ import android.support.design.widget.TabLayout
 import android.support.design.widget.TabLayout.Tab
 import android.support.design.widget.TabLayout.TabLayoutOnPageChangeListener
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.ContentLoadingProgressBar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.TextView
+import android.widget.Toast
 
 import me.rosuh.android.jianews.R
+import me.rosuh.jianews.adapter.SearchListAdapter
+import me.rosuh.jianews.bean.ArticleBean
+import me.rosuh.jianews.precenter.ArticleListViewPresenter
 import me.rosuh.jianews.util.Const
+import me.rosuh.jianews.util.ViewUtils
 import java.lang.ref.WeakReference
 
 /**
  * @author rosu
  * @date 2018/9/29
  */
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment(), IListClickedView {
 
     // Tab 选中时字体大小
     private val endTextSize = 18f
@@ -58,16 +70,22 @@ class HomeFragment : BaseFragment() {
     private var mStatePagerAdapter: FragmentStatePagerAdapter? = null
     private lateinit var tabLayoutRef: WeakReference<TabLayout>
     private var tabCustomViewList = ArrayList<TextView>()
-    lateinit var viewPager:ViewPager
+    lateinit var viewPager: ViewPager
+    private var searchPopWindow: PopupWindow? = null
+    private var searchResultBeans: ArrayList<ArticleBean> = java.util.ArrayList(Const.VALUE_LIST_DEFAULT_SIZE)
+    private val mViewPresenter by lazy { ArticleListViewPresenter }
+    private lateinit var rvSearch: RecyclerView
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.home_fragment, container, false)
 
-         viewPager = view.findViewById(R.id.vp_article_list)
+        viewPager = view.findViewById(R.id.vp_article_list)
         // 文章列表
-        mStatePagerAdapter = object :FragmentStatePagerAdapter(activity!!.supportFragmentManager){
+        mStatePagerAdapter = object : FragmentStatePagerAdapter(activity!!.supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 return ArticleListFragment.getInstances(Const.getCorrectURL(position))
             }
+
             override fun getCount(): Int {
                 return Const.VALUE_ARTICLE_MAX_PAGES
             }
@@ -93,24 +111,84 @@ class HomeFragment : BaseFragment() {
             setDisplayHomeAsUpEnabled(false)
             setDisplayShowTitleEnabled(false)
         }
+    }
 
-        val searchView = toolbar.menu.findItem(R.id.menu_item_search).actionView as SearchView
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (menu == null) return
+        val searchView = menu.findItem(R.id.menu_item_search).actionView as SearchView
         initSearchView(searchView)
     }
 
     private fun initSearchView(searchView: SearchView) {
-        searchView.visibility = View.INVISIBLE
         searchView.queryHint = "请输入关键词"
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                //                Toast.makeText(HomeActivity.this, query, Toast.LENGTH_SHORT).show();
-                return false
+                if (searchPopWindow == null) {
+                    searchPopWindow = initPopUpWindows(searchView)
+                    rvSearch = searchPopWindow?.contentView?.findViewById(R.id.rv_search_frag) ?: return false
+                } else {
+                    searchPopWindow?.showAsDropDown(searchView)
+                }
+
+                mViewPresenter.searchData(
+                    this@HomeFragment,
+                    keyWord = query
+                )
+                return true
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
                 return false
             }
         })
+    }
+
+    override fun onHeaderRequestFinished(list: ArrayList<ArticleBean>) {
+        searchResultBeans = list
+        if (rvSearch.adapter == null){
+            rvSearch.adapter = SearchListAdapter(activity!!, searchResultBeans, this@HomeFragment)
+            rvSearch.layoutManager = LinearLayoutManager(activity!!)
+        }else {
+            (rvSearch.adapter as SearchListAdapter).updateData(searchResultBeans)
+            rvSearch.adapter?.notifyDataSetChanged()
+        }
+
+    }
+
+//    private fun switchProgressBar(){
+//        searchPopWindow?.contentView?.findViewById<ContentLoadingProgressBar>(R.id.pb_searching).apply {
+//            if (this?.isShown  == true){
+//                this.hide()
+//            }else {
+//                this?.show()
+//            }
+//        }
+//    }
+
+
+    override fun onUpdateDataFailed(t: Throwable) {
+        t.printStackTrace()
+        Toast.makeText(activity, t.message + "\n 请稍后重试", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onItemClick(clickedBean: ArticleBean) {
+        if (searchPopWindow?.isShowing == true){
+            searchPopWindow?.dismiss()
+        }
+        (activity as HomeActivity).onItemClick(clickedBean)
+    }
+
+    private fun initPopUpWindows(view: View): PopupWindow {
+        return PopupWindow(context).run {
+            width = ViewGroup.LayoutParams.MATCH_PARENT
+            height = 600
+            contentView = LayoutInflater.from(context).inflate(R.layout.search_fragment, null)
+            setBackgroundDrawable(resources.getDrawable(R.color.very_light_gray, activity!!.theme))
+            isOutsideTouchable = true
+            isFocusable = true
+            this
+        }
     }
 
     /**
@@ -147,7 +225,8 @@ class HomeFragment : BaseFragment() {
                 super.onTabReselected(tab)
                 val newestSelectedTime = System.currentTimeMillis()
                 if (newestSelectedTime - mLastSelectedTime < sDoubleClickedInterval) {
-                    val listFrag = viewPager.adapter?.instantiateItem(viewPager, viewPager.currentItem) as? ArticleListFragment
+                    val listFrag =
+                        viewPager.adapter?.instantiateItem(viewPager, viewPager.currentItem) as? ArticleListFragment
                     listFrag?.scrollToTop()
                 }
                 mLastSelectedTime = newestSelectedTime
@@ -185,7 +264,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun setCustomViewFroTabs(resIdList: List<Int>, tabLayout: TabLayout) {
-        for(i in 0..tabLayout.tabCount){
+        for (i in 0..tabLayout.tabCount) {
             tabLayout.getTabAt(i)?.setCustomView(
                 TextView(activity).apply {
                     layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)

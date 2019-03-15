@@ -1,13 +1,11 @@
 package me.rosuh.jianews.view
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -55,7 +53,7 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.article_reading_frag, container, false).run {
+        return inflater.inflate(R.layout.reading_frag, container, false).run {
             initWebView(this)
             webViewLoad(articleBean?.content ?: "空空如也？")
             this

@@ -1,13 +1,16 @@
 package me.rosuh.jianews.adapter
 
 import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Paint
 import android.net.Uri
 import android.support.v7.widget.RecyclerView
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +22,7 @@ import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.util.Const
 import me.rosuh.jianews.util.GlideApp
 import me.rosuh.jianews.util.MyGlideExtension
-import me.rosuh.jianews.view.ArticleListFragment
+import me.rosuh.jianews.view.IListClickedView
 import java.util.ArrayList
 
 /**
@@ -30,7 +33,7 @@ import java.util.ArrayList
 class ArticleAdapter(
     private val context: Activity,
     articleBeans: MutableList<ArticleBean>,
-    val articleListFragment: ArticleListFragment
+    val clickedView: IListClickedView
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -39,8 +42,6 @@ class ArticleAdapter(
     private var mArticleBean: ArticleBean? = null
 
     private var mFooterHolder: FooterHolder? = null
-
-    lateinit var itemClickListener: View.OnClickListener
 
     init {
         mArticleBeans = articleBeans
@@ -156,6 +157,8 @@ class ArticleAdapter(
                     )
                     .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3, 10))
                     .into(mThumbnailImageView!!)
+            }else {
+                mTitleTextView.paintFlags = Paint.UNDERLINE_TEXT_FLAG
             }
 
             mPublishTimeTextView.text = mArticleBean!!.date
@@ -174,7 +177,7 @@ class ArticleAdapter(
                 intent.data = Uri.parse(mArticleBean!!.url)
                 context.startActivity(intent)
             } else {
-                articleListFragment.onItemClick(mArticleBean!!)
+                clickedView.onItemClick(mArticleBean!!)
             }
         }
     }

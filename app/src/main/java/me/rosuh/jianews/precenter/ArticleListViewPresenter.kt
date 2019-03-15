@@ -1,17 +1,14 @@
 package me.rosuh.jianews.precenter
 
-import android.util.Log
 import java.util.concurrent.ConcurrentHashMap
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.bean.ArticleLab
 import me.rosuh.jianews.storage.IDataModel
 import me.rosuh.jianews.util.Const
 import me.rosuh.jianews.util.Const.PageURL
-import me.rosuh.jianews.util.ViewUtils
 import me.rosuh.jianews.view.ArticleListFragment
 import me.rosuh.jianews.view.IView
 
@@ -79,6 +76,20 @@ object ArticleListViewPresenter : IDataModel {
                     disposableMap[pageURL]?.dispose()
                 }
             ).isDisposed
+    }
+
+    fun searchData(iView: IView, keyWord:String){
+        val disposable = ArticleLab
+            .searchArticles(keyWord)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    iView.onHeaderRequestFinished(it)
+                },
+                {
+                    iView.onUpdateDataFailed(it)
+                }
+            )
     }
 
     private fun register(pageURL: PageURL, disposable: Disposable) {

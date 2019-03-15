@@ -12,12 +12,14 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.widget.SearchView
+import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.Toast
-import kotlinx.android.synthetic.main.article_reading_frag.tb_reading
+import kotlinx.android.synthetic.main.reading_frag.tb_reading
 import kotlinx.android.synthetic.main.home_activity.dl_home
 import kotlinx.android.synthetic.main.home_activity.nav_view
 import kotlinx.android.synthetic.main.home_fragment.tb_home
@@ -40,6 +42,8 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
     private lateinit var readingFrag: ArticleReadingFrag
 
     private lateinit var homeFragment: HomeFragment
+
+    private lateinit var searchFragment: HomeFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)

@@ -17,6 +17,7 @@
     <color name="silver">#C0C0C0</color>
     <color name="gray">#808080</color>
     <color name="light_gray">#e4c2c2c2</color>
+    <color name="very_light_gray">#79D1D1D1</color>
 
     <color name="olive">#808000</color>
     <color name="purple">#800080</color>

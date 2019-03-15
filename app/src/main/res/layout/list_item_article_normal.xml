@@ -16,13 +16,13 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="360dp"
         android:background="@drawable/custom_ripple">
 
         <ImageView
             android:id="@+id/iv_article_thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="280dp"
             android:contentDescription="@string/iv_description"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:background="#11C2C2C2"
+            android:background="#525C5C5C"
             android:ellipsize="end"
             android:maxLines="3"
             android:textColor="#fff"
@@ -56,12 +56,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:textColor="#000"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_article_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_article_title"
             tools:text="@string/test_public_time" />
 
 
@@ -71,20 +68,19 @@
             android:layout_height="16dp"
             android:layout_marginBottom="8dp"
             android:contentDescription="@string/article_views"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_list_publish_time"
-            app:layout_constraintTop_toBottomOf="@+id/tv_list_publish_time"
+            app:layout_constraintBottom_toTopOf="@+id/tv_list_publish_time"
+            app:layout_constraintStart_toStartOf="@+id/tv_article_title"
             app:srcCompat="@drawable/ic_article_views" />
 
         <TextView xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/tv_views"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
             android:textColor="#000"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_views"
+            app:layout_constraintBottom_toTopOf="@+id/tv_list_publish_time"
             app:layout_constraintStart_toEndOf="@+id/iv_views"
-            app:layout_constraintTop_toTopOf="@+id/iv_views"
             tools:text="10000" />
 
         <TextView
@@ -94,13 +90,16 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="查看完整报道"
             android:clickable="false"
             android:focusable="false"
+            android:text="查看完整报道"
             android:textColor="@color/indicator_select"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_article_thumbnail" />
 
 

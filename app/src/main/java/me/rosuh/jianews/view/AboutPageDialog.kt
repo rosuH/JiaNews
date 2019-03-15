@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_about_page_dialog.project_page_text_view
 import me.rosuh.android.jianews.R
 
 /**
@@ -19,7 +18,7 @@ import me.rosuh.android.jianews.R
 class AboutPageDialog : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.activity_about_page_dialog, container, false)
+        val view = inflater.inflate(R.layout.about_dialog, container, false)
         val tv = view.findViewById<TextView>(R.id.project_page_text_view)
         tv.movementMethod = LinkMovementMethod.getInstance()
         return view

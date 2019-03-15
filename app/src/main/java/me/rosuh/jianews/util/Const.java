@@ -48,6 +48,8 @@ public class Const {
      */
     public static final int VALUE_LIST_DEFAULT_NOT_IMG_TYPE = 5;
 
+    public static final int VALUE_LIST_SEARCH_TYPE = 5;
+
     /**
      * The constant VALUE_LIST_DEFAULT_SIZE.
      */

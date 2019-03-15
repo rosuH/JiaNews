@@ -68,16 +68,69 @@ object ArticleLab {
         return index / VALUE_LIST_DEFAULT_SIZE
     }
 
+    public fun searchArticles(keyWord: String): Observable<ArrayList<ArticleBean>> {
+        return articleService
+            .searchArticles(keyWord)
+            .subscribeOn(Schedulers.io())
+            .onErrorReturn { t: Throwable ->
+                if (t is ConnectException || t is UnknownHostException) {
+                    DataBean(code = 0, msg = "糟糕！网络好像不太稳定！(╬ﾟ ◣ ﾟ)", data = emptyList())
+                } else {
+                    val errorCode = (t as HttpException).code()
+                    when (errorCode) {
+                        in 500..599 -> {
+                            DataBean(code = errorCode, msg = "服务器发生了一点小错误(,,・ω・,,)", data = emptyList())
+                        }
+                        404 -> {
+                            DataBean(code = errorCode, msg = "没有搜索到相关文章 (‘⊙д-)", data = emptyList())
+                        }
+                        in 400..499 -> {
+                            DataBean(code = errorCode, msg = "发送的请求有误 (‘⊙д-)", data = emptyList())
+                        }
+                        else -> {
+                            DataBean(code = errorCode, msg = "我也不知道发生了啥错误...", data = emptyList())
+                        }
+                    }
+                }
+            }
+            .compose(DataTransformer.getDataFromResponse(false))
+            .map {
+                val listArticleBean: ArrayList<ArticleBean> = ArrayList()
+                for (item in it) {
+                    listArticleBean.add(
+                        ArticleBean(
+                            id = item.id,
+                            url = item.link,
+                            title = item.title,
+                            summary = "",
+                            imagesList = emptyList(),
+                            thumbnail = "",
+                            isRead = false,
+                            content = if (item.content.isNullOrBlank()) {
+                                ""
+                            } else {
+                                item.content
+                            },
+                            date = StringUtils.getFormattedTime(item.created),
+                            type = item.type,
+                            views = item.views
+                        )
+                    )
+                }
+                listArticleBean
+            }
+    }
+
     private fun getArticleListFromServer(pageType: PageType, index: Int): Observable<ArrayList<ArticleBean>> {
         return articleService
             .getArticles(pageType.toString(), index.toString())
             .subscribeOn(Schedulers.io())
             .onErrorReturn { t: Throwable ->
-                if (t is ConnectException || t is UnknownHostException){
+                if (t is ConnectException || t is UnknownHostException) {
                     DataBean(code = 0, msg = "糟糕！网络好像不太稳定！(╬ﾟ ◣ ﾟ)", data = emptyList())
-                }else {
+                } else {
                     val errorCode = (t as HttpException).code()
-                    when(errorCode) {
+                    when (errorCode) {
                         in 500..599 -> {
                             DataBean(code = errorCode, msg = "服务器发生了一点小错误(,,・ω・,,)", data = emptyList())
                         }
@@ -107,9 +160,9 @@ object ArticleLab {
                             } else {
                                 item.content.substring(0, 20)
                             },
-                            imagesList = if (item.img == 1){
+                            imagesList = if (item.img == 1) {
                                 item.imageList.map { imageDataItem -> imageDataItem.link }
-                            }else {
+                            } else {
                                 emptyList()
                             },
                             thumbnail = if (item.imageList.isNullOrEmpty()) {
@@ -118,9 +171,9 @@ object ArticleLab {
                                 item.imageList[0].link
                             },
                             isRead = false,
-                            content = if (item.content.isNullOrBlank()){
+                            content = if (item.content.isNullOrBlank()) {
                                 ""
-                            }else {
+                            } else {
                                 item.content
                             },
                             date = StringUtils.getFormattedTime(item.created),

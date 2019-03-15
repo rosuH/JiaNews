@@ -1,0 +1,10 @@
+<vector android:height="24dp" android:viewportHeight="1024"
+    android:viewportWidth="1024" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:name="magnifying"
+        android:pivotX="5"
+        android:pivotY="5">
+        <path android:fillColor="#3688FF" android:pathData="M492.5,917.7c-247,0 -447.9,-200.9 -447.9,-447.9s200.9,-448 447.9,-448 447.9,200.9 447.9,447.9 -200.9,448 -447.9,448zM492.5,107.1c-200,0 -362.6,162.7 -362.6,362.6s162.7,362.6 362.6,362.6 362.6,-162.7 362.6,-362.6 -162.6,-362.6 -362.6,-362.6z"/>
+    </group>
+    <path android:fillColor="#5F6379" android:pathData="M951.1,971c-10.9,0 -21.8,-4.2 -30.2,-12.5l-96,-96c-16.7,-16.7 -16.7,-43.7 0,-60.3 16.6,-16.7 43.7,-16.7 60.3,0l96,96c16.7,16.7 16.7,43.7 0,60.3 -8.2,8.4 -19.2,12.5 -30.1,12.5z"/>
+</vector>

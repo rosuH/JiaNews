@@ -17,5 +17,6 @@ import retrofit2.http.Query
 interface ArticleService{
     @GET("api/v1/articles/get")
     fun getArticles(@Query("type") articleType:String, @Query("offset") offset:String): Observable<DataBean<List<ArticleDataItem>>>
+    @GET("api/v1/articles/search")
     fun searchArticles(@Query("word") keyWord:String): Observable<DataBean<List<ArticleDataItem>>>
 }

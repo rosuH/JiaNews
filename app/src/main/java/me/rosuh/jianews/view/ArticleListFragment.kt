@@ -41,7 +41,7 @@ import android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE
  * @author rosuh 2018-5-9
  * @version 0.1l
  */
-class ArticleListFragment : Fragment(), IView {
+class ArticleListFragment : Fragment(), IView, IListClickedView {
 
     private var mRVArticles: RecyclerView? = null
 
@@ -165,12 +165,12 @@ class ArticleListFragment : Fragment(), IView {
         }
     }
 
-    override fun onHeaderRequestFinished(list: MutableList<ArticleBean>) {
+    override fun onHeaderRequestFinished(list: ArrayList<ArticleBean>) {
         mIsRequesting.compareAndSet(true, false)
         stopRefresh(list)
     }
 
-    override fun onUpdateDataFinished(list: List<ArticleBean>, nextPos: Int) {
+    override fun onUpdateDataFinished(list: ArrayList<ArticleBean>, nextPos: Int) {
         mIsRequesting.compareAndSet(true, false)
         stopLoading(list)
     }
@@ -246,7 +246,7 @@ class ArticleListFragment : Fragment(), IView {
         return list == null || list.isEmpty()
     }
 
-    fun onItemClick(clickedBean: ArticleBean) {
+    override fun onItemClick(clickedBean: ArticleBean) {
         (activity as HomeActivity).onItemClick(clickedBean)
     }
 
