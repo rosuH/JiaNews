@@ -157,8 +157,7 @@ class ArticleAdapter(
                     )
                     .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3, 10))
                     .into(mThumbnailImageView!!)
-            }else {
-                mTitleTextView.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+
             }
 
             mPublishTimeTextView.text = mArticleBean!!.date
@@ -197,8 +196,8 @@ class ArticleAdapter(
         RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_footer, parent, false))
 
     private fun beginAnimate(view: View) {
-        ObjectAnimator.ofFloat(view, "alpha", 1f, 0.4f, 1f).apply {
-            duration = 1500
+        ObjectAnimator.ofFloat(view, "alpha", 1f, 0.5f, 1f).apply {
+            duration = 1250
             repeatMode = ValueAnimator.RESTART
             repeatCount = ValueAnimator.INFINITE
             start()

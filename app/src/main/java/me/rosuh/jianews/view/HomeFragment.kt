@@ -1,8 +1,11 @@
 package me.rosuh.jianews.view
 
 import android.animation.ObjectAnimator
+import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Animatable
+import android.graphics.drawable.ColorDrawable
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -18,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -25,11 +29,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewParent
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
-
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.adapter.SearchListAdapter
 import me.rosuh.jianews.bean.ArticleBean
@@ -122,15 +128,17 @@ class HomeFragment : BaseFragment(), IListClickedView {
 
     private fun initSearchView(searchView: SearchView) {
         searchView.queryHint = "请输入关键词"
+        val ivIcon = searchView.findViewById<ImageView>(android.support.v7.appcompat.R.id.search_button)
+        ivIcon.setImageResource(R.drawable.ic_search)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (searchPopWindow == null) {
                     searchPopWindow = initPopUpWindows(searchView)
                     rvSearch = searchPopWindow?.contentView?.findViewById(R.id.rv_search_frag) ?: return false
-                } else {
-                    searchPopWindow?.showAsDropDown(searchView)
                 }
-
+                searchPopWindow?.showAsDropDown(searchView)
+                applyDim(activity?.window?.decorView?.rootView!! as ViewGroup, 0.5f)
+                hideSoftKeyBoard(searchView)
                 mViewPresenter.searchData(
                     this@HomeFragment,
                     keyWord = query
@@ -142,6 +150,27 @@ class HomeFragment : BaseFragment(), IListClickedView {
                 return false
             }
         })
+    }
+
+    /**
+     * 弹出窗口出现时，应用背景变暗效果
+     */
+    private fun applyDim(parent: ViewGroup, dimAmount:Float){
+        val dim = ColorDrawable(Color.BLACK)
+        dim.apply{
+            setBounds(0, 0, parent.width, parent.height)
+            alpha = (255 * dimAmount).toInt()
+        }
+        parent.overlay.add(dim)
+    }
+
+    private fun clearDim(parent:ViewGroup){
+        parent.overlay.clear()
+    }
+
+    private fun hideSoftKeyBoard(view:View){
+        (this@HomeFragment.activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     override fun onHeaderRequestFinished(list: ArrayList<ArticleBean>) {
@@ -156,15 +185,6 @@ class HomeFragment : BaseFragment(), IListClickedView {
 
     }
 
-//    private fun switchProgressBar(){
-//        searchPopWindow?.contentView?.findViewById<ContentLoadingProgressBar>(R.id.pb_searching).apply {
-//            if (this?.isShown  == true){
-//                this.hide()
-//            }else {
-//                this?.show()
-//            }
-//        }
-//    }
 
 
     override fun onUpdateDataFailed(t: Throwable) {
@@ -182,11 +202,15 @@ class HomeFragment : BaseFragment(), IListClickedView {
     private fun initPopUpWindows(view: View): PopupWindow {
         return PopupWindow(context).run {
             width = ViewGroup.LayoutParams.MATCH_PARENT
-            height = 600
+            height = 800
             contentView = LayoutInflater.from(context).inflate(R.layout.search_fragment, null)
-            setBackgroundDrawable(resources.getDrawable(R.color.very_light_gray, activity!!.theme))
+            setBackgroundDrawable(resources.getDrawable(R.color.white, activity!!.theme))
             isOutsideTouchable = true
             isFocusable = true
+            animationStyle = R.style.pop_animation
+            this.setOnDismissListener {
+                clearDim(activity?.window?.decorView?.rootView!! as ViewGroup)
+            }
             this
         }
     }

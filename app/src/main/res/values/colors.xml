@@ -4,10 +4,10 @@
     <color name="colorPrimaryDark">#c7c7c7</color>
     <color name="colorAccent">#00bcd4</color>
     <color name="indicator_normal">#a3a3a3</color>
-    <color name="indicator_select">#007fca</color>
+    <color name="indicator_select">#576aff</color>
     <color name="banner_text_color">#007fca</color>
     <color name="banner_text_background">#ac007fca</color>
-    <color name="tab_selected_color">#02c690</color>
+    <color name="tab_selected_color">#576aff</color>
 
 
     <color name="white">#FFFFFF</color>
@@ -29,6 +29,7 @@
     <color name="blue">#0000FF</color>
     <color name="navy">#000080</color>
     <color name="black">#000000</color>
+    <color name="mask_black">#C0000000</color>
     <color name="black_pearl">#000f23</color>
 
     <!--<color name="tab_selected">@drawable/shape_tab_indicator_color</color>-->

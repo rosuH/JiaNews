@@ -9,7 +9,7 @@
     android:layout_marginStart="16dp"
     android:layout_marginTop="10dp"
     app:cardCornerRadius="2dp"
-    app:cardElevation="2dp">
+    app:cardElevation="1dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,7 +25,8 @@
             android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textColor="#000"
+            android:textStyle="bold"
+            android:textColor="@color/black_pearl"
             android:textSize="18sp"
             android:gravity="center"
             app:layout_constraintBottom_toTopOf="@+id/tv_list_publish_time"
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="16dp"
-            android:textColor="#000"
+            android:textColor="@color/gray"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="@string/test_public_time" />
@@ -65,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:textColor="#000"
+            android:textColor="@color/gray"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tv_article_title"
             app:layout_constraintTop_toBottomOf="@+id/tv_article_title"
