@@ -1,6 +1,7 @@
 package me.rosuh.jianews.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
@@ -246,8 +247,20 @@ class ArticleListFragment : Fragment(), IView, IListClickedView {
         return list == null || list.isEmpty()
     }
 
-    override fun onItemClick(clickedBean: ArticleBean) {
-        (activity as HomeActivity).onItemClick(clickedBean)
+    override fun onItemClick(v:View, clickedBean: ArticleBean) {
+        if (v.id == R.id.btn_share_item){
+            val intentShare = Intent(Intent.ACTION_SEND)
+            intentShare.putExtra(Intent.EXTRA_TEXT, clickedBean.title + "\n" + clickedBean.url)
+            intentShare.type = "text/plain"
+            startActivity(
+                Intent.createChooser(
+                    intentShare,
+                    resources.getString(R.string.menu_item_share)
+                )
+            )
+        }else{
+            (activity as HomeActivity).onItemClick(clickedBean)
+        }
     }
 
     /**

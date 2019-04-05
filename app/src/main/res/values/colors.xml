@@ -3,11 +3,19 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#c7c7c7</color>
     <color name="colorAccent">#00bcd4</color>
-    <color name="indicator_normal">#a3a3a3</color>
-    <color name="indicator_select">#576aff</color>
-    <color name="banner_text_color">#007fca</color>
-    <color name="banner_text_background">#ac007fca</color>
-    <color name="tab_selected_color">#576aff</color>
+
+    <color name="indicator_normal">#000</color>
+    <color name="indicator_select">#4289a7</color>
+
+    <color name="tab_selected_color">#54e5b3</color>
+
+    <color name="tab_selected_icon_color">#0A84F1</color>
+    <color name="tab_normal_icon_color">#474747</color>
+
+    <color name="tab_selected_text_color">#0A84F1</color>
+    <color name="tab_normal_text_color">#474747</color>
+
+    <color name="views_text_color">#ec644b</color>
 
 
     <color name="white">#FFFFFF</color>
@@ -17,7 +25,8 @@
     <color name="silver">#C0C0C0</color>
     <color name="gray">#808080</color>
     <color name="light_gray">#e4c2c2c2</color>
-    <color name="very_light_gray">#79D1D1D1</color>
+    <color name="very_light_gray">#E5E6E9</color>
+    <color name="jut_gray">#C7C6C6</color>
 
     <color name="olive">#808000</color>
     <color name="purple">#800080</color>

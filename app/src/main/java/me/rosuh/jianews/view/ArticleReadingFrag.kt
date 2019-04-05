@@ -10,9 +10,11 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.View.TEXT_ALIGNMENT_CENTER
 import android.view.ViewGroup
 
 import android.webkit.WebView
+import android.widget.TextView
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +71,7 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
         webView = view.findViewById(R.id.wv_reading)
         with(webView){
             this.settings.apply {
-                textZoom = 125
+                textZoom = 100
                 setSupportZoom(true)
                 javaScriptEnabled = false
                 builtInZoomControls = false
@@ -104,7 +106,7 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
                 when (item.itemId) {
                     R.id.menu_item_font -> {
                         fontItemView = fontItemView?:view?.findViewById(R.id.menu_item_font)
-
+                        fontItemView?.findViewById<TextView>(R.id.item_font_size)?.textAlignment = TEXT_ALIGNMENT_CENTER
                         if (mFontPopupMenu == null) {
                             // 实例化一个 字体弹出菜单
                             mFontPopupMenu = PopupMenu(activity!!, fontItemView!!, Gravity.CENTER)
@@ -166,6 +168,7 @@ class ArticleReadingFrag : BaseFragment(), CoroutineScope {
     private fun reset(){
         fontItemView = null
         mFontPopupMenu = null
+        webView.clearCache(false)
     }
 
     private fun webViewLoad(content: String) =

@@ -14,6 +14,7 @@ import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.request.RequestOptions
@@ -131,6 +132,8 @@ class ArticleAdapter(
 
         private val tvViews: TextView = itemView.findViewById(R.id.tv_views)
 
+        private val btnShare = itemView.findViewById<ImageButton>(R.id.btn_share_item)
+
         init {
             itemView.setOnClickListener(this)
         }
@@ -145,9 +148,9 @@ class ArticleAdapter(
         fun bind(context: Context, articleBean: ArticleBean) {
             this.mArticleBean = articleBean
             mTitleTextView.text = mArticleBean!!.title
-
             if (this.hasImage) {
                 mThumbnailImageView = itemView.findViewById(R.id.iv_article_thumbnail)
+                btnShare.setOnClickListener(this)
                 GlideApp.with(context)
                     .load(mArticleBean!!.thumbnail)
                     .thumbnail(
@@ -157,14 +160,12 @@ class ArticleAdapter(
                     )
                     .apply(MyGlideExtension.getOptions(RequestOptions(), context, 3, 10))
                     .into(mThumbnailImageView!!)
-
             }
 
             mPublishTimeTextView.text = mArticleBean!!.date
             tvViews.text = mArticleBean!!.views.toString()
             if (articleBean.type == Const.PageType.MEDIA_REPORTS.toString()) {
                 tvViews.visibility = View.INVISIBLE
-                itemView.findViewById<ImageView>(R.id.iv_views).visibility = View.INVISIBLE
             }
         }
 
@@ -176,7 +177,7 @@ class ArticleAdapter(
                 intent.data = Uri.parse(mArticleBean!!.url)
                 context.startActivity(intent)
             } else {
-                clickedView.onItemClick(mArticleBean!!)
+                clickedView.onItemClick(v, mArticleBean!!)
             }
         }
     }

@@ -36,10 +36,10 @@
     </string>
     <string name="test_public_time">18&#8211;04&#8211;23</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="tiny_font">小</string>
     <string name="font_size">字号</string>
-    <string name="medium_font">中</string>
-    <string name="large_font">大</string>
+    <string name="tiny_font">中</string>
+    <string name="medium_font">大</string>
+    <string name="large_font">超大</string>
     <string name="article_views">阅读数</string>
     <string name="banner">Banner</string>
 </resources>

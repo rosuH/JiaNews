@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.Animatable
 import android.graphics.drawable.ColorDrawable
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
@@ -15,13 +14,11 @@ import android.support.design.widget.TabLayout.TabLayoutOnPageChangeListener
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
-import android.support.v4.widget.ContentLoadingProgressBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -29,8 +26,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.ViewParent
-import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Animation.RELATIVE_TO_SELF
+import android.view.animation.AnimationUtils
+import android.view.animation.RotateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.PopupWindow
@@ -41,7 +40,6 @@ import me.rosuh.jianews.adapter.SearchListAdapter
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.precenter.ArticleListViewPresenter
 import me.rosuh.jianews.util.Const
-import me.rosuh.jianews.util.ViewUtils
 import java.lang.ref.WeakReference
 
 /**
@@ -49,13 +47,6 @@ import java.lang.ref.WeakReference
  * @date 2018/9/29
  */
 class HomeFragment : BaseFragment(), IListClickedView {
-
-    // Tab 选中时字体大小
-    private val endTextSize = 18f
-    // Tab 未选中时字体大小
-    private var startTextSize = 14f
-    // Tab 字体大小变换时长
-    private val animationDuration = 85L
 
     private val indicatorSelectedColor: Int by lazy {
         if (VERSION.SDK_INT >= VERSION_CODES.M) {
@@ -74,12 +65,32 @@ class HomeFragment : BaseFragment(), IListClickedView {
     }
 
     private var mStatePagerAdapter: FragmentStatePagerAdapter? = null
+
     private lateinit var tabLayoutRef: WeakReference<TabLayout>
+
     private var tabCustomViewList = ArrayList<TextView>()
+
+
+    private val iConResIdList:List<Int> = arrayListOf(
+        R.drawable.selector_bottom_bar_new,
+        R.drawable.selector_bottom_bar_announcement,
+        R.drawable.selector_bottom_bar_reports
+    )
+
+    private val titleResIdList:List<Int> = arrayListOf(
+        R.string.tab_home,
+        R.string.tab_announce,
+        R.string.tab_media
+    )
+
     lateinit var viewPager: ViewPager
+
     private var searchPopWindow: PopupWindow? = null
+
     private var searchResultBeans: ArrayList<ArticleBean> = java.util.ArrayList(Const.VALUE_LIST_DEFAULT_SIZE)
+
     private val mViewPresenter by lazy { ArticleListViewPresenter }
+
     private lateinit var rvSearch: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -192,11 +203,10 @@ class HomeFragment : BaseFragment(), IListClickedView {
         Toast.makeText(activity, t.message + "\n 请稍后重试", Toast.LENGTH_LONG).show()
     }
 
-    override fun onItemClick(clickedBean: ArticleBean) {
+    override fun onItemClick(v:View, clickedBean: ArticleBean) {
         if (searchPopWindow?.isShowing == true){
             searchPopWindow?.dismiss()
         }
-        (activity as HomeActivity).onItemClick(clickedBean)
     }
 
     private fun initPopUpWindows(view: View): PopupWindow {
@@ -222,24 +232,11 @@ class HomeFragment : BaseFragment(), IListClickedView {
     private fun initTabLayout(view: View) {
         val tabLayout = view.findViewById<TabLayout>(R.id.tb_layout_nav)
         tabLayout.setupWithViewPager(viewPager)
+        setCustomViewFroTabs(titleResIdList, iConResIdList, tabLayout)
         tabLayoutRef = WeakReference(tabLayout)
-        setCustomViewFroTabs(
-            arrayListOf(
-                R.string.tab_home,
-                R.string.tab_announce,
-                R.string.tab_media
-            ), tabLayout
-        )
-        (tabLayoutRef.get()?.getTabAt(0)?.customView as TextView).let {
-            startTextSize = (it.textSize / resources.displayMetrics.scaledDensity)
-            it
-        }
-        // 初始化首个 Tab 的样式
-        (tabLayout.getTabAt(0)?.customView as TextView).also {
-            it.textSize = endTextSize
-            it.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-            it.setTextColor(indicatorSelectedColor)
-        }
+
+        // 初始化第一个 item 样式
+        (tabLayout.getTabAt(0)?.customView as? TextView)?.setTextColor(indicatorSelectedColor)
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
             private val sDoubleClickedInterval = 400L
@@ -258,45 +255,43 @@ class HomeFragment : BaseFragment(), IListClickedView {
 
             override fun onTabSelected(tab: Tab?) {
                 super.onTabSelected(tab)
-                for (customView in tabCustomViewList) {
-                    if (customView == tab?.customView as TextView) {
-                        // 被选中的 Tab 的样式
-                        customView.also {
-                            ObjectAnimator
-                                .ofFloat(it, "textSize", startTextSize, endTextSize)
-                                .setDuration(animationDuration)
-                                .start()
-                            it.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
-                            it.setTextColor(indicatorSelectedColor)
-                        }
-                    } else {
-                        customView.also {
-                            // 只能使用颜色作为判断，不能使用字体大小，因为上面属性动画有可能还未执行完毕，就进行下面的判断
-                            if (it.currentTextColor == indicatorSelectedColor) {
-                                ObjectAnimator
-                                    .ofFloat(it, "textSize", endTextSize, startTextSize)
-                                    .setDuration(animationDuration)
-                                    .start()
-                                it.setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
-                                it.setTextColor(indicatorNormalColor)
-                            }
-                        }
+                val iv = (tab?.customView)?.findViewById<ImageView>(R.id.iv_tab_item_custom) ?: return
+                when(tab.position){
+                    0 -> {
+                        val rotateAnimation = RotateAnimation(0f, 360f, RELATIVE_TO_SELF, 0.5f, RELATIVE_TO_SELF, 0.5f)
+                        rotateAnimation.duration = 250
+                        rotateAnimation.interpolator = AccelerateDecelerateInterpolator()
+                        iv.startAnimation(rotateAnimation)
+                    }
+                    else -> {
+                        val rotateAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_tab_item_rotate)
+                        rotateAnimation.repeatCount = 3
+                        iv.startAnimation(rotateAnimation)
                     }
                 }
+            }
+
+            override fun onTabUnselected(tab: Tab?) {
+                super.onTabUnselected(tab)
+//                (tab?.customView as? TextView)?.setTextColor(indicatorNormalColor)
             }
         })
     }
 
-    private fun setCustomViewFroTabs(resIdList: List<Int>, tabLayout: TabLayout) {
+    private fun setCustomViewFroTabs(titleResList: List<Int>, iConResIdList:List<Int>, tabLayout: TabLayout) {
         for (i in 0..tabLayout.tabCount) {
-            tabLayout.getTabAt(i)?.setCustomView(
-                TextView(activity).apply {
-                    layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-                    setText(resIdList[i])
-                    tabCustomViewList.add(this)
-                    setTypeface(Typeface.DEFAULT, Typeface.NORMAL)
+            tabLayout.getTabAt(i)
+                ?.setCustomView(R.layout.tab_item_custom_layout)
+                ?.setContentDescription(titleResList[i])
+
+            tabLayout.getTabAt(i)?.customView?.apply {
+                findViewById<TextView>(R.id.tv_tab_item_custom).apply {
+                    setText(titleResList[i])
                 }
-            )?.setContentDescription(resIdList[i])
+                findViewById<ImageView>(R.id.iv_tab_item_custom).apply{
+                    setBackgroundResource(iConResIdList[i])
+                }
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package me.rosuh.jianews.view
 
+import android.view.View
 import me.rosuh.jianews.bean.ArticleBean
 
 /**
@@ -8,5 +9,5 @@ import me.rosuh.jianews.bean.ArticleBean
  * @date 2019/3/14
  */
 interface IListClickedView {
-    fun onItemClick(clickedBean:ArticleBean)
+    fun onItemClick(v: View, clickedBean:ArticleBean)
 }

@@ -75,14 +75,14 @@ class SearchListAdapter(
         }
 
         override fun onClick(v: View) {
-            // 实现点击启动特定 article 的阅读页面
             if (mArticleBean!!.content.isEmpty() && mArticleBean!!.thumbnail.isEmpty()) {
                 // 媒体报道直接打开浏览器
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(mArticleBean!!.url)
                 context.startActivity(intent)
             } else {
-                clickedView.onItemClick(mArticleBean!!)
+                // 实现点击启动特定 article 的阅读页面
+                clickedView.onItemClick(v, mArticleBean!!)
             }
         }
     }
