@@ -207,6 +207,7 @@ class HomeFragment : BaseFragment(), IListClickedView {
         if (searchPopWindow?.isShowing == true){
             searchPopWindow?.dismiss()
         }
+        (activity as HomeActivity).onItemClick(clickedBean)
     }
 
     private fun initPopUpWindows(view: View): PopupWindow {
