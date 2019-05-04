@@ -2,7 +2,7 @@ package me.rosuh.jianews.bean
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import me.rosuh.jianews.network.ArticleService
+import me.rosuh.jianews.network.Api
 import me.rosuh.jianews.network.ImageService
 import me.rosuh.jianews.network.RetrofitClient
 import me.rosuh.jianews.util.Const
@@ -32,8 +32,8 @@ object ArticleLab {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
-    private val articleService: ArticleService by lazy {
-        retrofit.create(ArticleService::class.java)
+    private val API: Api by lazy {
+        retrofit.create(Api::class.java)
     }
 
     private val imageService: ImageService by lazy {
@@ -69,7 +69,7 @@ object ArticleLab {
     }
 
     public fun searchArticles(keyWord: String): Observable<ArrayList<ArticleBean>> {
-        return articleService
+        return API
             .searchArticles(keyWord)
             .subscribeOn(Schedulers.io())
             .onErrorReturn { t: Throwable ->
@@ -122,7 +122,7 @@ object ArticleLab {
     }
 
     private fun getArticleListFromServer(pageType: PageType, index: Int): Observable<ArrayList<ArticleBean>> {
-        return articleService
+        return API
             .getArticles(pageType.toString(), index.toString())
             .subscribeOn(Schedulers.io())
             .onErrorReturn { t: Throwable ->

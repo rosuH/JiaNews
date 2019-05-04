@@ -5,12 +5,8 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Paint
 import android.net.Uri
 import android.support.v7.widget.RecyclerView
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,7 +64,7 @@ class ArticleAdapter(
                 holder.bind(context, mArticleBean!!)
             }
             is EmptyHolder -> {
-                beginAnimate(holder.itemView.findViewById(R.id.tv_article_title))
+                beginAnimate(holder.itemView.findViewById(R.id.tv_title))
                 beginAnimate(holder.itemView.findViewById(R.id.tv_article_summary))
             }
             is FooterHolder -> beginAnimate(holder.itemView)
@@ -124,9 +120,9 @@ class ArticleAdapter(
 
         var mArticleBean: ArticleBean? = null
 
-        private val mTitleTextView: TextView = itemView.findViewById(R.id.tv_article_title)
+        private val mTitleTextView: TextView = itemView.findViewById(R.id.tv_title)
 
-        private val mPublishTimeTextView: TextView = itemView.findViewById(R.id.tv_list_publish_time)
+        private val mPublishTimeTextView: TextView = itemView.findViewById(R.id.tv_publish_time)
 
         private var mThumbnailImageView: ImageView? = null
 

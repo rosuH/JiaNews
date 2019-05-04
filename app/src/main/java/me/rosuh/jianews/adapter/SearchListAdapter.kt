@@ -63,7 +63,7 @@ class SearchListAdapter(
 
         var mArticleBean: ArticleBean? = null
 
-        private val mTitleTextView: TextView = itemView.findViewById(R.id.tv_article_title)
+        private val mTitleTextView: TextView = itemView.findViewById(R.id.tv_title)
 
         init {
             itemView.setOnClickListener(this)

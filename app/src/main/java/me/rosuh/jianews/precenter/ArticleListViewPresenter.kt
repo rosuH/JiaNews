@@ -1,9 +1,11 @@
 package me.rosuh.jianews.precenter
 
+import io.reactivex.Scheduler
 import java.util.concurrent.ConcurrentHashMap
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.bean.ArticleLab
 import me.rosuh.jianews.storage.IDataModel

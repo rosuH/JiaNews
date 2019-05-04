@@ -1,7 +1,9 @@
 package me.rosuh.jianews
 
 import android.app.Application
+import com.orhanobut.hawk.Hawk
 import me.rosuh.android.jianews.R
+import me.rosuh.jianews.user.Configure
 
 /**
  * @author rosu
@@ -17,5 +19,9 @@ class App : Application() {
         setTheme(R.style.AppTheme)
         super.onCreate()
         instance = this
+        Hawk.init(instance.applicationContext).build()
+        if (Hawk.contains("USERID")){
+            Configure.USERID = Hawk.get<String>("USERID")
+        }
     }
 }

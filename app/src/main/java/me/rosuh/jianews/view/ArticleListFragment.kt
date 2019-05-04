@@ -89,7 +89,7 @@ class ArticleListFragment : Fragment(), IView, IListClickedView {
         initRv()
         // 下拉刷新布局
         mSwipeRefreshLayout!!.setColorSchemeColors(ContextCompat.getColor(mContext!!, R.color.colorAccent))
-        mSwipeRefreshLayout!!.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener { this.loadHeaderData() })
+        mSwipeRefreshLayout!!.setOnRefreshListener { this.loadHeaderData() }
         mSwipeRefreshLayout!!.isRefreshing = true
         updateUI()
         return view

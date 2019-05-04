@@ -36,6 +36,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import me.rosuh.android.jianews.R
+import me.rosuh.android.jianews.R.string
 import me.rosuh.jianews.adapter.SearchListAdapter
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.precenter.ArticleListViewPresenter
@@ -70,17 +71,18 @@ class HomeFragment : BaseFragment(), IListClickedView {
 
     private var tabCustomViewList = ArrayList<TextView>()
 
-
-    private val iConResIdList:List<Int> = arrayListOf(
+    private val iConResIdList: List<Int> = arrayListOf(
         R.drawable.selector_bottom_bar_new,
         R.drawable.selector_bottom_bar_announcement,
-        R.drawable.selector_bottom_bar_reports
+        R.drawable.selector_bottom_bar_reports,
+        R.drawable.selector_bottom_bar_boards
     )
 
-    private val titleResIdList:List<Int> = arrayListOf(
+    private val titleResIdList: List<Int> = arrayListOf(
         R.string.tab_home,
         R.string.tab_announce,
-        R.string.tab_media
+        R.string.tab_media,
+        R.string.boards
     )
 
     lateinit var viewPager: ViewPager
@@ -100,7 +102,11 @@ class HomeFragment : BaseFragment(), IListClickedView {
         // 文章列表
         mStatePagerAdapter = object : FragmentStatePagerAdapter(activity!!.supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
-                return ArticleListFragment.getInstances(Const.getCorrectURL(position))
+                return if (position < 3) {
+                    ArticleListFragment.getInstances(Const.getCorrectURL(position))
+                } else {
+                    BoardListFragment()
+                }
             }
 
             override fun getCount(): Int {
@@ -166,45 +172,42 @@ class HomeFragment : BaseFragment(), IListClickedView {
     /**
      * 弹出窗口出现时，应用背景变暗效果
      */
-    private fun applyDim(parent: ViewGroup, dimAmount:Float){
+    private fun applyDim(parent: ViewGroup, dimAmount: Float) {
         val dim = ColorDrawable(Color.BLACK)
-        dim.apply{
+        dim.apply {
             setBounds(0, 0, parent.width, parent.height)
             alpha = (255 * dimAmount).toInt()
         }
         parent.overlay.add(dim)
     }
 
-    private fun clearDim(parent:ViewGroup){
+    private fun clearDim(parent: ViewGroup) {
         parent.overlay.clear()
     }
 
-    private fun hideSoftKeyBoard(view:View){
+    private fun hideSoftKeyBoard(view: View) {
         (this@HomeFragment.activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
             .hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     override fun onHeaderRequestFinished(list: ArrayList<ArticleBean>) {
         searchResultBeans = list
-        if (rvSearch.adapter == null){
+        if (rvSearch.adapter == null) {
             rvSearch.adapter = SearchListAdapter(activity!!, searchResultBeans, this@HomeFragment)
             rvSearch.layoutManager = LinearLayoutManager(activity!!)
-        }else {
+        } else {
             (rvSearch.adapter as SearchListAdapter).updateData(searchResultBeans)
             rvSearch.adapter?.notifyDataSetChanged()
         }
-
     }
-
-
 
     override fun onUpdateDataFailed(t: Throwable) {
         t.printStackTrace()
         Toast.makeText(activity, t.message + "\n 请稍后重试", Toast.LENGTH_LONG).show()
     }
 
-    override fun onItemClick(v:View, clickedBean: ArticleBean) {
-        if (searchPopWindow?.isShowing == true){
+    override fun onItemClick(v: View, clickedBean: ArticleBean) {
+        if (searchPopWindow?.isShowing == true) {
             searchPopWindow?.dismiss()
         }
         (activity as HomeActivity).onItemClick(clickedBean)
@@ -247,9 +250,9 @@ class HomeFragment : BaseFragment(), IListClickedView {
                 super.onTabReselected(tab)
                 val newestSelectedTime = System.currentTimeMillis()
                 if (newestSelectedTime - mLastSelectedTime < sDoubleClickedInterval) {
-                    val listFrag =
-                        viewPager.adapter?.instantiateItem(viewPager, viewPager.currentItem) as? ArticleListFragment
-                    listFrag?.scrollToTop()
+                    val iView =
+                        viewPager.adapter?.instantiateItem(viewPager, viewPager.currentItem) as? IView
+                    iView?.scrollToTop()
                 }
                 mLastSelectedTime = newestSelectedTime
             }
@@ -257,9 +260,10 @@ class HomeFragment : BaseFragment(), IListClickedView {
             override fun onTabSelected(tab: Tab?) {
                 super.onTabSelected(tab)
                 val iv = (tab?.customView)?.findViewById<ImageView>(R.id.iv_tab_item_custom) ?: return
-                when(tab.position){
+                when (tab.position) {
                     0 -> {
-                        val rotateAnimation = RotateAnimation(0f, 360f, RELATIVE_TO_SELF, 0.5f, RELATIVE_TO_SELF, 0.5f)
+                        val rotateAnimation =
+                            RotateAnimation(0f, 360f, RELATIVE_TO_SELF, 0.5f, RELATIVE_TO_SELF, 0.5f)
                         rotateAnimation.duration = 250
                         rotateAnimation.interpolator = AccelerateDecelerateInterpolator()
                         iv.startAnimation(rotateAnimation)
@@ -279,7 +283,7 @@ class HomeFragment : BaseFragment(), IListClickedView {
         })
     }
 
-    private fun setCustomViewFroTabs(titleResList: List<Int>, iConResIdList:List<Int>, tabLayout: TabLayout) {
+    private fun setCustomViewFroTabs(titleResList: List<Int>, iConResIdList: List<Int>, tabLayout: TabLayout) {
         for (i in 0..tabLayout.tabCount) {
             tabLayout.getTabAt(i)
                 ?.setCustomView(R.layout.tab_item_custom_layout)
@@ -289,7 +293,7 @@ class HomeFragment : BaseFragment(), IListClickedView {
                 findViewById<TextView>(R.id.tv_tab_item_custom).apply {
                     setText(titleResList[i])
                 }
-                findViewById<ImageView>(R.id.iv_tab_item_custom).apply{
+                findViewById<ImageView>(R.id.iv_tab_item_custom).apply {
                     setBackgroundResource(iConResIdList[i])
                 }
             }

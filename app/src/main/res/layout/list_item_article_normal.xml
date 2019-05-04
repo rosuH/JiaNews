@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_article_title"
+            android:id="@+id/tv_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -40,7 +40,7 @@
             android:textColor="#fff"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/tv_list_publish_time"
+            app:layout_constraintBottom_toTopOf="@+id/tv_publish_time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,13 +49,13 @@
             tools:text="2月6日上午，应市人大常委会副主任、学院党委负责人李俊夫邀请，旅港乡贤、知名实业家刘汉兴、朱雪云伉俪来校参观访问。在参观校园和德龙会堂新办公室后，刘汉兴先生伉俪和李俊夫书记、政法系教授李春泰等亲切座谈，对我校新领导上任后的变化表示赞赏，欣然表示捐资10万元办学经费，支持学院事业的发展" />
 
         <TextView
-            android:id="@+id/tv_list_publish_time"
+            android:id="@+id/tv_publish_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#525C5C5C"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/iv_article_thumbnail"
-            app:layout_constraintEnd_toEndOf="@+id/tv_article_title"
+            app:layout_constraintEnd_toEndOf="@+id/tv_title"
             tools:text="@string/test_public_time" />
 
         <TextView xmlns:tools="http://schemas.android.com/tools"
@@ -67,7 +67,7 @@
             android:textAlignment="center"
             android:textColor="@color/views_text_color"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_article_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_title"
             app:layout_constraintTop_toBottomOf="@+id/iv_article_thumbnail"
             tools:text="10000" />
 

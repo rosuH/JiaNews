@@ -2,8 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_item_about"
+            android:id="@+id/nav_item_home"
+            android:icon="@drawable/ic_nav_home"
+            android:title="@string/item_home"/>
+        <item
+            android:id="@+id/nav_item_user"
             android:icon="@drawable/ic_nav_about"
+            android:title="@string/user_center"/>
+        <item
+            android:id="@+id/nav_item_about"
+            android:icon="@drawable/ic_about"
             android:title="@string/about_author"/>
     </group>
 </menu>

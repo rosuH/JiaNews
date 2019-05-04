@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher"
+        tools:replace="android:icon"
         tools:targetApi="n">
         <activity
             android:name="me.rosuh.jianews.view.HomeActivity"
@@ -26,6 +27,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="me.rosuh.jianews.view.UserCenterActivity" />
+        <activity android:name="me.rosuh.jianews.view.LoginActivity" />
+        <activity android:name="me.rosuh.jianews.view.BoardDetailActivity" />
     </application>
 
 </manifest>

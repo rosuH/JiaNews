@@ -1,49 +1,40 @@
 package me.rosuh.jianews.view
 
+import android.content.Intent
 import android.graphics.Color
 import android.support.constraint.ConstraintLayout.LayoutParams
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.transition.Fade
-import android.support.transition.TransitionInflater
-import android.support.transition.TransitionSet
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.app.FragmentTransaction
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.SearchView
-import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.Toast
-import kotlinx.android.synthetic.main.reading_frag.tb_reading
 import kotlinx.android.synthetic.main.home_activity.dl_home
 import kotlinx.android.synthetic.main.home_activity.nav_view
-import kotlinx.android.synthetic.main.home_fragment.tb_home
 import me.rosuh.android.jianews.R
 import me.rosuh.jianews.util.GlideApp
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import me.rosuh.jianews.bean.ArticleBean
 import me.rosuh.jianews.util.DrawerLocker
+import me.rosuh.jianews.util.LoginUtil
+import me.rosuh.jianews.util.LoginUtil.LoginStatusCallBack
 import me.rosuh.jianews.view.ArticleReadingFrag.Companion.READING_FRAGMENT_TAG
 
 /**
  * 首页 Activity
  * @author rosu
  */
-class HomeActivity : AppCompatActivity(), DrawerLocker{
+class HomeActivity : AppCompatActivity(), DrawerLocker {
 
     private var isExit = false
 
     private lateinit var readingFrag: ArticleReadingFrag
 
-    private lateinit var homeFragment: HomeFragment
-
-    private lateinit var searchFragment: HomeFragment
+    private var homeFragment: HomeFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -53,9 +44,6 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
         addHomeFragment()
         tryPreLoadWebView()
     }
-
-    override fun onSaveInstanceState(outState: Bundle?) {}
-
     /**
      * 初始化侧滑栏
      */
@@ -86,6 +74,16 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
         }
         nav_view.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                R.id.nav_item_home -> {
+                    addHomeFragment()
+                }
+                R.id.nav_item_user -> {
+                    LoginUtil.checkLogin(this, object : LoginStatusCallBack {
+                        override fun logged() {
+                            this@HomeActivity.startActivity(Intent(this@HomeActivity, UserCenterActivity::class.java))
+                        }
+                    })
+                }
                 R.id.nav_item_about -> AboutPageDialog().show(supportFragmentManager, "About Dialog")
             }
             dl_home.closeDrawers()
@@ -97,13 +95,13 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
      * 添加主视图
      */
     private fun addHomeFragment() {
+        if (homeFragment != null && homeFragment!!.isAdded){
+            return
+        }
         homeFragment = supportFragmentManager
             .findFragmentById(R.id.home_fragment_layout) as? HomeFragment ?: HomeFragment.instance
-
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.content_fragment, homeFragment, HomeFragment.HOME_FRAGMENT_TAG)
-            .commit()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.add(R.id.content_fragment, homeFragment!!, HomeFragment.HOME_FRAGMENT_TAG).commit()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -149,16 +147,18 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
             setCustomAnimations(
                 R.anim.push_right_in, R.anim.push_left_out
             )
-            hide(homeFragment)
-            show(readingFrag)
-            commit()
+            if (homeFragment != null && homeFragment!!.isAdded) {
+                hide(homeFragment!!)
+                show(readingFrag)
+                commit()
+            }
         }
     }
 
     override fun setDrawerLocked(shouldLock: Boolean) {
-        if (shouldLock){
+        if (shouldLock) {
             dl_home.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        }else{
+        } else {
             dl_home.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         }
     }
@@ -172,12 +172,12 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
     /**
      * 预热WebView
      */
-    private fun tryPreLoadWebView(){
+    private fun tryPreLoadWebView() {
         WebView(this).destroy()
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentByTag(ArticleReadingFrag.READING_FRAGMENT_TAG)?.isHidden?:true) {
+        if (supportFragmentManager.findFragmentByTag(ArticleReadingFrag.READING_FRAGMENT_TAG)?.isHidden ?: true) {
             // 如果在首页 Fragment
             exitAppByDoubleClick()
         } else {
@@ -186,7 +186,7 @@ class HomeActivity : AppCompatActivity(), DrawerLocker{
                 setCustomAnimations(
                     R.anim.push_left_in, R.anim.push_right_out
                 )
-                show(homeFragment)
+                show(homeFragment!!)
                 hide(readingFrag)
                 commit()
             }

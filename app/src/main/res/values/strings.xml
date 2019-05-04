@@ -42,4 +42,13 @@
     <string name="large_font">超大</string>
     <string name="article_views">阅读数</string>
     <string name="banner">Banner</string>
+    <string name="user_center">个人中心</string>
+    <string name="go_login">登录</string>
+    <string name="logout">注销</string>
+    <string name="loging">正在登陆中...</string>
+    <string name="register">注册</string>
+    <string name="registering">正在注册</string>
+    <string name="item_home">主页</string>
+    <string name="board_creating">帖子创建中</string>
+    <string name="boards">看板</string>
 </resources>

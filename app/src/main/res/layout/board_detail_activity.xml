@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="56dp"
+        android:text="这是一个标题"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider_board_detail"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.4"
+        android:layout_height="0.5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/very_light_gray"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+    <TextView
+        android:id="@+id/tv_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_board_detail"
+        android:layout_margin="16dp"
+        android:gravity="left"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        tools:text="我是作者"
+        android:padding="5dp"
+        />
+    <TextView
+        android:id="@+id/tv_publish_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_author"
+        android:layout_margin="16dp"
+        android:background="@color/very_light_gray"
+        tools:text="2019年5月4日"
+        android:padding="5dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/tv_publish_time"
+        app:layout_constraintTop_toBottomOf="@id/tv_author"
+        android:layout_margin="16dp"
+        android:background="@color/very_light_gray"
+        tools:text="标签1"
+        android:padding="5dp"
+        />
+
+    <View
+        android:id="@+id/divider_board_detail2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="15dp"
+        android:background="#92D1D1D1"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tag" />
+
+
+    <ScrollView
+        android:id="@+id/sv_board_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:scrollbars="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_board_detail2">
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容这是内容"
+            android:textSize="16sp"
+            android:layout_gravity="top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </ScrollView>
+    <android.support.design.button.MaterialButton
+        android:id="@+id/btn_exit"
+        android:layout_width="0dp"
+        android:text="阅读完毕"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintWidth_percent="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sv_board_detail"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+</android.support.constraint.ConstraintLayout>

@@ -16,7 +16,7 @@ public class Const {
     /**
      * ArticleBean View Pager
      */
-    public static final int VALUE_ARTICLE_MAX_PAGES = 3;
+    public static final int VALUE_ARTICLE_MAX_PAGES = 4;
 
     /**
      * The constant VALUE_ARTICLE_START_PAGE.

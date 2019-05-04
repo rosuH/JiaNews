@@ -46,6 +46,13 @@ class DataTransformer {
             }
         }
 
+        fun <T> applySchedulers():ObservableTransformer<T, T>{
+            return  ObservableTransformer {
+                upstream -> upstream.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+            }
+        }
+
         /**
          * 传入 @param imageService，用于发起网络请求，以便填充上下文（ArticleDataItem）的图片链接列表
          */
