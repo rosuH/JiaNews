@@ -28,7 +28,9 @@
             </intent-filter>
         </activity>
         <activity android:name="me.rosuh.jianews.view.UserCenterActivity" />
-        <activity android:name="me.rosuh.jianews.view.LoginActivity" />
+        <activity android:name="me.rosuh.jianews.view.LoginActivity"
+            android:windowSoftInputMode="adjustPan"
+            />
         <activity android:name="me.rosuh.jianews.view.BoardDetailActivity" />
     </application>
 

@@ -48,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:inputType="textPassword"
         android:hint="请输入密码"
         app:layout_constraintBottom_toBottomOf="@id/tv_passwd"
         app:layout_constraintEnd_toEndOf="parent"

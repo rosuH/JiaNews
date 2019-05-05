@@ -84,12 +84,9 @@ class BoardListFragment : Fragment(){
 
     private fun goConnect() {
         if (Hawk.contains("user")) {
-            ApiService.login(Hawk.get("user"))
-                .subscribe {
-                    val addBoardDialog= AddBoardDialog()
-                    addBoardDialog.boardListFragment = this@BoardListFragment
-                    addBoardDialog.show(fragmentManager, "addBoardDialog")
-                }.isDisposed
+            val addBoardDialog= AddBoardDialog()
+            addBoardDialog.boardListFragment = this@BoardListFragment
+            addBoardDialog.show(fragmentManager, "addBoardDialog")
         }
     }
 

@@ -73,7 +73,7 @@ class LoginActivity : AppCompatActivity() {
 
         if (isRegister && ti_name.text.isNullOrBlank()) {
             Toast.makeText(this@LoginActivity, "请输入昵称", Toast.LENGTH_SHORT).show()
-            ti_passwd.requestFocus()
+            ti_name.requestFocus()
             return false
         }
 
@@ -134,13 +134,13 @@ class LoginActivity : AppCompatActivity() {
             }
             .subscribe(
                 {
-                    saveUserData(user)
+                    saveUserData(it)
                     pDialog.run {
                         titleText = "登录成功"
                         changeAlertType(SweetAlertDialog.SUCCESS_TYPE)
                     }
                     pDialog.setOnDismissListener {
-                        finish()
+                        this@LoginActivity.finish()
                     }
                 },
                 {

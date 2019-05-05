@@ -4,8 +4,7 @@ import io.reactivex.Observable
 import me.rosuh.jianews.bean.ArticleDataItem
 import me.rosuh.jianews.bean.BoardBean
 import me.rosuh.jianews.bean.DataBean
-import me.rosuh.jianews.network.ApiService.BoardEntity
-import retrofit2.http.Body
+import me.rosuh.jianews.bean.User
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -27,7 +26,7 @@ interface Api {
 
     @FormUrlEncoded
     @POST("/api/v1/user/login")
-    fun login(@Field("account") account: String, @Field("passwd") passwd: String): Observable<DataBean<Any>>
+    fun login(@Field("account") account: String, @Field("passwd") passwd: String): Observable<DataBean<User>>
 
     @FormUrlEncoded
     @POST("/api/v1/user/logout")

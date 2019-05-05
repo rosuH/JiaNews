@@ -1,22 +1,13 @@
 package me.rosuh.jianews.network
 
-import android.app.Application
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import me.rosuh.jianews.App
-import me.rosuh.jianews.App.Companion
 import me.rosuh.jianews.bean.BoardBean
-import me.rosuh.jianews.bean.DataBean
 import me.rosuh.jianews.bean.DataTransformer
 import me.rosuh.jianews.bean.User
-import okhttp3.ResponseBody
-import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.net.ConnectException
-import java.net.UnknownHostException
 
 /**
  *
@@ -45,7 +36,7 @@ object ApiService {
             .compose(DataTransformer.applySchedulers())
     }
 
-    fun login(user: User):Observable<Any>{
+    fun login(user: User):Observable<User>{
         return API.login(account = user.account, passwd = user.passwd)
             .compose(DataTransformer.getDataFromResponse(true))
             .compose(DataTransformer.applySchedulers())
