@@ -1,15 +1,8 @@
 package me.rosuh.jianews.network
 
-
-import android.content.Context
-import me.rosuh.android.jianews.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
-import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
-import com.franmontiel.persistentcookiejar.cache.SetCookieCache
-import com.franmontiel.persistentcookiejar.PersistentCookieJar
-import me.rosuh.jianews.App
 
 /**
  *
@@ -19,12 +12,9 @@ import me.rosuh.jianews.App
 object HttpClient {
     val builder = OkHttpClient.Builder()
     init {
-        if (BuildConfig.DEBUG){
-            builder
-                .addInterceptor(HttpLoggingInterceptor().setLevel(BODY))
-                .cookieJar(PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(
-                    App.instance().applicationContext
-                )))
-        }
+        builder
+            .addInterceptor(HttpLoggingInterceptor().setLevel(BODY))
+            .addInterceptor(AddCookiesInterceptor()) //这部分
+            .addInterceptor(ReceivedCookiesInterceptor()) //这部分
     }
 }

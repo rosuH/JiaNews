@@ -48,7 +48,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46'
     implementation 'com.github.f0ris.sweetalert:library:1.5.6'
     implementation "com.orhanobut:hawk:2.0.1"

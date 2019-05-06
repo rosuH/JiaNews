@@ -86,6 +86,7 @@ class UserCenterActivity : AppCompatActivity() {
             Hawk.delete("USERID")
             Configure.USERID = ""
         }
+        Hawk.destroy()
     }
 
     companion object {
